@@ -1,0 +1,98 @@
+{
+  "general_info": {
+    "farm_name": "Sầu riêng",
+    "total_area": 0,
+    "total_trees": 0,
+    "start_harvest_year": 0,
+    "last_year_yield": 0,
+    "forecast_yield": 0
+  },
+  "varieties": [
+    {
+      "name": "Ri6",
+      "origin": "",
+      "count": 120,
+      "stage": "Kinh doanh"
+    }
+  ],
+  "soil_environment": {
+    "soil_type": "",
+    "water_source": "Sông/suối",
+    "land_history": "",
+    "pollution_risks": {
+      "industrial_zone": false,
+      "waste_dump": false,
+      "livestock_area": false,
+      "hospital_cemetery": false,
+      "highway": false,
+      "none": false
+    },
+    "risk_mitigation": ""
+  },
+  "quick_tests": [
+    { "name": "pH đất", "value": 0, "unit": "" },
+    { "name": "N (Đạm tổng số)", "value": 0, "unit": "%" },
+    { "name": "P (Lân hữu hiệu)", "value": 0, "unit": "mg/100g" },
+    { "name": "K (Kali hữu hiệu)", "value": 0, "unit": "mg/100g" }
+  ],
+  "soil_lab_results": "",
+  "plots": [],
+  "current_tree": {
+    "id": "",
+    "location": "",
+    "stage": "Trưởng thành",
+    "details": {}
+  },
+  "facilities": {
+    "warehouse_status": "Có kho riêng, xây kiên cố",
+    "warehouse_location": "",
+    "safety_conditions": {
+      "danger_sign": false,
+      "safe_lock": false,
+      "separate_zone": false,
+      "shelves": false,
+      "ventilation": false
+    },
+    "equipment_list": "",
+    "waste_management": "Thu gom và để tại nơi quy định của địa phương"
+  },
+  "labor_safety": {
+    "total_labor": 0,
+    "training_status": "Đã tập huấn đầy đủ",
+    "ppe": {
+      "clothes": false,
+      "gloves": false,
+      "boots": false,
+      "glasses": false,
+      "hat": false,
+      "mask": false
+    },
+    "first_aid": "Có tủ thuốc và hướng dẫn sơ cứu đầy đủ"
+  },
+  "agri_inputs": {
+    "fertilizers": [],
+    "pesticides": [],
+    "pests": [],
+    "treatment_plan": ""
+  },
+  "certifications": {
+    "standards": {
+      "vietgap": true,
+      "globalgap": false,
+      "organic": false,
+      "conventional": false
+    },
+    "serial": ""
+  },
+  "buyer_info": {
+    "name": "",
+    "representative": "",
+    "packing_code": "",
+    "phone": "",
+    "province": "",
+    "ward": "",
+    "address": "",
+    "volume": 0
+  },
+  "other_notes": ""
+}
