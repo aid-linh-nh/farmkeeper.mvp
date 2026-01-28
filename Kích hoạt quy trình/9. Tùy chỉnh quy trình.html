@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Tùy chỉnh Quy trình</title>
+    <!-- Google Fonts: Noto Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Ionicons for icons -->
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <style>
+      /* --- General Styles --- */
+      :root {
+        --primary-color: #69bd70;
+        --primary-light: #e6f9e7;
+        --secondary-color: #ff9f43;
+        --danger-color: #ea5455;
+        --danger-bg: #fef2f2;
+        --light-gray: #f4f7fa;
+        --dark-gray: #6c757d;
+        --text-color: #333;
+        --white-color: #ffffff;
+        --border-color: #dee2e6;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        background-color: var(--light-gray);
+        color: var(--text-color);
+        display: flex;
+      }
+
+      /* --- Sidebar Menu --- */
+      .sidebar {
+        width: 260px;
+        background-color: var(--white-color);
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        z-index: 200;
+      }
+
+      .sidebar .logo {
+        padding: 24px 20px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .sidebar .logo h1 {
+        color: var(--primary-color);
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      .sidebar .menu {
+        list-style: none;
+        padding: 20px 0;
+        flex-grow: 1;
+      }
+      .sidebar .menu-item {
+        padding: 0 20px;
+      }
+      .sidebar .menu-item .menu-link {
+        display: block;
+        padding: 14px 18px;
+        color: #555;
+        text-decoration: none;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+      .sidebar .menu-item .menu-link:hover {
+        background-color: var(--light-gray);
+      }
+      .sidebar .menu-item.open > .menu-link {
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+      .sidebar .submenu .menu-item.active .menu-link {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+      }
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 25px;
+        margin-top: 5px;
+      }
+      .sidebar .submenu .menu-link {
+        padding: 10px 18px;
+        font-size: 14px;
+      }
+
+      /* --- Main Content --- */
+      .main-content {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        padding: 30px;
+      }
+
+      .header-bar {
+        background-color: var(--primary-light);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .header-bar h2 {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+      .header-bar p {
+        font-size: 0.9rem;
+        color: #5a8a60;
+      }
+      .header-bar .btn {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .header-bar .btn:hover {
+        background-color: #58a860;
+      }
+
+      /* --- Process Detail Container --- */
+      .process-container {
+        background-color: var(--white-color);
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .process-section {
+        margin-bottom: 2.5rem;
+      }
+      .process-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-color);
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        font-size: 14px;
+      }
+
+      .info-grid > div > p:first-child,
+      .editable-group > label {
+        color: var(--dark-gray);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+
+      .info-grid > div > p:last-child {
+        font-weight: 600;
+      }
+
+      .phase-card {
+        background-color: var(--white-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+        margin-top: 1.5rem;
+      }
+
+      .phase-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .phase-icon {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary-light);
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .phase-title-input {
+        font-weight: 700;
+        font-size: 1.2rem;
+        border: none;
+        border-bottom: 2px solid transparent;
+        padding: 0.25rem;
+        width: 100%;
+        transition: border-color 0.3s;
+      }
+      .phase-title-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      .phase-details {
+        border-top: 1px solid var(--border-color);
+        padding-top: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .task-card {
+        border: 1px solid #e9e9eb;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+      }
+
+      .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        gap: 1rem;
+      }
+
+      .task-title-input {
+        font-weight: 600;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        width: 100%;
+        padding: 0.25rem;
+        border-bottom: 2px solid transparent;
+        transition: border-color 0.3s;
+      }
+      .task-title-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      .task-status-tag {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        background-color: var(--danger-bg);
+        color: var(--danger-color);
+        white-space: nowrap;
+      }
+
+      .task-actions {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .task-action-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--dark-gray);
+        transition: color 0.3s;
+        background: none;
+        border: none;
+        cursor: pointer;
+      }
+
+      .task-action-link:hover {
+        color: var(--primary-color);
+      }
+
+      .editable-group input,
+      .editable-group textarea,
+      .editable-group select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        font-family: 'Noto Sans', sans-serif;
+        font-size: 14px;
+        background-color: var(--white-color);
+      }
+      .editable-group textarea {
+        resize: vertical;
+        min-height: 60px;
+      }
+
+      .add-buttons-container {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .add-work-btn,
+      .add-phase-btn {
+        flex: 1;
+        padding: 0.8rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .add-work-btn {
+        background: var(--primary-light);
+        color: var(--primary-color);
+        border: 2px solid var(--primary-light);
+      }
+      .add-work-btn:hover {
+        background: #d4f3d7;
+      }
+
+      .add-phase-btn {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px dashed var(--primary-color);
+      }
+      .add-phase-btn:hover {
+        background: var(--primary-light);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar Menu -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>FARMKEEPER</h1>
+      </div>
+      <ul class="menu">
+        <li class="menu-item">
+          <a href="#" class="menu-link">Quản lý vườn</a>
+        </li>
+        <li class="menu-item open">
+          <a href="#" class="menu-link">Quy trình canh tác</a>
+          <ul class="submenu">
+            <li class="menu-item active">
+              <a href="#" class="menu-link">Kích hoạt quy trình</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Activated Header -->
+      <div class="header-bar">
+        <div>
+          <h2>Tùy chỉnh Quy trình: Sầu riêng GlobalGAP</h2>
+          <p>Vườn sầu riêng Ba Tấn • Bắt đầu từ giai đoạn 1</p>
+        </div>
+        <a href="#deployment" class="btn">
+          <ion-icon name="rocket-outline"></ion-icon>
+          Lưu & Triển khai
+        </a>
+      </div>
+
+      <!-- Process Detail Container -->
+      <div class="process-container">
+        <!-- Section 1: Basic Information -->
+        <div class="process-section">
+          <h3 class="section-title">Thông tin chung</h3>
+          <div class="info-grid">
+            <div>
+              <p>Đơn vị đề xuất</p>
+              <p>HTX Nông nghiệp Bền vững Tây Nguyên</p>
+            </div>
+            <div>
+              <p>Dự án</p>
+              <p>Canh tác sầu riêng Ri6 theo tiêu chuẩn GlobalGAP</p>
+            </div>
+            <div>
+              <p>Người đề xuất</p>
+              <p>Trần Minh Quân</p>
+            </div>
+            <div>
+              <p>Ngày đề xuất</p>
+              <p>31/07/2024</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Phases & Tasks -->
+        <div class="process-section">
+          <h3 class="section-title">Các Giai đoạn & Công việc</h3>
+
+          <div class="phase-card">
+            <div class="phase-header">
+              <div class="phase-icon">
+                <ion-icon name="leaf-outline"></ion-icon>
+              </div>
+              <input
+                type="text"
+                class="phase-title-input"
+                value="Giai đoạn: Chuẩn bị và xử lý đất"
+              />
+            </div>
+            <div class="phase-details info-grid">
+              <div class="editable-group">
+                <label>Thời gian thực hiện</label>
+                <input type="text" value="15-30 ngày" />
+              </div>
+              <div class="editable-group">
+                <label>Triển khai tối ưu</label>
+                <input type="text" value="Tháng 1-2" />
+              </div>
+              <div class="editable-group">
+                <label>Loại công việc</label>
+                <select>
+                  <option>Thiết lập 1 lần</option>
+                  <option>Lặp lại</option>
+                </select>
+              </div>
+              <div class="editable-group">
+                <label>Độ ưu tiên</label>
+                <select>
+                  <option>Cao</option>
+                  <option>Trung bình</option>
+                  <option>Thấp</option>
+                </select>
+              </div>
+              <div class="editable-group" style="grid-column: 1 / -1">
+                <label>Mô tả giai đoạn</label>
+                <textarea>
+Giai đoạn chuẩn bị nền tảng quan trọng nhất cho sự phát triển của cây sầu riêng, bao gồm việc xử lý đất để đảm bảo môi trường tối ưu cho rễ cây.</textarea
+                >
+              </div>
+            </div>
+
+            <div class="task-card">
+              <div class="task-header">
+                <input
+                  type="text"
+                  class="task-title-input"
+                  value="1. Làm đất và bón phân cơ bản"
+                />
+                <span class="task-status-tag">Rất quan trọng</span>
+              </div>
+              <div class="info-grid">
+                <div class="editable-group">
+                  <label>Thời gian thực hiện:</label>
+                  <input type="text" value="3-5 ngày" />
+                </div>
+                <div class="editable-group">
+                  <label>Thời điểm thực hiện:</label>
+                  <input type="text" value="Trước khi trồng 2 tuần" />
+                </div>
+                <div class="editable-group">
+                  <label>Loại công việc:</label>
+                  <select>
+                    <option>Thiết lập 1 lần</option>
+                    <option>Lặp lại</option>
+                  </select>
+                </div>
+              </div>
+              <div class="editable-group" style="margin-top: 1rem">
+                <label>Mô tả:</label>
+                <textarea>
+Xử lý tính chua của đất bằng vôi bột CaCO3, nâng pH lên mức 5.5-6.5.</textarea
+                >
+              </div>
+              <div class="task-actions">
+                <button class="task-action-link">
+                  <ion-icon name="settings-outline"></ion-icon> Thiết lập Chi
+                  tiết Công việc & Chi phí
+                </button>
+                <button class="task-action-link">
+                  <ion-icon name="checkmark-done-outline"></ion-icon> Tiêu chuẩn
+                </button>
+                <button class="task-action-link">
+                  <ion-icon name="trash-outline"></ion-icon> Xóa
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="add-buttons-container">
+            <button class="add-work-btn">
+              ➕ Thêm công việc trong giai đoạn
+            </button>
+            <button class="add-phase-btn">➕ Thêm giai đoạn mới</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

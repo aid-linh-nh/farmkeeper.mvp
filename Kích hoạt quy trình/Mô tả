@@ -1,0 +1,46 @@
+1. Màn hình 1
+- Xuất hiện khi người dùng bấm vào mục "Quy trình canh tác" --> "Kích hoạt quy trình"
+Note: Đối với đối tượng người dùng là nông hộ và chưa kích hoạt quy trình
+
+2. Màn hình 2
+- Xuất hiện khi người dùng bấm vào mục "Quy trình canh tác" --> "Kích hoạt quy trình"
+Note: Đối với đối tượng người dùng là nông hộ và đã kích hoạt quy trình
+
+3. Màn hình 3
+- Xuất hiện khi người dùng bấm vào mục "Quy trình canh tác" --> "Kích hoạt quy trình"
+Note: Đối với đối tượng người dùng là kỹ thuật viên
+
+4. Màn hình 4
+- Xuất hiện khi người dùng ở màn hình 2 và bấm hành động "Xem chi tiết" với vườn tương ứng.
+Note: Chưa kích hoạt quy trình canh tác
+
+5. Màn hình 5
+- Xuất hiện khi người dùng ở màn hình 2 và bấm hành động "Xem chi tiết" với vườn tương ứng.
+Note: Đã kích hoạt quy trình canh tác
+
+6. Màn hình 6
+- Xuất hiện sau khi người dùng bấm nút "Kích hoạt quy trình"
+
+7. Màn hình 7
+- Xuất hiện khi người dùng bấm vào nút "Xem chi tiết" từ màn hình 6
+Note: 2 pop up xuất hiện khi bấm vào nút "Xem chi tiết" và "Tiêu chuẩn đánh giá" làm tương tự như ở pop 3,4 của mục "Phê duyêt quy trình" nhưng chỉ ở quyền view
+
+8. Màn hình 8
+- Xuất hiện khi người dùng bấm vào nút "Kích hoạt" ở màn hình 6 hoặc màn hình 7
+
+9. Màn hình 9
+- Xuất hiện khi người dùng bấm nút "Kích hoạt" ở màn hình 8
+Note: pop up khi bấm vào nút "Tiêu chuẩn đánh giá" làm tương tự như ở pop 4 của mục "Phê duyêt quy trình".
+
+10. Pop up 10
+- Xuất hiện khi người dùng bấm nút "Thiết lập chi tiết công việc & chi phí" ở màn hình 9
+Note: check lại các form thêm mới ở màn hình "Thiết lập chi tiết công việc" (pop up 10 là pop up mở rộng thêm một số thông tin từ màn hình "Thiết lập chi tiết công việc" ở mục quản lý quy trình)
+
+11. Màn hình 11
+- Xuất hiện khi người dùng bấm nút "Lưu & Triển khai" ở màn 9.
+Note: 
+(1) View của nông hộ và kỹ thuật viên giống nhau. Nhưng đối với nông hộ sẽ không hiển thị phân công thực hiện.
+(2) Pop up khi bấm vào xem "Tiêu chuẩn đánh giá" làm tương tự như pop 4 của phần "Phê duyệt quy trình"
+
+12. Pop up 12
+- Xuất hiện khi người dùng bấm xem "Chi tiết công việc & chi phí" ở màn 11.

@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmkeeper - Cấu hình Tham số</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="60" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="80" r="1" fill="rgba(255,255,255,0.1)"/></svg>');
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .breadcrumb {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .breadcrumb-path {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .breadcrumb-path i {
+            color: #4CAF50;
+        }
+
+        .context-info {
+            background: #e8f5e8;
+            border-left: 4px solid #4CAF50;
+            padding: 20px 30px;
+            margin-bottom: 0;
+        }
+
+        .context-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .context-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .context-item i {
+            color: #4CAF50;
+            font-size: 18px;
+            width: 24px;
+        }
+
+        .context-item .label {
+            font-weight: 600;
+            color: #2E7D32;
+        }
+
+        .context-item .value {
+            color: #333;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .filter-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #2E7D32;
+            margin-bottom: 8px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        .apply-filter-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .apply-filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .content-area {
+            padding: 30px;
+        }
+
+        .task-header {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .task-title {
+            color: #2E7D32;
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .task-title i {
+            font-size: 28px;
+            color: #4CAF50;
+        }
+
+        .task-description {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .task-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card i {
+            color: #4CAF50;
+            font-size: 16px;
+            width: 20px;
+        }
+
+        .info-card .info-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .info-card .info-value {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .parameters-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .parameter-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+            position: relative;
+        }
+
+        .parameter-section.custom {
+            border-color: #2196F3;
+            background: #f0f4ff;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: #2E7D32;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .parameter-section.custom .section-title {
+            color: #2196F3;
+        }
+
+        .remove-section {
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .remove-section:hover {
+            background: #cc0000;
+        }
+
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .parameter-field {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .parameter-field.custom-field {
+            border-color: #2196F3;
+        }
+
+        .parameter-field label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .parameter-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .parameter-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+        }
+
+        .parameter-unit {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .tolerance-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .tolerance-inputs label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .remove-parameter {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .parameter-field.custom-field .remove-parameter {
+            display: flex;
+        }
+
+        .remove-parameter:hover {
+            background: #cc0000;
+        }
+
+        .add-parameter-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-parameter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .add-section-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .add-section-btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .action-bar {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 2px solid #f0f0f0;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .save-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .save-status.saved {
+            color: #4CAF50;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 2px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h3 {
+            color: #2E7D32;
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-modal:hover {
+            color: #ff4444;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-modal {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-modal.primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-modal.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .info-tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .info-tooltip i {
+            color: #4CAF50;
+            cursor: help;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .info-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .filter-container {
+                grid-template-columns: 1fr;
+            }
+
+            .context-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .parameter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .task-info {
+                grid-template-columns: 1fr;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-seedling"></i> Farmkeeper</h1>
+            <div class="subtitle">Cấu hình Tham số & Tiêu chuẩn Kế hoạch Sản xuất</div>
+        </div>
+
+        <div class="breadcrumb">
+            <div class="breadcrumb-path">
+                <i class="fas fa-home"></i>
+                <span>Trang chủ</span>
+                <i class="fas fa-chevron-right"></i>
+                <span>Lập kế hoạch sản xuất</span>
+                <i class="fas fa-chevron-right"></i>
+                <span><strong>Cấu hình Tham số</strong></span>
+            </div>
+        </div>
+
+        <!-- Context Information -->
+        <div class="context-info">
+            <div class="context-grid">
+                <div class="context-item">
+                    <i class="fas fa-industry"></i>
+                    <div>
+                        <div class="label">Loại hình:</div>
+                        <div class="value">Trồng trọt</div>
+                    </div>
+                </div>
+                <div class="context-item">
+                    <i class="fas fa-apple-alt"></i>
+                    <div>
+                        <div class="label">Cây trồng:</div>
+                        <div class="value">Xoài</div>
+                    </div>
+                </div>
+                <div class="context-item">
+                    <i class="fas fa-dna"></i>
+                    <div>
+                        <div class="label">Giống:</div>
+                        <div class="value">Xoài Cát Chu</div>
+                    </div>
+                </div>
+                <div class="context-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div>
+                        <div class="label">Mùa vụ:</div>
+                        <div class="value">Vụ chính 2025</div>
+                    </div>
+                </div>
+                <div class="context-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                        <div class="label">Khu vực:</div>
+                        <div class="value">Vườn A - Lô 1</div>
+                    </div>
+                </div>
+                <div class="context-item">
+                    <i class="fas fa-ruler"></i>
+                    <div>
+                        <div class="label">Diện tích:</div>
+                        <div class="value">2.5 hecta</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-container">
+                <div class="filter-group">
+                    <label><i class="fas fa-tasks"></i> Công việc</label>
+                    <select id="taskFilter" class="filter-select">
+                        <option value="">-- Chọn công việc --</option>
+                        <option value="soil-improvement">Cải tạo đất</option>
+                        <option value="planting">Trồng cây</option>
+                        <option value="fertilizing">Bón phân</option>
+                        <option value="watering">Tưới nước</option>
+                        <option value="pest-control">Phòng trừ sâu bệnh</option>
+                        <option value="pruning">Tỉa cành</option>
+                        <option value="harvesting">Thu hoạch</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-layer-group"></i> Giai đoạn</label>
+                    <select id="stageFilter" class="filter-select">
+                        <option value="">-- Chọn giai đoạn --</option>
+                        <option value="preparation">Chuẩn bị</option>
+                        <option value="seedling">Cây con</option>
+                        <option value="development">Phát triển</option>
+                        <option value="flowering">Ra hoa</option>
+                        <option value="fruiting">Đậu quả</option>
+                        <option value="maturation">Chín</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-clock"></i> Thời vụ</label>
+                    <select id="seasonFilter" class="filter-select">
+                        <option value="">-- Chọn thời vụ --</option>
+                        <option value="dry-season">Mùa khô</option>
+                        <option value="rainy-season">Mùa mưa</option>
+                        <option value="harvest-season">Mùa thu hoạch</option>
+                    </select>
+                </div>
+                <button class="apply-filter-btn" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i>
+                    Áp dụng
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div id="emptyState" class="empty-state">
+                <i class="fas fa-filter"></i>
+                <h3>Chọn công việc để cấu hình tham số</h3>
+                <p>Sử dụng bộ lọc ở trên để chọn công việc cần thiết lập tham số</p>
+            </div>
+
+            <div id="taskContent" style="display: none;">
+                <!-- Task Header -->
+                <div class="task-header" id="taskHeader">
+                    <!-- Task info will be loaded here -->
+                </div>
+
+                <!-- Parameters -->
+                <div class="parameters-grid" id="parametersContainer">
+                    <!-- Parameters will be loaded here -->
+                </div>
+
+                <button class="add-section-btn" onclick="showAddSectionModal()">
+                    <i class="fas fa-plus"></i>
+                    Thêm nhóm tham số tùy chỉnh
+                </button>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <div class="save-status" id="saveStatus">
+                <i class="fas fa-save"></i>
+                <span>Tự động lưu</span>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-outline" onclick="previewParameters()">
+                    <i class="fas fa-eye"></i>
+                    Xem trước
+                </button>
+                <button class="btn btn-secondary" onclick="resetToDefault()">
+                    <i class="fas fa-undo"></i>
+                    Khôi phục mặc định
+                </button>
+                <button class="btn btn-primary" onclick="saveAndApply()">
+                    <i class="fas fa-check"></i>
+                    Lưu & Áp dụng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Parameter Modal -->
+    <div id="addParameterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Thêm Tham số</h3>
+                <button class="close-modal" onclick="closeModal('addParameterModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addParameterForm">
+                    <div class="form-group">
+                        <label>Tên tham số:</label>
+                        <input type="text" id="paramName" class="parameter-input" placeholder="Ví dụ: Độ sâu trồng" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Loại dữ liệu:</label>
+                        <select id="paramType" class="parameter-input" required>
+                            <option value="">-- Chọn loại --</option>
+                            <option value="number">Số đo (có đơn vị)</option>
+                            <option value="range">Khoảng giá trị</option>
+                            <option value="text">Văn bản</option>
+                            <option value="select">Lựa chọn</option>
+                            <option value="boolean">Có/Không</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="unitGroup" style="display: none;">
+                        <label>Đơn vị đo:</label>
+                        <input type="text" id="paramUnit" class="parameter-input" placeholder="cm, kg, %, °C...">
+                    </div>
+                    
+                    <div class="form-group" id="valueGroup" style="display: none;">
+                        <label>Giá trị chuẩn:</label>
+                        <input type="text" id="paramValue" class="parameter-input" placeholder="Nhập giá trị chuẩn">
+                    </div>
+                    
+                    <div class="form-group" id="rangeGroup" style="display: none;">
+                        <label>Khoảng giá trị cho phép:</label>
+                        <div class="tolerance-inputs">
+                            <div>
+                                <label>Từ:</label>
+                                <input type="number" id="paramMin" class="parameter-input" placeholder="Min">
+                            </div>
+                            <div>
+                                <label>Đến:</label>
+                                <input type="number" id="paramMax" class="parameter-input" placeholder="Max">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="optionsGroup" style="display: none;">
+                        <label>Các lựa chọn (mỗi dòng một lựa chọn):</label>
+                        <textarea id="paramOptions" class="parameter-input" placeholder="Tốt&#10;Khá&#10;Trung bình&#10;Kém"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mô tả:</label>
+                        <textarea id="paramDescription" class="parameter-input" placeholder="Hướng dẫn đo lường, ý nghĩa của tham số..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal secondary" onclick="closeModal('addParameterModal')">Hủy</button>
+                <button type="button" class="btn-modal primary" onclick="addParameter()">Thêm tham số</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Section Modal -->
+    <div id="addSectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-layer-group"></i> Thêm Nhóm Tham số</h3>
+                <button class="close-modal" onclick="closeModal('addSectionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addSectionForm">
+                    <div class="form-group">
+                        <label>Tên nhóm tham số:</label>
+                        <input type="text" id="sectionName" class="parameter-input" placeholder="Ví dụ: Điều kiện thời tiết" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Mô tả nhóm:</label>
+                        <textarea id="sectionDescription" class="parameter-input" placeholder="Mô tả mục đích và nội dung của nhóm tham số này..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal secondary" onclick="closeModal('addSectionModal')">Hủy</button>
+                <button type="button" class="btn-modal primary" onclick="addSection()">Tạo nhóm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Đã lưu thành công!</span>
+    </div>
+
+    <script>
+        // Task configurations with default parameters  
+        const taskConfigs = {
+            'planting': {
+                title: 'Trồng cây',
+                icon: 'fas fa-seedling',
+                description: 'Thiết lập các tiêu chuẩn kỹ thuật cho việc trồng cây xoài Cát Chu',
+                info: {
+                    duration: '2-3 ngày',
+                    difficulty: 'Trung bình',
+                    equipment: 'Cuốc, xẻng, nước',
+                    weather: 'Không mưa, nắng nhẹ'
+                },
+                sections: [
+                    {
+                        name: 'Thông số trồng cơ bản',
+                        parameters: [
+                            { name: 'Độ sâu hố trồng', type: 'range', unit: 'cm', min: 40, max: 60, description: 'Độ sâu hố trồng phù hợp với xoài Cát Chu' },
+                            { name: 'Khoảng cách giữa các cây', type: 'range', unit: 'm', min: 6, max: 8, description: 'Khoảng cách tối ưu cho cây xoài phát triển' },
+                            { name: 'Số cây mỗi hàng', type: 'number', unit: 'cây', value: 8, description: 'Số lượng cây trên mỗi hàng trồng' },
+                            { name: 'Tỷ lệ sống tối thiểu', type: 'number', unit: '%', value: 90, description: 'Tỷ lệ cây con sống đạt yêu cầu' }
+                        ]
+                    },
+                    {
+                        name: 'Điều kiện đất và môi trường',
+                        parameters: [
+                            { name: 'Độ ẩm đất', type: 'range', unit: '%', min: 65, max: 75, description: 'Độ ẩm đất thích hợp cho xoài' },
+                            { name: 'pH đất', type: 'range', unit: 'pH', min: 6.0, max: 7.5, description: 'Độ pH đất tối ưu cho cây xoài' },
+                            { name: 'Nhiệt độ trồng', type: 'range', unit: '°C', min: 25, max: 32, description: 'Nhiệt độ môi trường phù hợp' },
+                            { name: 'Thời tiết', type: 'select', options: ['Nắng nhẹ', 'Âm u', 'Không mưa'], description: 'Điều kiện thời tiết thích hợp' }
+                        ]
+                    }
+                ]
+            },
+            'fertilizing': {
+                title: 'Bón phân',
+                icon: 'fas fa-leaf',
+                description: 'Cấu hình chế độ dinh dưỡng cho cây xoài Cát Chu theo từng giai đoạn',
+                info: {
+                    duration: '1 ngày',
+                    difficulty: 'Dễ',
+                    equipment: 'Xô, thuổng, cân',
+                    weather: 'Khô ráo, không mưa'
+                },
+                sections: [
+                    {
+                        name: 'Liều lượng bón phân cơ bản',
+                        parameters: [
+                            { name: 'Phân hữu cơ mỗi cây', type: 'range', unit: 'kg', min: 5, max: 8, description: 'Lượng phân chuồng hoai mục' },
+                            { name: 'NPK 16-16-8 mỗi cây', type: 'range', unit: 'g', min: 200, max: 300, description: 'Lượng phân NPK cho cây xoài' },
+                            { name: 'Chu kỳ bón phân', type: 'number', unit: 'ngày', value: 45, description: 'Khoảng cách giữa các lần bón' },
+                            { name: 'Độ ẩm đất khi bón', type: 'range', unit: '%', min: 50, max: 70, description: 'Độ ẩm thích hợp khi bón phân' }
+                        ]
+                    }
+                ]
+            },
+            'harvesting': {
+                title: 'Thu hoạch',
+                icon: 'fas fa-apple-alt',
+                description: 'Thiết lập tiêu chuẩn chất lượng và phương pháp thu hoạch xoài Cát Chu',
+                info: {
+                    duration: '5-7 ngày',
+                    difficulty: 'Khó',
+                    equipment: 'Thang, kéo cắt, thùng',
+                    weather: 'Khô ráo, nắng'
+                },
+                sections: [
+                    {
+                        name: 'Tiêu chuẩn chất lượng xoài Cát Chu',
+                        parameters: [
+                            { name: 'Trọng lượng quả tối thiểu', type: 'number', unit: 'g', value: 150, description: 'Trọng lượng quả đạt chuẩn xuất bán' },
+                            { name: 'Tỷ lệ loại A mong đợi', type: 'number', unit: '%', value: 75, description: 'Tỷ lệ quả loại A (xuất khẩu)' },
+                            { name: 'Độ ngọt tối thiểu', type: 'number', unit: '°Bx', value: 14, description: 'Độ Brix của xoài Cát Chu chín' },
+                            { name: 'Sản lượng mục tiêu', type: 'number', unit: 'kg/cây', value: 80, description: 'Sản lượng dự kiến mỗi cây 5 tuổi' }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        let currentTask = null;
+        let currentSectionId = 0;
+
+        // Apply filters and load task configuration
+        function applyFilters() {
+            const taskType = document.getElementById('taskFilter').value;
+            const stage = document.getElementById('stageFilter').value;
+            const season = document.getElementById('seasonFilter').value;
+
+            if (!taskType) {
+                showNotification('Vui lòng chọn công việc', 'error');
+                return;
+            }
+
+            currentTask = taskType;
+            loadTaskConfiguration(taskType, stage, season);
+        }
+
+        function loadTaskConfiguration(taskType, stage, season) {
+            const config = taskConfigs[taskType];
+            
+            if (!config) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('taskContent').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('taskContent').style.display = 'block';
+
+            // Render task header
+            renderTaskHeader(config, stage, season);
+            
+            // Render parameters
+            renderParameters(config.sections);
+
+            showNotification(`Đã tải cấu hình cho: ${config.title}`);
+        }
+
+        function renderTaskHeader(config, stage, season) {
+            const header = document.getElementById('taskHeader');
+            
+            let stageText = stage ? ` - Giai đoạn ${getStageLabel(stage)}` : '';
+            let seasonText = season ? ` (${getSeasonLabel(season)})` : '';
+            
+            header.innerHTML = `
+                <div class="task-title">
+                    <i class="${config.icon}"></i>
+                    ${config.title}${stageText}${seasonText}
+                </div>
+                <div class="task-description">${config.description}</div>
+                <div class="task-info">
+                    <div class="info-card">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <div class="info-label">Thời gian:</div>
+                            <div class="info-value">${config.info.duration}</div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-signal"></i>
+                        <div>
+                            <div class="info-label">Độ khó:</div>
+                            <div class="info-value">${config.info.difficulty}</div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-tools"></i>
+                        <div>
+                            <div class="info-label">Dụng cụ:</div>
+                            <div class="info-value">${config.info.equipment}</div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-cloud-sun"></i>
+                        <div>
+                            <div class="info-label">Thời tiết:</div>
+                            <div class="info-value">${config.info.weather}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStageLabel(stage) {
+            const labels = {
+                'preparation': 'Chuẩn bị',
+                'seedling': 'Cây con',
+                'development': 'Phát triển',
+                'flowering': 'Ra hoa',
+                'fruiting': 'Đậu quả',
+                'maturation': 'Chín'
+            };
+            return labels[stage] || stage;
+        }
+
+        function getSeasonLabel(season) {
+            const labels = {
+                'dry-season': 'Mùa khô',
+                'rainy-season': 'Mùa mưa',
+                'harvest-season': 'Mùa thu hoạch'
+            };
+            return labels[season] || season;
+        }
+
+        function renderParameters(sections) {
+            const container = document.getElementById('parametersContainer');
+            container.innerHTML = sections.map((section, index) => 
+                `<div class="parameter-section" data-section-id="${index}">
+                    <div class="section-header">
+                        <h3 class="section-title">${section.name}</h3>
+                    </div>
+                    <div class="parameter-grid">
+                        ${section.parameters.map(param => renderParameterField(param)).join('')}
+                    </div>
+                    <button class="add-parameter-btn" onclick="showAddParameterModal(${index})">
+                        <i class="fas fa-plus"></i>
+                        Thêm tham số
+                    </button>
+                </div>`
+            ).join('');
+        }
+
+        function renderParameterField(param, isCustom = false) {
+            let inputHtml = '';
+            
+            switch(param.type) {
+                case 'number':
+                    inputHtml = `<input type="number" class="parameter-input" value="${param.value || ''}" placeholder="Nhập giá trị">`;
+                    break;
+                case 'range':
+                    inputHtml = `
+                        <div class="tolerance-inputs">
+                            <div><label>Tối thiểu:</label><input type="number" class="parameter-input" value="${param.min || ''}" placeholder="Min"></div>
+                            <div><label>Tối đa:</label><input type="number" class="parameter-input" value="${param.max || ''}" placeholder="Max"></div>
+                        </div>
+                    `;
+                    break;
+                case 'text':
+                    inputHtml = `<input type="text" class="parameter-input" value="${param.value || ''}" placeholder="Nhập văn bản">`;
+                    break;
+                case 'select':
+                    inputHtml = `
+                        <select class="parameter-input">
+                            <option value="">-- Chọn --</option>
+                            ${param.options ? param.options.map(opt => `<option value="${opt}">${opt}</option>`).join('') : ''}
+                        </select>
+                    `;
+                    break;
+                case 'boolean':
+                    inputHtml = `
+                        <select class="parameter-input">
+                            <option value="">-- Chọn --</option>
+                            <option value="true">Có</option>
+                            <option value="false">Không</option>
+                        </select>
+                    `;
+                    break;
+            }
+
+            return `
+                <div class="parameter-field ${isCustom ? 'custom-field' : ''}">
+                    ${isCustom ? '<button class="remove-parameter" onclick="removeParameter(this)"><i class="fas fa-times"></i></button>' : ''}
+                    <label>
+                        ${param.name}
+                        ${param.description ? `<span class="info-tooltip"><i class="fas fa-info-circle"></i><span class="tooltip-text">${param.description}</span></span>` : ''}
+                    </label>
+                    ${inputHtml}
+                    ${param.unit ? `<div class="parameter-unit">${param.unit}</div>` : ''}
+                </div>
+            `;
+        }
+
+        function showAddParameterModal(sectionId) {
+            currentSectionId = sectionId;
+            document.getElementById('addParameterModal').style.display = 'block';
+        }
+
+        function showAddSectionModal() {
+            document.getElementById('addSectionModal').style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            const form = document.getElementById(modalId).querySelector('form');
+            if (form) form.reset();
+            toggleParameterGroups();
+        }
+
+        // Handle parameter type change
+        document.getElementById('paramType').addEventListener('change', toggleParameterGroups);
+
+        function toggleParameterGroups() {
+            const paramType = document.getElementById('paramType').value;
+            const unitGroup = document.getElementById('unitGroup');
+            const valueGroup = document.getElementById('valueGroup');
+            const rangeGroup = document.getElementById('rangeGroup');
+            const optionsGroup = document.getElementById('optionsGroup');
+
+            [unitGroup, valueGroup, rangeGroup, optionsGroup].forEach(group => {
+                if (group) group.style.display = 'none';
+            });
+
+            if (paramType === 'number') {
+                unitGroup.style.display = 'block';
+                valueGroup.style.display = 'block';
+            } else if (paramType === 'range') {
+                unitGroup.style.display = 'block';
+                rangeGroup.style.display = 'block';
+            } else if (paramType === 'text') {
+                valueGroup.style.display = 'block';
+            } else if (paramType === 'select') {
+                optionsGroup.style.display = 'block';
+            }
+        }
+
+        function addParameter() {
+            const name = document.getElementById('paramName').value.trim();
+            const type = document.getElementById('paramType').value;
+            const unit = document.getElementById('paramUnit').value.trim();
+            const value = document.getElementById('paramValue').value.trim();
+            const min = document.getElementById('paramMin').value;
+            const max = document.getElementById('paramMax').value;
+            const options = document.getElementById('paramOptions').value.trim();
+            const description = document.getElementById('paramDescription').value.trim();
+
+            if (!name || !type) {
+                showNotification('Vui lòng nhập đầy đủ tên tham số và loại dữ liệu', 'error');
+                return;
+            }
+
+            const param = {
+                name: name,
+                type: type,
+                unit: unit,
+                value: value,
+                description: description
+            };
+
+            if (type === 'range') {
+                param.min = parseFloat(min) || 0;
+                param.max = parseFloat(max) || 100;
+            }
+
+            if (type === 'select' && options) {
+                param.options = options.split('\n').map(opt => opt.trim()).filter(opt => opt);
+            }
+
+            const section = document.querySelector(`[data-section-id="${currentSectionId}"] .parameter-grid`);
+            const newField = document.createElement('div');
+            newField.innerHTML = renderParameterField(param, true);
+            section.appendChild(newField.firstElementChild);
+
+            closeModal('addParameterModal');
+            showNotification(`Đã thêm tham số: ${name}`);
+        }
+
+        function addSection() {
+            const name = document.getElementById('sectionName').value.trim();
+            const description = document.getElementById('sectionDescription').value.trim();
+
+            if (!name) {
+                showNotification('Vui lòng nhập tên nhóm tham số', 'error');
+                return;
+            }
+
+            const sectionId = Date.now();
+            const container = document.getElementById('parametersContainer');
+            const newSection = document.createElement('div');
+            newSection.className = 'parameter-section custom';
+            newSection.dataset.sectionId = sectionId;
+            newSection.innerHTML = `
+                <div class="section-header">
+                    <div>
+                        <h3 class="section-title">${name}</h3>
+                        ${description ? `<p style="color: #666; font-size: 14px; margin-top: 5px;">${description}</p>` : ''}
+                    </div>
+                    <button class="remove-section" onclick="removeSection(${sectionId})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="parameter-grid"></div>
+                <button class="add-parameter-btn" onclick="showAddParameterModal(${sectionId})">
+                    <i class="fas fa-plus"></i>
+                    Thêm tham số
+                </button>
+            `;
+
+            container.appendChild(newSection);
+            closeModal('addSectionModal');
+            showNotification(`Đã tạo nhóm: ${name}`);
+        }
+
+        function removeSection(sectionId) {
+            if (confirm('Bạn có chắc muốn xóa nhóm tham số này?')) {
+                document.querySelector(`[data-section-id="${sectionId}"]`).remove();
+                showNotification('Đã xóa nhóm tham số');
+            }
+        }
+
+        function removeParameter(button) {
+            const paramField = button.closest('.parameter-field');
+            const paramName = paramField.querySelector('label').textContent.trim();
+            
+            if (confirm(`Bạn có chắc muốn xóa tham số "${paramName}"?`)) {
+                paramField.remove();
+                showNotification(`Đã xóa tham số: ${paramName}`);
+            }
+        }
+
+        function previewParameters() {
+            if (!currentTask) {
+                showNotification('Vui lòng chọn công việc trước', 'error');
+                return;
+            }
+            showNotification('Đang mở xem trước...');
+        }
+
+        function resetToDefault() {
+            if (!currentTask) {
+                showNotification('Vui lòng chọn công việc trước', 'error');
+                return;
+            }
+            
+            if (confirm('Bạn có chắc muốn khôi phục về cấu hình mặc định?')) {
+                applyFilters();
+                showNotification('Đã khôi phục về cấu hình mặc định');
+            }
+        }
+
+        function saveAndApply() {
+            if (!currentTask) {
+                showNotification('Vui lòng chọn công việc trước', 'error');
+                return;
+            }
+
+            const saveStatus = document.getElementById('saveStatus');
+            saveStatus.classList.add('saved');
+            saveStatus.innerHTML = '<i class="fas fa-check"></i><span>Đã lưu</span>';
+            
+            showNotification('Đã lưu và áp dụng cấu hình thành công!');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const icon = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+            const bgColor = type === 'success' ? '#4CAF50' : '#ff4444';
+            
+            notification.style.background = bgColor;
+            notification.innerHTML = `<i class="${icon}"></i><span>${message}</span>`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

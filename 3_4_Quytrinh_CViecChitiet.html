@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiết lập Chi tiết Công việc - FarmKeeper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .main-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        
+        .card-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-section {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 2rem;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .form-section h3 {
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        
+        .btn-icon {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-icon:hover {
+            background: #f1f5f9;
+            border-color: #22c55e;
+            color: #22c55e;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .file-upload-area:hover,
+        .file-upload-area.dragover {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        
+        .uploaded-file {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .resource-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-item:hover {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        
+        .tag {
+            background: #e0f2fe;
+            color: #0277bd;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin: 2px 4px 2px 0;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .tag.skill {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .tag.frequency {
+            background: #f0f9ff;
+            color: #0369a1;
+        }
+        
+        .condition-item {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .alert-item {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .step::after {
+            content: '';
+            position: absolute;
+            top: 1.5rem;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: -1;
+        }
+        
+        .step:last-child::after {
+            display: none;
+        }
+        
+        .step.active {
+            color: #22c55e;
+        }
+        
+        .step.active::after {
+            background: #22c55e;
+        }
+        
+        .step-circle {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-circle {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            border-bottom-color: #22c55e;
+            color: #22c55e;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="main-container">
+    <div class="container mx-auto px-6 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="card-modern mb-8">
+            <div class="p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-tasks mr-3 text-green-600"></i>
+                            Thiết lập Chi tiết Công việc
+                        </h1>
+                        <p class="text-gray-600">Cấu hình đầy đủ thông tin, hướng dẫn và điều kiện thực hiện</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="btn-secondary" onclick="saveAsDraft()">
+                            <i class="fas fa-save mr-2"></i>Lưu nháp
+                        </button>
+                        <button class="btn-primary" onclick="saveTask()">
+                            <i class="fas fa-check mr-2"></i>Hoàn thành
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="card-modern mb-8">
+            <div class="p-6">
+                <div class="step-indicator">
+                    <div class="step active">
+                        <div class="step-circle">
+                            <i class="fas fa-info"></i>
+                        </div>
+                        <div class="text-sm font-medium">Thông tin cơ bản</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="text-sm font-medium">Tài nguyên</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="text-sm font-medium">Thời gian</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <div class="text-sm font-medium">Điều kiện</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="text-sm font-medium">Hoàn thành</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2">
+                <div class="card-modern">
+                    <!-- Tabs Navigation -->
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab(event, 'basic')">
+                            <i class="fas fa-info-circle mr-2"></i>Thông tin cơ bản
+                        </div>
+                        <div class="tab" onclick="switchTab(event, 'resources')">
+                            <i class="fas fa-tools mr-2"></i>Tài nguyên
+                        </div>
+                        <div class="tab" onclick="switchTab(event, 'conditions')">
+                            <i class="fas fa-cog mr-2"></i>Điều kiện & Thông báo
+                        </div>
+                    </div>
+
+                    <!-- Tab 1: Basic Information -->
+                    <div id="basic-tab" class="tab-content active">
+                        <!-- Basic Info Section -->
+                        <div class="form-section">
+                            <h3>
+                                <i class="fas fa-info-circle mr-3 text-blue-600"></i>
+                                Thông tin cơ bản
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tên công việc *</label>
+                                    <input type="text" class="form-input" placeholder="VD: Bón phân NPK cho cây sầu riêng" value="Bón phân NPK">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Mã công việc</label>
+                                    <input type="text" class="form-input" placeholder="Tự động tạo hoặc nhập thủ công" value="SR_FERT_001">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Loại công việc *</label>
+                                    <select class="form-input">
+                                        <option value="">Chọn loại công việc</option>
+                                        <option value="fertilizing" selected>Bón phân</option>
+                                        <option value="watering">Tưới nước</option>
+                                        <option value="pruning">Tỉa cành/trái</option>
+                                        <option value="pest-control">Phòng trừ sâu bệnh</option>
+                                        <option value="monitoring">Giám sát/Theo dõi</option>
+                                        <option value="harvesting">Thu hoạch</option>
+                                        <option value="soil-prep">Chuẩn bị đất</option>
+                                        <option value="planting">Trồng cây</option>
+                                        <option value="maintenance">Bảo trì</option>
+                                        <option value="other">Khác</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Mức độ ưu tiên</label>
+                                    <select class="form-input">
+                                        <option value="normal" selected>Bình thường</option>
+                                        <option value="high">Cao</option>
+                                        <option value="urgent">Khẩn cấp</option>
+                                        <option value="low">Thấp</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả ngắn gọn</label>
+                                <textarea class="form-input" rows="3" placeholder="Mô tả tóm tắt về công việc này...">Bón phân NPK cho cây sầu riêng theo định kỳ để cung cấp dinh dưỡng cần thiết cho giai đoạn sinh trưởng.</textarea>
+                            </div>
+                            
+                            <!-- Task Type Configuration -->
+                            <div class="mt-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-4">Loại thực hiện</label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="border border-gray-200 rounded-lg p-4 cursor-pointer transition-all hover:border-green-500 hover:bg-green-50" onclick="selectTaskType('recurring')">
+                                        <div class="flex items-center mb-2">
+                                            <input type="radio" name="task-type" value="recurring" checked class="mr-3">
+                                            <i class="fas fa-sync-alt text-green-600 mr-2"></i>
+                                            <span class="font-semibold">Công việc lặp lại</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Thực hiện theo chu kỳ định kỳ (hàng ngày, tuần, tháng)</p>
+                                    </div>
+                                    
+                                    <div class="border border-gray-200 rounded-lg p-4 cursor-pointer transition-all hover:border-blue-500 hover:bg-blue-50" onclick="selectTaskType('onetime')">
+                                        <div class="flex items-center mb-2">
+                                            <input type="radio" name="task-type" value="onetime" class="mr-3">
+                                            <i class="fas fa-check-circle text-blue-600 mr-2"></i>
+                                            <span class="font-semibold">Công việc một lần</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">Chỉ thực hiện một lần trong giai đoạn thiết lập</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Recurring Configuration -->
+                                <div id="recurring-config" class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                    <h4 class="font-semibold text-green-800 mb-3">Cấu hình lặp lại</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Tần suất</label>
+                                            <select class="form-input">
+                                                <option value="daily">Hàng ngày</option>
+                                                <option value="weekly" selected>Hàng tuần</option>
+                                                <option value="monthly">Hàng tháng</option>
+                                                <option value="custom">Tùy chỉnh</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Khoảng cách</label>
+                                            <div class="flex items-center space-x-2">
+                                                <input type="number" class="form-input w-20" value="2" min="1">
+                                                <span class="text-sm text-gray-600">tuần</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Số lần thực hiện</label>
+                                            <select class="form-input">
+                                                <option value="unlimited" selected>Không giới hạn</option>
+                                                <option value="limited">Giới hạn số lần</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Instructions Section -->
+                        <div class="form-section">
+                            <h3>
+                                <i class="fas fa-book-open mr-3 text-purple-600"></i>
+                                Hướng dẫn thực hiện
+                            </h3>
+                            
+                            <!-- Detailed Instructions -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Các bước thực hiện chi tiết</label>
+                                <textarea class="form-input" rows="6" placeholder="Nhập từng bước thực hiện chi tiết...">1. Chuẩn bị phân NPK 16-16-8, tỷ lệ 2-3 kg/cây trưởng thành
+2. Kiểm tra độ ẩm đất, đảm bảo đất không quá khô hoặc ướt
+3. Rải phân xung quanh tán lá, cách gốc 1-1.5m
+4. Xới nhẹ đất để trộn phân với đất
+5. Tưới nước nhẹ sau khi bón phân
+6. Ghi nhận lượng phân đã sử dụng vào sổ theo dõi</textarea>
+                            </div>
+                            
+                            <!-- File Upload -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Tài liệu hướng dẫn</label>
+                                <div class="file-upload-area" onclick="triggerFileUpload()" ondragover="handleDragOver(event)" ondrop="handleFileDrop(event)">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-3"></i>
+                                    <p class="text-lg font-medium text-gray-700 mb-2">Đính kèm tài liệu, hình ảnh, video</p>
+                                    <p class="text-sm text-gray-500 mb-4">Kéo thả file vào đây hoặc nhấp để chọn</p>
+                                    <div class="flex justify-center space-x-4 text-xs text-gray-400">
+                                        <span><i class="fas fa-file-pdf mr-1"></i>PDF</span>
+                                        <span><i class="fas fa-file-word mr-1"></i>DOC</span>
+                                        <span><i class="fas fa-image mr-1"></i>IMG</span>
+                                        <span><i class="fas fa-video mr-1"></i>VIDEO</span>
+                                    </div>
+                                    <input type="file" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.mp4,.avi,.mov" style="display: none;" id="file-upload">
+                                </div>
+                                
+                                <!-- Uploaded Files -->
+                                <div id="uploaded-files" class="mt-4">
+                                    <div class="uploaded-file">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-file-pdf text-red-500 mr-3"></i>
+                                            <div>
+                                                <div class="font-medium text-sm">Hướng dẫn bón phân NPK.pdf</div>
+                                                <div class="text-xs text-gray-500">2.3 MB - Đã tải lên 2 phút trước</div>
+                                            </div>
+                                        </div>
+                                        <button class="btn-icon" onclick="removeFile(this)">
+                                            <i class="fas fa-trash text-red-500"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Video Links -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Link video hướng dẫn</label>
+                                <div id="video-links" class="space-y-3">
+                                    <div class="flex items-center space-x-3">
+                                        <input type="url" class="form-input flex-1" placeholder="https://youtube.com/watch?v=..." value="https://youtube.com/watch?v=bon-phan-sau-rieng-123">
+                                        <button class="btn-icon" onclick="removeVideoLink(this)">
+                                            <i class="fas fa-trash text-red-500"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button class="btn-secondary mt-2" onclick="addVideoLink()">
+                                    <i class="fas fa-video mr-2"></i>Thêm video khác
+                                </button>
+                            </div>
+                            
+                            <!-- Safety Notes -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Lưu ý an toàn</label>
+                                    <textarea class="form-input" rows="3" placeholder="Các lưu ý về an toàn khi thực hiện...">- Đeo găng tay khi xử lý phân bón
+- Tránh bón phân vào ngày mưa to
+- Không hít trực tiếp bụi phân
+- Rửa tay sạch sau khi hoàn thành</textarea>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phương pháp kiểm tra</label>
+                                    <textarea class="form-input" rows="3" placeholder="Cách kiểm tra chất lượng công việc...">- Kiểm tra phân đã được rải đều
+- Đo lượng phân theo định mức
+- Quan sát phản ứng của cây sau 1 tuần
+- Chụp ảnh trước và sau khi thực hiện</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Resources -->
+                    <div id="resources-tab" class="tab-content">
+                        <!-- Materials Section -->
+                        <div class="form-section">
+                            <h3>
+                                <i class="fas fa-boxes mr-3 text-green-600"></i>
+                                Vật tư cần thiết
+                            </h3>
+                            
+                            <div id="materials-list" class="space-y-4">
+                                <div class="resource-item">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                                            <div>
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">Tên vật tư</label>
+                                                <input type="text" class="form-input" value="Phân NPK 16-16-8">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">Thành phần/Hoạt chất</label>
+                                                <input type="text" class="form-input" value="16% N, 16% P2O5, 8% K2O">
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">Định lượng</label>
+                                                <div class="flex items-center space-x-1">
+                                                    <input type="number" class="form-input w-20" value="2.5" step="0.1">
+                                                    <select class="form-input w-16">
+                                                        <option value="kg" selected>kg</option>
+                                                        <option value="g">g</option>
+                                                        <option value="lit">lít</option>
+                                                        <option value="ml">ml</option>
+                                                    </select>
+                                                    <span class="text-sm text-gray-500">/</span>
+                                                    <select class="form-input w-20">
+                                                        <option value="tree" selected>cây</option>
+                                                        <option value="m2">m²</option>
+                                                        <option value="ha">ha</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">Nhà cung cấp</label>
+                                                <select class="form-input">
+                                                    <option value="">Chọn NCC</option>
+                                                    <option value="duc-giang" selected>Đức Giang</option>
+                                                    <option value="phu-my">Phú Mỹ</option>
+                                                    <option value="other">Khác</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button class="btn-icon ml-3" onclick="removeMaterial(this)">
+                                            <i class="fas fa-trash text-red-500"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Giá ước tính</label>
+                                            <input type="number" class="form-input" placeholder="25,000 VNĐ/kg">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Thời hạn sử dụng</label>
+                                            <input type="text" class="form-input" placeholder="24 tháng">
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Ghi chú</label>
+                                            <input type="text" class="form-input" placeholder="Bảo quản nơi khô ráo">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn-secondary mt-4" onclick="addMaterial()">
+                                <i class="fas fa-plus mr-2"></i>Thêm vật tư
+                            </button>
+                        </div>
+                        
+                        <!-- Tools Section -->
+                        <div class="form-section">
+                            <h3>
+                                <i class="fas fa-tools mr-3 text-orange-600"></i>
+                                Công cụ thiết bị
+                            </h3>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-hand-holding text-gray-500 mr-2"></i>
+                                        <span class="text-sm">Găng tay</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-tools text-gray-500 mr-2"></i>
+                                        <span class="text-sm">Xẻng nhỏ</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-ruler text-gray-500 mr-2"></i>
+                                        <span class="text-sm">Thước đo</span>
+                                    </div>
+                                </label>
+                                
+                                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-bucket text-gray-500 mr-2"></i>
+                                        <span class="text-sm">Xô đựng</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Human Resources Section -->
+                        <div class="form-section">
+                            <h3>
+                                <i class="fas fa-users mr-3 text-blue-600"></i>
+                                Nhân sự thực hiện
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Số người cần</label>
+                                    <input type="number" class="form-input" value="2" min="1">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Kỹ năng yêu cầu</label>
+                                    <select class="form-input">
+                                        <option value="basic">Cơ bản</option>
+                                        <option value="intermediate" selected>Trung bình</option>
+                                        <option value="advanced">Nâng cao</option>
+                                        <option value="expert">Chuyên gia</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Thời gian làm việc</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="number" class="form-input w-20" value="3" min="1">
+                                        <select class="form-input w-24">
+                                            <option value="hours" selected>giờ</option>
+                                            <option value="days">ngày</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 3: Conditions & Notifications -->
+                    <div id="conditions-tab" class="tab-content">
+                        <!-- Timing Section -->
+                        <div class="form-section">
+                            <h3>
+                                <i class="fas fa-clock mr-3 text-indigo-600"></i>
+                                Thời gian thực hiện
+                            </h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Thời điểm bắt đầu</label>
+                                    <select class="form-input">
+                                        <option value="fixed">Ngày cố định</option>
+                                        <option value="relative" selected>Sau công việc khác</option>
+                                        <option value="condition">Khi có điều kiện</option>
+                                        <option value="manual">Thủ công</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Thời gian thực hiện tốt nhất</label>
+                                    <select class="form-input">
+                                        <option value="morning" selected>Buổi sáng (6:00-10:00)</option>
+                                        <option value="afternoon">Buổi chiều (14:00-17:00)</option>
+                                        <option value="evening">Buổi tối (17:00-19:00)</option>
+                                        <option value="anytime">Bất kỳ lúc nào</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Trigger Conditions Section -->
+                        <div class="form-section">
+                            <h3>
+                                <i class="fas fa-cog mr-3 text-yellow-600"></i>
+                                Điều kiện kích hoạt
+                            </h3>
+                            
+                            <div id="conditions-list" class="space-y-4">
+                                <div class="condition-item">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-semibold text-yellow-800">Điều kiện 1</h4>
+                                        <button class="btn-icon" onclick="removeCondition(this)">
+                                            <i class="fas fa-trash text-red-500"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Loại điều kiện</label>
+                                            <select class="form-input">
+                                                <option value="weather">Thời tiết</option>
+                                                <option value="soil" selected>Đất</option>
+                                                <option value="plant">Cây trồng</option>
+                                                <option value="time">Thời gian</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Tham số</label>
+                                            <select class="form-input">
+                                                <option value="moisture" selected>Độ ẩm đất</option>
+                                                <option value="ph">pH đất</option>
+                                                <option value="temperature">Nhiệt độ đất</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Điều kiện</label>
+                                            <div class="flex items-center space-x-1">
+                                                <select class="form-input w-16">
+                                                    <option value=">">&gt;</option>
+                                                    <option value="<">&lt;</option>
+                                                    <option value="=" selected>=</option>
+                                                    <option value=">=">&gt;=</option>
+                                                    <option value="<=">&lt;=</option>
+                                                </select>
+                                                <input type="number" class="form-input w-20" value="60">
+                                                <span class="text-xs text-gray-500">%</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Hành động</label>
+                                            <select class="form-input">
+                                                <option value="start" selected>Bắt đầu công việc</option>
+                                                <option value="stop">Dừng công việc</option>
+                                                <option value="alert">Gửi cảnh báo</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn-secondary mt-4" onclick="addCondition()">
+                                <i class="fas fa-plus mr-2"></i>Thêm điều kiện
+                            </button>
+                        </div>
+                        
+                        <!-- Notifications Section -->
+                        <div class="form-section">
+                            <h3>
+                                <i class="fas fa-bell mr-3 text-red-600"></i>
+                                Thông báo & Nhắc nhở
+                            </h3>
+                            
+                            <div id="alerts-list" class="space-y-4">
+                                <div class="alert-item">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <h4 class="font-semibold text-red-800">Nhắc nhở 1</h4>
+                                        <button class="btn-icon" onclick="removeAlert(this)">
+                                            <i class="fas fa-trash text-red-500"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Thời điểm</label>
+                                            <select class="form-input">
+                                                <option value="before" selected>Trước khi thực hiện</option>
+                                                <option value="during">Trong khi thực hiện</option>
+                                                <option value="after">Sau khi hoàn thành</option>
+                                                <option value="overdue">Khi quá hạn</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Thời gian</label>
+                                            <div class="flex items-center space-x-1">
+                                                <input type="number" class="form-input w-16" value="1">
+                                                <select class="form-input w-20">
+                                                    <option value="hours">giờ</option>
+                                                    <option value="days" selected>ngày</option>
+                                                    <option value="weeks">tuần</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Phương thức</label>
+                                            <select class="form-input">
+                                                <option value="app" selected>Thông báo app</option>
+                                                <option value="email">Email</option>
+                                                <option value="sms">SMS</option>
+                                                <option value="all">Tất cả</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-xs font-medium text-gray-600 mb-1">Người nhận</label>
+                                            <select class="form-input">
+                                                <option value="assigned" selected>Người thực hiện</option>
+                                                <option value="supervisor">Người giám sát</option>
+                                                <option value="manager">Quản lý</option>
+                                                <option value="all">Tất cả</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <label class="block text-xs font-medium text-gray-600 mb-1">Nội dung thông báo</label>
+                                        <input type="text" class="form-input" value="Nhắc nhở: Đến giờ bón phân NPK cho cây sầu riêng. Hãy kiểm tra thời tiết trước khi thực hiện.">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="btn-secondary mt-4" onclick="addAlert()">
+                                <i class="fas fa-plus mr-2"></i>Thêm thông báo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-section">
+                        <div class="flex justify-between items-center">
+                            <button class="btn-secondary" onclick="goBack()">
+                                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                            </button>
+                            
+                            <div class="space-x-3">
+                                <button class="btn-secondary" onclick="previewTask()">
+                                    <i class="fas fa-eye mr-2"></i>Xem trước
+                                </button>
+                                
+                                <button class="btn-secondary" onclick="saveAsDraft()">
+                                    <i class="fas fa-save mr-2"></i>Lưu nháp
+                                </button>
+                                
+                                <button class="btn-primary" onclick="saveTask()">
+                                    <i class="fas fa-check mr-2"></i>Hoàn thành
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Quick Info -->
+                <div class="card-modern mb-6">
+                    <div class="p-6">
+                        <h3 class="font-bold text-gray-800 mb-4">Thông tin nhanh</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Loại:</span>
+                                <span class="tag">Lặp lại</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Tần suất:</span>
+                                <span class="tag frequency">2 tuần</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Thời lượng:</span>
+                                <span class="text-gray-800 font-medium">3 giờ</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Nhân sự:</span>
+                                <span class="text-gray-800 font-medium">2 người</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Kỹ năng:</span>
+                                <span class="tag skill">Trung bình</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <div class="card-modern mb-6">
+                    <div class="p-6">
+                        <h3 class="font-bold text-gray-800 mb-4">Tiến độ thiết lập</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Thông tin cơ bản</span>
+                                <i class="fas fa-check-circle text-green-500"></i>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Hướng dẫn</span>
+                                <i class="fas fa-check-circle text-green-500"></i>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Tài nguyên</span>
+                                <i class="fas fa-check-circle text-green-500"></i>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Điều kiện</span>
+                                <i class="fas fa-circle text-gray-300"></i>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Thông báo</span>
+                                <i class="fas fa-circle text-gray-300"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <div class="flex justify-between text-sm mb-2">
+                                <span class="text-gray-600">Hoàn thành</span>
+                                <span class="text-gray-800 font-medium">60%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Templates -->
+                <div class="card-modern">
+                    <div class="p-6">
+                        <h3 class="font-bold text-gray-800 mb-4">Template có sẵn</h3>
+                        <div class="space-y-3">
+                            <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50">
+                                <div class="font-medium text-sm">Bón phân cơ bản</div>
+                                <div class="text-xs text-gray-500">Template cho cây ăn trái</div>
+                                <button class="btn-secondary mt-2 text-xs" onclick="loadTemplate('basic-fertilizer')">
+                                    <i class="fas fa-download mr-1"></i>Sử dụng
+                                </button>
+                            </div>
+                            
+                            <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50">
+                                <div class="font-medium text-sm">Phòng trừ sâu bệnh</div>
+                                <div class="text-xs text-gray-500">Template IPM cơ bản</div>
+                                <button class="btn-secondary mt-2 text-xs" onclick="loadTemplate('pest-control')">
+                                    <i class="fas fa-download mr-1"></i>Sử dụng
+                                </button>
+                            </div>
+                            
+                            <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-green-500 hover:bg-green-50">
+                                <div class="font-medium text-sm">Tưới nước định kỳ</div>
+                                <div class="text-xs text-gray-500">Template cho hệ thống tưới</div>
+                                <button class="btn-secondary mt-2 text-xs" onclick="loadTemplate('irrigation')">
+                                    <i class="fas fa-download mr-1"></i>Sử dụng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(event, tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+        }
+
+        // Task type selection
+        function selectTaskType(type) {
+            const recurringConfig = document.getElementById('recurring-config');
+            const radioButtons = document.querySelectorAll('input[name="task-type"]');
+            
+            radioButtons.forEach(radio => {
+                radio.checked = radio.value === type;
+            });
+            
+            if (type === 'recurring') {
+                recurringConfig.style.display = 'block';
+            } else {
+                recurringConfig.style.display = 'none';
+            }
+        }
+
+        // File upload functions
+        function triggerFileUpload() {
+            document.getElementById('file-upload').click();
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('dragover');
+        }
+
+        function handleFileDrop(event) {
+            event.preventDefault();
+            event.currentTarget.classList.remove('dragover');
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            const uploadedFiles = document.getElementById('uploaded-files');
+            Array.from(files).forEach(file => {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'uploaded-file';
+                
+                let icon = 'fas fa-file';
+                if (file.type.includes('pdf')) icon = 'fas fa-file-pdf text-red-500';
+                else if (file.type.includes('image')) icon = 'fas fa-image text-green-500';
+                else if (file.type.includes('video')) icon = 'fas fa-video text-blue-500';
+                else if (file.type.includes('word')) icon = 'fas fa-file-word text-blue-600';
+                
+                fileDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="${icon} mr-3"></i>
+                        <div>
+                            <div class="font-medium text-sm">${file.name}</div>
+                            <div class="text-xs text-gray-500">${(file.size / 1024 / 1024).toFixed(2)} MB - Vừa tải lên</div>
+                        </div>
+                    </div>
+                    <button class="btn-icon" onclick="removeFile(this)">
+                        <i class="fas fa-trash text-red-500"></i>
+                    </button>
+                `;
+                uploadedFiles.appendChild(fileDiv);
+            });
+        }
+
+        function removeFile(button) {
+            button.parentElement.remove();
+        }
+
+        // Video link management
+        function addVideoLink() {
+            const videoLinks = document.getElementById('video-links');
+            const newLink = document.createElement('div');
+            newLink.className = 'flex items-center space-x-3';
+            newLink.innerHTML = `
+                <input type="url" class="form-input flex-1" placeholder="https://youtube.com/watch?v=...">
+                <button class="btn-icon" onclick="removeVideoLink(this)">
+                    <i class="fas fa-trash text-red-500"></i>
+                </button>
+            `;
+            videoLinks.appendChild(newLink);
+        }
+
+        function removeVideoLink(button) {
+            button.parentElement.remove();
+        }
+
+        // Material management
+        function addMaterial() {
+            const materialsList = document.getElementById('materials-list');
+            const newMaterial = document.createElement('div');
+            newMaterial.className = 'resource-item';
+            newMaterial.innerHTML = `
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Tên vật tư</label>
+                            <input type="text" class="form-input" placeholder="Tên vật tư">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Thành phần/Hoạt chất</label>
+                            <input type="text" class="form-input" placeholder="Thành phần">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Định lượng</label>
+                            <div class="flex items-center space-x-1">
+                                <input type="number" class="form-input w-20" step="0.1">
+                                <select class="form-input w-16">
+                                    <option value="kg">kg</option>
+                                    <option value="g">g</option>
+                                    <option value="lit">lít</option>
+                                    <option value="ml">ml</option>
+                                </select>
+                                <span class="text-sm text-gray-500">/</span>
+                                <select class="form-input w-20">
+                                    <option value="tree">cây</option>
+                                    <option value="m2">m²</option>
+                                    <option value="ha">ha</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Nhà cung cấp</label>
+                            <select class="form-input">
+                                <option value="">Chọn NCC</option>
+                                <option value="duc-giang">Đức Giang</option>
+                                <option value="phu-my">Phú Mỹ</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-icon ml-3" onclick="removeMaterial(this)">
+                        <i class="fas fa-trash text-red-500"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Giá ước tính</label>
+                        <input type="number" class="form-input" placeholder="VNĐ">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Thời hạn sử dụng</label>
+                        <input type="text" class="form-input" placeholder="tháng">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Ghi chú</label>
+                        <input type="text" class="form-input" placeholder="Ghi chú">
+                    </div>
+                </div>
+            `;
+            materialsList.appendChild(newMaterial);
+        }
+
+        function removeMaterial(button) {
+            button.closest('.resource-item').remove();
+        }
+
+        // Condition management
+        function addCondition() {
+            const conditionsList = document.getElementById('conditions-list');
+            const conditionCount = conditionsList.children.length + 1;
+            const newCondition = document.createElement('div');
+            newCondition.className = 'condition-item';
+            newCondition.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="font-semibold text-yellow-800">Điều kiện ${conditionCount}</h4>
+                    <button class="btn-icon" onclick="removeCondition(this)">
+                        <i class="fas fa-trash text-red-500"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Loại điều kiện</label>
+                        <select class="form-input">
+                            <option value="weather">Thời tiết</option>
+                            <option value="soil">Đất</option>
+                            <option value="plant">Cây trồng</option>
+                            <option value="time">Thời gian</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Tham số</label>
+                        <select class="form-input">
+                            <option value="temperature">Nhiệt độ</option>
+                            <option value="humidity">Độ ẩm</option>
+                            <option value="rain">Lượng mưa</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Điều kiện</label>
+                        <div class="flex items-center space-x-1">
+                            <select class="form-input w-16">
+                                <option value=">">&gt;</option>
+                                <option value="<">&lt;</option>
+                                <option value="=">=</option>
+                                <option value=">=">&gt;=</option>
+                                <option value="<=">&lt;=</option>
+                            </select>
+                            <input type="number" class="form-input w-20">
+                            <span class="text-xs text-gray-500">°C</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Hành động</label>
+                        <select class="form-input">
+                            <option value="start">Bắt đầu công việc</option>
+                            <option value="stop">Dừng công việc</option>
+                            <option value="alert">Gửi cảnh báo</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+            conditionsList.appendChild(newCondition);
+        }
+
+        function removeCondition(button) {
+            button.closest('.condition-item').remove();
+        }
+
+        // Alert management
+        function addAlert() {
+            const alertsList = document.getElementById('alerts-list');
+            const alertCount = alertsList.children.length + 1;
+            const newAlert = document.createElement('div');
+            newAlert.className = 'alert-item';
+            newAlert.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="font-semibold text-red-800">Nhắc nhở ${alertCount}</h4>
+                    <button class="btn-icon" onclick="removeAlert(this)">
+                        <i class="fas fa-trash text-red-500"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Thời điểm</label>
+                        <select class="form-input">
+                            <option value="before">Trước khi thực hiện</option>
+                            <option value="during">Trong khi thực hiện</option>
+                            <option value="after">Sau khi hoàn thành</option>
+                            <option value="overdue">Khi quá hạn</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Thời gian</label>
+                        <div class="flex items-center space-x-1">
+                            <input type="number" class="form-input w-16" value="1">
+                            <select class="form-input w-20">
+                                <option value="hours">giờ</option>
+                                <option value="days">ngày</option>
+                                <option value="weeks">tuần</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Phương thức</label>
+                        <select class="form-input">
+                            <option value="app">Thông báo app</option>
+                            <option value="email">Email</option>
+                            <option value="sms">SMS</option>
+                            <option value="all">Tất cả</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Người nhận</label>
+                        <select class="form-input">
+                            <option value="assigned">Người thực hiện</option>
+                            <option value="supervisor">Người giám sát</option>
+                            <option value="manager">Quản lý</option>
+                            <option value="all">Tất cả</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Nội dung thông báo</label>
+                    <input type="text" class="form-input" placeholder="Nhập nội dung thông báo...">
+                </div>
+            `;
+            alertsList.appendChild(newAlert);
+        }
+
+        function removeAlert(button) {
+            button.closest('.alert-item').remove();
+        }
+
+        // Template functions
+        function loadTemplate(templateType) {
+            const templates = {
+                'basic-fertilizer': {
+                    name: 'Bón phân NPK cơ bản',
+                    description: 'Bón phân NPK cho cây ăn trái theo định kỳ',
+                    instructions: '1. Kiểm tra độ ẩm đất\n2. Rải phân xung quanh tán lá\n3. Xới nhẹ đất\n4. Tưới nước sau khi bón'
+                },
+                'pest-control': {
+                    name: 'Phòng trừ sâu bệnh IPM',
+                    description: 'Quy trình quản lý tổng hợp sâu bệnh',
+                    instructions: '1. Quan sát và đánh giá mức độ sâu bệnh\n2. Pha chế thuốc theo tỷ lệ\n3. Phun vào buổi chiều mát\n4. Ghi nhận kết quả'
+                },
+                'irrigation': {
+                    name: 'Tưới nước định kỳ',
+                    description: 'Quy trình tưới nước cho cây trồng',
+                    instructions: '1. Kiểm tra hệ thống tưới\n2. Đo độ ẩm đất\n3. Tưới từ từ cho thấm đều\n4. Kiểm tra sau khi tưới'
+                }
+            };
+
+            const template = templates[templateType];
+            if (template) {
+                if (confirm(`Sử dụng template "${template.name}"?\n\nDữ liệu hiện tại sẽ được thay thế.`)) {
+                    document.querySelector('[placeholder="VD: Bón phân NPK cho cây sầu riêng"]').value = template.name;
+                    document.querySelector('[placeholder="Mô tả tóm tắt về công việc này..."]').value = template.description;
+                    document.querySelector('[placeholder="Nhập từng bước thực hiện chi tiết..."]').value = template.instructions;
+                    
+                    alert(`✅ Đã áp dụng template "${template.name}"\n\nVui lòng kiểm tra và điều chỉnh thông tin cho phù hợp.`);
+                }
+            }
+        }
+
+        // Main action functions
+        function saveAsDraft() {
+            const taskName = document.querySelector('[placeholder="VD: Bón phân NPK cho cây sầu riêng"]').value;
+            if (!taskName) {
+                alert('⚠️ Vui lòng nhập tên công việc trước khi lưu nháp!');
+                return;
+            }
+            
+            alert(`💾 Đã lưu nháp công việc "${taskName}"\n\nBạn có thể tiếp tục chỉnh sửa sau.`);
+        }
+
+        function saveTask() {
+            const taskName = document.querySelector('[placeholder="VD: Bón phân NPK cho cây sầu riêng"]').value;
+            const taskType = document.querySelector('input[name="task-type"]:checked').value;
+            
+            if (!taskName) {
+                alert('⚠️ Vui lòng nhập tên công việc!');
+                return;
+            }
+
+            const materials = document.querySelectorAll('#materials-list .resource-item').length;
+            const instructions = document.querySelector('[placeholder="Nhập từng bước thực hiện chi tiết..."]').value;
+            
+            let warnings = [];
+            if (materials === 0) warnings.push('- Chưa có vật tư nào được thêm');
+            if (!instructions.trim()) warnings.push('- Chưa có hướng dẫn thực hiện');
+            
+            if (warnings.length > 0) {
+                const proceed = confirm(`⚠️ Có một số thông tin chưa đầy đủ:\n${warnings.join('\n')}\n\nBạn có muốn tiếp tục lưu không?`);
+                if (!proceed) return;
+            }
+            
+            alert(`✅ Đã lưu thành công công việc "${taskName}"\n\nLoại: ${taskType === 'recurring' ? 'Lặp lại' : 'Một lần'}\nVật tư: ${materials} loại\nTrạng thái: Hoàn thành`);
+        }
+
+        function previewTask() {
+            const taskName = document.querySelector('[placeholder="VD: Bón phân NPK cho cây sầu riêng"]').value || 'Chưa đặt tên';
+            const taskType = document.querySelector('input[name="task-type"]:checked').value;
+            const materials = document.querySelectorAll('#materials-list .resource-item').length;
+            const conditions = document.querySelectorAll('#conditions-list .condition-item').length;
+            const alerts = document.querySelectorAll('#alerts-list .alert-item').length;
+            
+            alert(`👀 Xem trước công việc:\n\n• Tên: ${taskName}\n• Loại: ${taskType === 'recurring' ? 'Lặp lại' : 'Một lần'}\n• Vật tư: ${materials} loại\n• Điều kiện: ${conditions}\n• Thông báo: ${alerts}\n\nNhấn "Hoàn thành" để lưu công việc.`);
+        }
+
+        function goBack() {
+            if (confirm('Quay lại trang trước?\n\nCác thay đổi chưa lưu sẽ bị mất.')) {
+                window.history.back();
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileUpload = document.getElementById('file-upload');
+            if (fileUpload) {
+                fileUpload.addEventListener('change', function(e) {
+                    handleFiles(e.target.files);
+                });
+            }
+
+            console.log('FarmKeeper Task Setup Form initialized successfully');
+        });
+    </script>
+</body>
+</html>

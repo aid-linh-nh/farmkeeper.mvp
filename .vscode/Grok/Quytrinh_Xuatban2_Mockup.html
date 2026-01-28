@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy trình Làm hoa và Thu hoạch Sầu riêng Dona - Tây Nguyên</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '🌸';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 4rem;
+            opacity: 0.3;
+        }
+        
+        .header::after {
+            content: '🍎';
+            position: absolute;
+            bottom: 20px;
+            right: 80px;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .template-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+        
+        .process-info h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .process-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .process-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .activation-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .activation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .activation-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .btn-activate {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-activate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #f59e0b, #10b981, #3b82f6, #8b5cf6, #ef4444, #06b6d4);
+            border-radius: 2px;
+        }
+        
+        .stage {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        .stage-header {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-left: 60px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .stage-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .stage-header::before {
+            content: attr(data-stage);
+            position: absolute;
+            left: -45px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9rem;
+        }
+        
+        .stage.stage-1 .stage-header::before { background: #f59e0b; }
+        .stage.stage-2 .stage-header::before { background: #10b981; }
+        .stage.stage-3 .stage-header::before { background: #3b82f6; }
+        .stage.stage-4 .stage-header::before { background: #8b5cf6; }
+        .stage.stage-5 .stage-header::before { background: #ef4444; }
+        .stage.stage-6 .stage-header::before { background: #06b6d4; }
+        
+        .stage-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .stage-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .stage-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .stage-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stage-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .stage-description {
+            color: #4b5563;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+        
+        .works-container {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .work-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .work-item:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .work-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .work-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .work-status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .work-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .work-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .work-description {
+            color: #4b5563;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .work-conditions {
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .conditions-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .conditions-list {
+            font-size: 0.8rem;
+            color: #6b7280;
+            list-style: none;
+        }
+        
+        .conditions-list li {
+            margin-bottom: 0.25rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+        
+        .conditions-list li::before {
+            content: '📋';
+            position: absolute;
+            left: 0;
+        }
+        
+        .work-materials {
+            background: #fffbeb;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .materials-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #d97706;
+            margin-bottom: 0.5rem;
+        }
+        
+        .materials-list {
+            font-size: 0.8rem;
+            color: #d97706;
+            list-style: none;
+        }
+        
+        .materials-list li {
+            margin-bottom: 0.25rem;
+            padding-left: 1rem;
+            position: relative;
+        }
+        
+        .materials-list li::before {
+            content: '🧪';
+            position: absolute;
+            left: 0;
+        }
+        
+        .work-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .requirements-widget {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #10b981;
+        }
+        
+        .requirements-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .requirements-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .floating-info {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .floating-info:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.6);
+        }
+        
+        .info-tooltip {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            width: 280px;
+            display: none;
+            font-size: 0.8rem;
+        }
+        
+        .info-tooltip.show {
+            display: block;
+        }
+        
+        .stress-indicator {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px dashed #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .stress-indicator h3 {
+            color: #92400e;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stress-level {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #92400e;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+            
+            .process-info h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header-top {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .process-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions {
+                justify-content: center;
+            }
+            
+            .stage-header {
+                margin-left: 40px;
+                padding: 1rem;
+            }
+            
+            .stage-header::before {
+                left: -35px;
+                width: 25px;
+                height: 25px;
+                font-size: 0.8rem;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .work-actions {
+                justify-content: center;
+            }
+            
+            .floating-info {
+                bottom: 1rem;
+                right: 1rem;
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="template-badge">🌸 CHU KỲ LÀM HOA - THU HOẠCH - PHIÊN BẢN 1.0</div>
+                <div class="header-top">
+                    <div class="process-info">
+                        <h1>🌸 Quy trình Làm hoa và Thu hoạch Dona</h1>
+                        <div class="process-meta">
+                            <div class="meta-item">
+                                <span>🏢</span>
+                                <span>Trung tâm Nghiên cứu Sinh sản Cây ăn quả</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>👨‍🔬</span>
+                                <span>PGS.TS Võ Văn Dũng, TS. Lê Thị Mai</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>Cập nhật: 21/01/2025</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>🎯</span>
+                                <span>Cây 4+ tuổi, cho trái ổn định</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="process-stats">
+                    <div class="stat-card">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">Giai đoạn sinh sản</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">28</div>
+                        <div class="stat-label">Công việc chi tiết</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">7-8</div>
+                        <div class="stat-label">Tháng hoàn thành</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Tỷ lệ thành công</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activation Section -->
+        <div class="activation-section">
+            <div class="activation-header">
+                <div class="activation-title">🚀 Bắt đầu chu kỳ làm hoa cho cây Dona của bạn?</div>
+                <button class="btn-activate" onclick="activateFloweringCycle()">
+                    Kích hoạt Chu kỳ
+                </button>
+            </div>
+            <p style="color: #6b7280; font-size: 0.9rem;">
+                <strong>Lưu ý quan trọng:</strong> Quy trình này chỉ áp dụng cho cây từ 4 tuổi trở lên, đã cho trái ít nhất 1 vụ. 
+                Cần chuẩn bị tâm lý và kỹ thuật cho việc siết nước và stress cây trong 2-3 tháng.
+            </p>
+        </div>
+
+        <!-- Requirements Widget -->
+        <div class="requirements-widget">
+            <div class="requirements-header">
+                <div class="requirements-title">📋 Điều kiện cây phù hợp để làm hoa</div>
+            </div>
+            <div class="requirements-grid">
+                <div class="requirement-item">
+                    <span>🌱</span>
+                    <span>Cây từ 4 tuổi trở lên</span>
+                </div>
+                <div class="requirement-item">
+                    <span>🍎</span>
+                    <span>Đã ra trái ít nhất 1 vụ</span>
+                </div>
+                <div class="requirement-item">
+                    <span>💪</span>
+                    <span>Cây khỏe mạnh, không bệnh</span>
+                </div>
+                <div class="requirement-item">
+                    <span>🗓️</span>
+                    <span>Nghỉ ngơi sau thu hoạch 2-3 tháng</span>
+                </div>
+                <div class="requirement-item">
+                    <span>💧</span>
+                    <span>Hệ thống tưới kiểm soát được</span>
+                </div>
+                <div class="requirement-item">
+                    <span>🌤️</span>
+                    <span>Thời tiết ổn định 4-5 tháng</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <button class="btn btn-info" onclick="downloadFloweringGuide()">
+                📄 Tải hướng dẫn làm hoa
+            </button>
+            <button class="btn btn-success" onclick="calculateFloweringCost()">
+                💰 Tính chi phí chu kỳ
+            </button>
+            <button class="btn btn-warning" onclick="scheduleFloweringCalendar()">
+                📅 Lập lịch làm hoa
+            </button>
+            <button class="btn" onclick="contactFloweringExpert()">
+                👨‍🔬 Chuyên gia sinh sản
+            </button>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+            <!-- Stage 1: Chuẩn bị làm hoa - Siết nước -->
+            <div class="stage stage-1">
+                <div class="stage-header" data-stage="1">
+                    <div class="stage-title">
+                        <div class="stage-name">💧 Chuẩn bị làm hoa - Siết nước và Stress cây</div>
+                        <div class="stage-status">Giai đoạn quyết định</div>
+                    </div>
+                    <div class="stage-meta">
+                        <div class="stage-meta-item">
+                            <span>⏰</span>
+                            <span>Thời gian: 60-90 ngày</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🗓️</span>
+                            <span>Tối ưu: Tháng 10-12</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🔄</span>
+                            <span>Hàng năm</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>💰</span>
+                            <span>Chi phí: 1-2 triệu/ha</span>
+                        </div>
+                    </div>
+                    <div class="stage-description">
+                        Tạo stress cho cây bằng cách siết nước và hạn chế dinh dưỡng để kích thích cây chuyển từ sinh trưởng sang sinh sản. Đây là giai đoạn quan trọng nhất quyết định thành công của việc làm hoa.
+                    </div>
+
+                    <div class="stress-indicator">
+                        <h3>⚡ Mức độ Stress Cây</h3>
+                        <div class="stress-level">
+                            <span>📊</span>
+                            <span>Cao (70-80%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="works-container">
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Đánh giá tình trạng cây trước khi stress</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>3-5 ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>200k-300k</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Định thời điểm thu hoạch</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Chuẩn bị thu hoạch</div>
+                        </div>
+                        <div class="work-description">
+                            Theo dõi các dấu hiệu chín của trái Dona để xác định thời điểm thu hoạch tối ưu. Dona chín sớm hơn các giống khác 15-20 ngày và có mùi thơm đặc trưng rất mạnh.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Dấu hiệu trái Dona sắp chín:</div>
+                            <ul class="conditions-list">
+                                <li>Màu vỏ chuyển từ xanh đậm sang xanh nhạt</li>
+                                <li>Cuống trái bắt đầu héo và nứt nhẹ</li>
+                                <li>Mùi thơm Dona đặc trưng bắt đầu tỏa ra</li>
+                                <li>Gai mềm hơn, có độ đàn hồi khi ấn nhẹ</li>
+                                <li>Âm thanh "bịch" khi gõ nhẹ vào trái</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Công cụ theo dõi độ chín:</div>
+                            <ul class="materials-list">
+                                <li>Bảng màu chuẩn cho sầu riêng Dona</li>
+                                <li>Penetrometer đo độ cứng vỏ trái</li>
+                                <li>Sổ ghi chép tiến độ chín của từng trái</li>
+                                <li>Camera để chụp ảnh theo dõi</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('ripening-monitoring')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('ripening-monitoring')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('ripening-monitoring')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 6: Thu hoạch và phục hồi cây -->
+            <div class="stage stage-6">
+                <div class="stage-header" data-stage="6">
+                    <div class="stage-title">
+                        <div class="stage-name">🏆 Thu hoạch và Phục hồi cây sau thu hoạch</div>
+                        <div class="stage-status">Hoàn thành chu kỳ</div>
+                    </div>
+                    <div class="stage-meta">
+                        <div class="stage-meta-item">
+                            <span>⏰</span>
+                            <span>Thu hoạch: 3-4 tháng, Phục hồi: 2-3 tháng</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🗓️</span>
+                            <span>Dona: T5-T8, Phục hồi: T9-T11</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🔄</span>
+                            <span>Chuẩn bị chu kỳ tiếp theo</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>💰</span>
+                            <span>Thu nhập: 150-300 triệu/ha</span>
+                        </div>
+                    </div>
+                    <div class="stage-description">
+                        Giai đoạn cuối cùng của chu kỳ, thu hoạch trái chất lượng cao và chăm sóc phục hồi cây để chuẩn bị cho vụ tiếp theo. Phục hồi tốt sẽ quyết định năng suất và chất lượng vụ sau.
+                    </div>
+
+                    <div class="stress-indicator">
+                        <h3>🏆 Kết quả Thu hoạch</h3>
+                        <div class="stress-level">
+                            <span>💰</span>
+                            <span>Thành công (90-95%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="works-container">
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Thu hoạch trái Dona đúng độ chín</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Theo từng trái chín</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>1.5-3tr/lần thu</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Chất lượng cao</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Thu hoạch chính</div>
+                        </div>
+                        <div class="work-description">
+                            Thu hoạch trái Dona khi đạt độ chín tối ưu, sử dụng kỹ thuật chuẩn để đảm bảo chất lượng và giá trị thương mại cao nhất. Dona có thời gian bảo quản ngắn nên cần xử lý nhanh.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Kỹ thuật thu hoạch Dona chuẩn:</div>
+                            <ul class="conditions-list">
+                                <li>Thu hoạch sáng sớm (5-7h) hoặc chiều mát (17-19h)</li>
+                                <li>Sử dụng lưới đỡ, không để trái rơi tự do</li>
+                                <li>Cắt cuống bằng kéo sắc, để lại 2-3cm</li>
+                                <li>Tẩy nhựa dính ngay bằng dầu ăn</li>
+                                <li>Phân loại và đóng gói trong vòng 2 giờ</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Vật tư thu hoạch Dona:</div>
+                            <ul class="materials-list">
+                                <li>Lưới nylon 3x3m chuyên dụng</li>
+                                <li>Kéo cắt cuống và thang nhôm</li>
+                                <li>Dầu ăn và khăn mềm tẩy nhựa</li>
+                                <li>Thùng nhựa mềm tránh va đập</li>
+                                <li>Cân điện tử và bao bì đóng gói</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('dona-harvesting')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('dona-harvesting')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('dona-harvesting')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Phân loại, đóng gói và tiêu thụ</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Ngay sau thu hoạch</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>800k-1.5tr/tấn</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Tối ưu giá trị</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Tạo giá trị</div>
+                        </div>
+                        <div class="work-description">
+                            Phân loại sầu riêng Dona theo tiêu chuẩn xuất khẩu và nội địa, đóng gói chuyên nghiệp để đạt giá bán cao nhất. Dona có thị trường tốt nhờ hương vị đặc trưng và chín sớm.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Tiêu chuẩn phân loại Dona:</div>
+                            <ul class="conditions-list">
+                                <li>Hạng A (Xuất khẩu): >2.5kg, đẹp, không khuyết tật</li>
+                                <li>Hạng B (Nội địa cao cấp): 1.5-2.5kg, chất lượng tốt</li>
+                                <li>Hạng C (Thị trường phổ thông): <1.5kg hoặc khuyết tật nhẹ</li>
+                                <li>Độ ngọt: >28 Brix, độ ẩm cơm: 65-75%</li>
+                                <li>Màu cơm: vàng cam đặc trưng Dona</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Vật tư đóng gói cao cấp:</div>
+                            <ul class="materials-list">
+                                <li>Thùng carton 5 lớp in logo thương hiệu</li>
+                                <li>Màng PE foam bọc từng trái</li>
+                                <li>Tem truy xuất nguồn gốc QR code</li>
+                                <li>Túi hút chân không cho xuất khẩu</li>
+                                <li>Giấy chứng nhận VietGAP/GlobalGAP</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('dona-packaging-marketing')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('dona-packaging-marketing')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('dona-packaging-marketing')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Cắt tỉa phục hồi sau thu hoạch</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Ngay sau thu hoạch xong</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>600k-1tr/ha</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Chuẩn bị vụ sau</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Phục hồi</div>
+                        </div>
+                        <div class="work-description">
+                            Cắt tỉa nhẹ để loại bỏ cành đã ra trái, cành yếu và tạo điều kiện cho cây phục hồi sức khỏe. Đây là thời điểm quan trọng để cây tái tạo năng lượng cho vụ tiếp theo.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Nguyên tắc cắt tỉa phục hồi:</div>
+                            <ul class="conditions-list">
+                                <li>Cắt tỉa nhẹ, không quá 20% khối lượng lá</li>
+                                <li>Ưu tiên cắt cành đã ra trái và cành yếu</li>
+                                <li>Giữ nguyên cấu trúc tán cây chính</li>
+                                <li>Tạo thông gió tốt cho tán cây</li>
+                                <li>Bôi thuốc khử trùng tất cả vết cắt</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Dụng cụ cắt tỉa phục hồi:</div>
+                            <ul class="materials-list">
+                                <li>Kéo cắt cành sắc bén, đã khử trùng</li>
+                                <li>Cưa máy cho cành lớn >5cm</li>
+                                <li>Thuốc bôi vết cắt Lac Balsam</li>
+                                <li>Alcohol 70% khử trùng dụng cụ</li>
+                                <li>Thang nhôm và thiết bị an toàn</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('post-harvest-pruning')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('post-harvest-pruning')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('post-harvest-pruning')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Bón phân phục hồi và chuẩn bị chu kỳ mới</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>60-90 ngày phục hồi</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>1.5-2.5tr/ha</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Tái tạo năng lượng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Chuẩn bị chu kỳ mới</div>
+                        </div>
+                        <div class="work-description">
+                            Bón phân phục hồi giàu đạm và phân hữu cơ để cây tái tạo lá non, tích lũy năng lượng. Sau 60-90 ngày nghỉ ngơi, cây sẽ sẵn sàng cho chu kỳ làm hoa tiếp theo.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Chương trình phục hồi cây sau thu hoạch:</div>
+                            <ul class="conditions-list">
+                                <li>Tuần 1-2: Tưới nước phục hồi, không bón phân</li>
+                                <li>Tuần 3-4: Bắt đầu bón phân hữu cơ</li>
+                                <li>Tháng 2-3: Bón phân NPK cân bằng thúc đẩy sinh trưởng</li>
+                                <li>Theo dõi sự xuất hiện lá non và chồi mới</li>
+                                <li>Chuẩn bị tinh thần cho chu kỳ làm hoa tiếp theo</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Phân bón phục hồi:</div>
+                            <ul class="materials-list">
+                                <li>Phân hữu cơ hoai mục: 20-30kg/cây</li>
+                                <li>NPK 20-20-20: 300-500g/cây/tháng</li>
+                                <li>Phân lá amino acid: 2-3ml/L</li>
+                                <li>Vi sinh vật có ích: Trichoderma, Mycorrhiza</li>
+                                <li>Thuốc kích thích sinh trưởng: GA3 + Cytokinin</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('recovery-fertilizing')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('recovery-fertilizing')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('recovery-fertilizing')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Đánh giá kết quả và lập kế hoạch vụ mới</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Cuối giai đoạn phục hồi</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>200k-300k</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Tối ưu hóa</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Đánh giá và cải thiện</div>
+                        </div>
+                        <div class="work-description">
+                            Tổng kết kết quả của chu kỳ vừa qua về năng suất, chất lượng, chi phí và lợi nhuận. Rút kinh nghiệm để cải thiện quy trình cho chu kỳ làm hoa tiếp theo.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Các chỉ số cần đánh giá:</div>
+                            <ul class="conditions-list">
+                                <li>Tỷ lệ ra hoa thành công: >70% là tốt</li>
+                                <li>Tỷ lệ đậu trái: >60% là đạt yêu cầu</li>
+                                <li>Năng suất: 40-60 trái/cây cho Dona</li>
+                                <li>Chất lượng trái: % trái hạng A, B, C</li>
+                                <li>Hiệu quả kinh tế: chi phí/thu nhập</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Công cụ đánh giá:</div>
+                            <ul class="materials-list">
+                                <li>Bảng tính Excel theo dõi KPI</li>
+                                <li>Sổ nhật ký ghi chép toàn bộ quá trình</li>
+                                <li>Ảnh chụp các giai đoạn quan trọng</li>
+                                <li>Báo cáo so sánh với các vụ trước</li>
+                                <li>Kế hoạch cải thiện cho vụ tiếp theo</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('cycle-evaluation')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('cycle-evaluation')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('cycle-evaluation')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Info Button -->
+    <button class="floating-info" onclick="toggleInfo()">
+        ℹ️
+        <div class="info-tooltip" id="info-tooltip">
+            <strong>💡 Chu kỳ Làm hoa - Thu hoạch Dona:</strong><br>
+            • Thời gian: 7-8 tháng hoàn thành<br>
+            • Giai đoạn stress: 60-90 ngày quan trọng nhất<br>
+            • Tỷ lệ thành công: 85-95% với kỹ thuật tốt<br>
+            • ROI: 200-400% tùy giá thị trường<br>
+            • Lưu ý: Cần kinh nghiệm và theo dõi sát sao
+        </div>
+    </button>
+
+    <script>
+        // Flowering and harvesting cycle specific functions
+        function activateFloweringCycle() {
+            if (confirm('🚀 Bắt đầu chu kỳ làm hoa cho cây Dona?\n\n⚠️ LƯU Ý QUAN TRỌNG:\n• Quy trình này yêu cầu kinh nghiệm và theo dõi 24/7\n• Giai đoạn siết nước rất căng thẳng cho cây\n• Cần chuẩn bị tâm lý và kỹ thuật đầy đủ\n• Thành công sẽ mang lại lợi nhuận cao\n\nBạn có chắc chắn muốn tiếp tục?')) {
+                alert('✅ Đã kích hoạt chu kỳ làm hoa Dona!\n\n📱 Hệ thống sẽ:\n• Tạo lịch siết nước và giám sát chi tiết\n• Cảnh báo các thời điểm quan trọng\n• Hướng dẫn từng bước cụ thể\n• Kết nối chuyên gia hỗ trợ khẩn cấp\n• Theo dõi tiến độ và dự báo kết quả\n\n🔔 Bắt đầu với giai đoạn đánh giá sức khỏe cây!');
+            }
+        }
+
+        function viewWorkDetails(workId) {
+            const workDescriptions = {
+                'tree-health-assessment': 'Đánh giá sức khỏe cây trước stress:\n🌱 Kiểm tra tán lá: >90% lá xanh tươi\n🦠 Không có dấu hiệu sâu bệnh nghiêm trọng\n💧 Hệ rễ khỏe mạnh (đào kiểm tra vài điểm)\n📏 Chu vi thân đạt chuẩn theo tuổi\n📋 Ghi chép chi tiết từng cây',
+                'water-stress-initiation': 'Bắt đầu siết nước:\n💧 NGỪNG HOÀN TOÀN tưới nước\n🚫 NGỪNG tất cả phân bón\n📊 Độ ẩm đất giảm từ 70% xuống <30%\n🌡️ Theo dõi nhiệt độ và độ ẩm không khí\n📸 Chụp ảnh tình trạng cây hàng ngày',
+                'hormone-flowering': 'Phun hormone kích hoa:\n🧪 Paclobutrazol 250ppm + KNO₃ 0.7%\n⏰ Phun 4 lần, cách nhau 4-5 ngày\n🌅 Thời gian: 6-8h sáng hoặc 17-19h chiều\n💨 Phun đều toàn bộ tán lá\n📋 Ghi chép phản ứng cây sau mỗi lần phun',
+                'dona-harvesting': 'Thu hoạch Dona chuẩn:\n🕐 5-7h sáng hoặc 17-19h chiều\n🥅 Dùng lưới đỡ 3x3m\n✂️ Cắt cuống để lại 2-3cm\n🧴 Tẩy nhựa ngay bằng dầu ăn\n📦 Đóng gói trong 2 giờ\n❄️ Bảo quản 12-15°C nếu có'
+            };
+            
+            const description = workDescriptions[workId] || `👁️ Chi tiết công việc: ${workId}\n\n📖 Hướng dẫn step-by-step\n🧪 Danh sách vật tư chi tiết\n⚠️ Cảnh báo và lưu ý quan trọng\n📊 Cách đo lường kết quả\n📸 Hình ảnh minh họa thực tế\n🎥 Video hướng dẫn (nếu có)`;
+            alert(description);
+        }
+
+        function viewEvaluationCriteria(workId) {
+            alert(`📋 Tiêu chuẩn đánh giá: ${workId}\n\nCác chỉ số quan trọng:\n⭐ Thang điểm chất lượng (1-10)\n📊 KPI cụ thể cần đạt\n📸 Bằng chứng cần thu thập\n✅ Điều kiện hoàn thành\n🚨 Dấu hiệu cảnh báo\n💡 Khuyến nghị cải thiện\n📈 So sánh với chuẩn ngành`);
+        }
+
+        function customizeWork(workId) {
+            alert(`⚙️ Tùy chỉnh công việc: ${workId}\n\nTùy chọn cá nhân hóa:\n🌱 Điều chỉnh theo tuổi cây cụ thể\n🌡️ Thích ứng khí hậu địa phương\n💧 Tùy chỉnh hệ thống tưới hiện có\n🧪 Điều chỉnh liều lượng hormone\n⏰ Thay đổi thời gian thực hiện\n📝 Thêm ghi chú riêng cho vườn`);
+        }
+
+        function downloadFloweringGuide() {
+            alert('📄 Đang tạo hướng dẫn làm hoa Dona...\n\nTài liệu bao gồm:\n📖 Quy trình 6 giai đoạn chi tiết\n🧪 Bảng tính liều lượng hormone\n📅 Lịch làm việc theo tuần\n📊 Biểu mẫu theo dõi tiến độ\n🆘 Hướng dẫn xử lý tình huống khẩn cấp\n📞 Danh bạ chuyên gia hỗ trợ');
+        }
+
+        function calculateFloweringCost() {
+            alert('💰 Ước tính chi phí chu kỳ làm hoa\n\nNhập thông tin:\n🌱 Số lượng cây trong vườn\n📏 Tuổi cây trung bình\n🧪 Loại hormone sử dụng\n💧 Hệ thống tưới hiện có\n👨‍🌾 Chi phí nhân công địa phương\n\n📊 Ước tính chi phí:\n• Hormone và hóa chất: 1.5-3tr/ha\n• Nhân công: 2-4tr/ha\n• Vật tư khác: 1-2tr/ha\n💰 Tổng: 4.5-9tr/ha\n💵 Dự kiến thu: 150-300tr/ha');
+        }
+
+        function scheduleFloweringCalendar() {
+            alert('📅 Lập lịch chu kỳ làm hoa Dona\n\nCác bước thiết lập:\n🔍 Đánh giá tình trạng cây hiện tại\n📊 Chọn cây phù hợp để làm hoa\n⏰ Xác định thời điểm bắt đầu tối ưu\n🌡️ Theo dõi dự báo thời tiết 3 tháng\n💧 Chuẩn bị hệ thống tưới/cắt nước\n👨‍🌾 Lên lịch nhân công và giám sát\n\n📱 Hệ thống sẽ gửi nhắc nhở:\n• Hàng ngày: Kiểm tra tình trạng cây\n• Hàng tuần: Các công việc quan trọng\n• Khẩn cấp: Cảnh báo thời tiết và bệnh');
+        }
+
+        function contactFloweringExpert() {
+            alert('👨‍🔬 Liên hệ chuyên gia sinh sản cây ăn quả\n\nHỗ trợ chuyên sâu:\n📞 Hotline làm hoa: 1900-FLOWER (356937)\n💬 Zalo/Telegram: 0988.xxx.xxx\n📧 Email: flowering@agritech.vn\n🏢 Viện Cây ăn quả Tây Nguyên\n👨‍🌾 Kỹ thuật viên làm hoa Dona\n🆘 Hỗ trợ khẩn cấp 24/7\n📅 Tư vấn trực tiếp tại vườn\n🌐 Group Facebook: "Làm hoa Sầu riêng Chuyên nghiệp"');
+        }
+
+        function toggleInfo() {
+            const tooltip = document.getElementById('info-tooltip');
+            tooltip.classList.toggle('show');
+        }
+
+        // Hide tooltip when clicking outside
+        document.addEventListener('click', function(e) {
+            const tooltip = document.getElementById('info-tooltip');
+            const button = document.querySelector('.floating-info');
+            if (!button.contains(e.target)) {
+                tooltip.classList.remove('show');
+            }
+        });
+
+        // Enhanced interactions for flowering cycle
+        document.querySelectorAll('.work-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.borderColor = '#f59e0b';
+                this.style.transform = 'translateY(-3px)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.borderColor = '#e5e7eb';
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Stress level indicator animation
+        function updateStressLevel() {
+            const stressIndicators = document.querySelectorAll('.stress-level');
+            stressIndicators.forEach(indicator => {
+                const currentStage = indicator.closest('.stage').querySelector('[data-stage]').getAttribute('data-stage');
+                const stressLevels = {
+                    '1': '⚡ Cao (70-80%)',
+                    '2': '🌸 Khởi động (30-40%)',
+                    '3': '🌺 Nở rộ (80-90%)',
+                    '4': '📈 Phát triển (60-70%)',
+                    '5': '🎯 Hoàn thiện (85-95%)',
+                    '6': '💰 Thành công (90-95%)'
+                };
+                
+                if (stressLevels[currentStage]) {
+                    indicator.querySelector('span:last-child').textContent = stressLevels[currentStage];
+                }
+            });
+        }
+
+        // Dynamic content updates
+        setInterval(() => {
+            const activeUsers = 15 + Math.floor(Math.random() * 10);
+            const successRate = 87 + Math.floor(Math.random() * 8);
+            console.log(`${activeUsers} nông dân đang theo dõi chu kỳ làm hoa này. Tỷ lệ thành công hiện tại: ${successRate}%`);
+        }, 30000);
+
+        // Weather simulation for flowering period
+        function checkWeatherConditions() {
+            const temp = 22 + Math.floor(Math.random() * 10); // 22-32°C
+            const humidity = 60 + Math.floor(Math.random() * 30); // 60-90%
+            
+            if (temp > 30 && humidity < 70) {
+                console.log(`⚠️ Cảnh báo: Nhiệt độ ${temp}°C, độ ẩm ${humidity}%. Cần tăng cường tưới phun sương!`);
+            } else if (temp < 25 && humidity > 85) {
+                console.log(`💧 Điều kiện tốt: ${temp}°C, ${humidity}% - Thuận lợi cho ra hoa!`);
+            }
+        }
+
+        // Initialize weather monitoring
+        setInterval(checkWeatherConditions, 3 * 60 * 60 * 1000); // Every 3 hours
+        
+        // Initialize stress level indicators
+        updateStressLevel();
+        
+        // Notification system simulation
+        function showFloweringNotification() {
+            const notifications = [
+                "🌸 Đã đến lúc kiểm tra nụ hoa!",
+                "💧 Nhắc nhở: Điều chỉnh lượng nước tưới",
+                "🧪 Chuẩn bị phun hormone lần tiếp theo",
+                "📊 Cập nhật tiến độ hoa nở",
+                "⚡ Kiểm tra mức độ stress cây"
+            ];
+            
+            const randomNotification = notifications[Math.floor(Math.random() * notifications.length)];
+            console.log(`🔔 ${randomNotification}`);
+        }
+
+        // Show notifications every 45 minutes
+        setInterval(showFloweringNotification, 45 * 60 * 1000);
+
+        // Initial notification
+        setTimeout(showFloweringNotification, 5000);
+    </script>
+</body>
+</html>Rất quan trọng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Kiểm tra sức khỏe</div>
+                        </div>
+                        <div class="work-description">
+                            Kiểm tra toàn diện sức khỏe cây, hệ rễ, tán lá và khả năng chịu stress. Chỉ những cây khỏe mạnh mới có thể chịu được quá trình siết nước kéo dài.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Tiêu chuẩn cây đủ sức khỏe:</div>
+                            <ul class="conditions-list">
+                                <li>Lá xanh tươi, không vàng úa quá 10%</li>
+                                <li>Thân cây không có vết nứt, chảy nhựa</li>
+                                <li>Hệ rễ phát triển tốt (kiểm tra vài điểm)</li>
+                                <li>Không bị sâu bệnh nghiêm trọng</li>
+                                <li>Đã nghỉ ngơi sau thu hoạch ít nhất 60 ngày</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Công cụ đánh giá:</div>
+                            <ul class="materials-list">
+                                <li>Thước đo chu vi thân cây</li>
+                                <li>Máy đo độ ẩm đất</li>
+                                <li>Kính lúp kiểm tra sâu bệnh</li>
+                                <li>Sổ ghi chép tình trạng từng cây</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('tree-health-assessment')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('tree-health-assessment')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('tree-health-assessment')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Bắt đầu siết nước và ngừng bón phân</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>60-75 ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>Tiết kiệm 2-3tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Cực kỳ quan trọng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Stress chính</div>
+                        </div>
+                        <div class="work-description">
+                            Hoàn toàn ngừng tưới nước và bón phân để tạo stress tối đa cho cây. Cây sẽ chuyển từ sinh trưởng sang sinh sản khi cảm nhận sự thiếu hụt nước và dinh dưỡng nghiêm trọng.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Dấu hiệu stress cần thiết:</div>
+                            <ul class="conditions-list">
+                                <li>Lá bắt đầu héo nhẹ vào giữa trưa</li>
+                                <li>Màu lá chuyển từ xanh tươi sang xanh nhạt</li>
+                                <li>Chồi non ngừng phát triển</li>
+                                <li>Đất khô nứt nẻ sâu 30-40cm</li>
+                                <li>Cây có vẻ "mệt mỏi" nhưng không héo lụi</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Thiết bị giám sát:</div>
+                            <ul class="materials-list">
+                                <li>Máy đo độ ẩm đất điện tử</li>
+                                <li>Nhiệt kế min-max theo dõi</li>
+                                <li>Camera quan sát từ xa (khuyến nghị)</li>
+                                <li>Nhật ký ghi chép chi tiết hàng ngày</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('water-stress-initiation')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('water-stress-initiation')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('water-stress-initiation')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Theo dõi và điều chỉnh mức độ stress</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Hàng ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>100k-200k/tháng</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Cần kinh nghiệm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Giám sát liên tục</div>
+                        </div>
+                        <div class="work-description">
+                            Theo dõi sát sao phản ứng của cây với stress. Nếu cây quá yếu có thể cho tưới nước nhẹ, nếu cây chưa đủ stress có thể kéo dài thời gian siết nước.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Dấu hiệu nguy hiểm cần can thiệp:</div>
+                            <ul class="conditions-list">
+                                <li>Lá héo lụi nặng, rụng lá hàng loạt</li>
+                                <li>Cành non bắt đầu khô từ ngọn</li>
+                                <li>Thân cây xuất hiện vết nứt mới</li>
+                                <li>Cây có dấu hiệu nhiễm bệnh do suy yếu</li>
+                                <li>Nhiệt độ quá cao >35°C kéo dài</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Biện pháp can thiệp khẩn cấp:</div>
+                            <ul class="materials-list">
+                                <li>Nước tưới cấp cứu: 50-100L/cây</li>
+                                <li>Lưới che nắng tạm thời 70%</li>
+                                <li>Phân bón lá pha loãng nhẹ</li>
+                                <li>Thuốc kích thích tăng cường sức đề kháng</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('stress-monitoring')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('stress-monitoring')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('stress-monitoring')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Cắt tỉa tạo stress bổ sung</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>2-3 ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>300k-500k/ha</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Kỹ thuật cao</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Stress bổ sung</div>
+                        </div>
+                        <div class="work-description">
+                            Cắt tỉa nhẹ các chồi non, lá già và cành yếu để giảm diện tích thoát hơi nước, tăng stress cho cây. Cần thực hiện cẩn thận để không gây tổn thương quá mức.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Nguyên tắc cắt tỉa stress:</div>
+                            <ul class="conditions-list">
+                                <li>Chỉ cắt tối đa 15-20% khối lượng lá</li>
+                                <li>Ưu tiên cắt chồi non và lá non</li>
+                                <li>Cắt các cành cạnh tranh và cành yếu</li>
+                                <li>Khử trùng dụng cụ cắt sau mỗi cây</li>
+                                <li>Bôi thuốc vết cắt để tránh nhiễm khuẩn</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Dụng cụ cắt tỉa:</div>
+                            <ul class="materials-list">
+                                <li>Kéo cắt cành sắc bén, đã khử trùng</li>
+                                <li>Cưa cắt cành cho cành lớn</li>
+                                <li>Thuốc bôi vết cắt (Lac Balsam)</li>
+                                <li>Alcohol 70% để khử trùng dụng cụ</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('stress-pruning')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('stress-pruning')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('stress-pruning')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 2: Kích thích ra hoa -->
+            <div class="stage stage-2">
+                <div class="stage-header" data-stage="2">
+                    <div class="stage-title">
+                        <div class="stage-name">🌸 Kích thích ra hoa bằng hormone và vi lượng</div>
+                        <div class="stage-status">Giai đoạn chuyển tiếp</div>
+                    </div>
+                    <div class="stage-meta">
+                        <div class="stage-meta-item">
+                            <span>⏰</span>
+                            <span>Thời gian: 15-20 ngày</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🗓️</span>
+                            <span>Sau 60-75 ngày siết nước</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🔄</span>
+                            <span>1-2 lần/vụ</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>💰</span>
+                            <span>Chi phí: 1.5-3 triệu/ha</span>
+                        </div>
+                    </div>
+                    <div class="stage-description">
+                        Sử dụng hormone sinh trưởng và các chất kích thích ra hoa để đẩy nhanh quá trình chuyển từ sinh trưởng sang sinh sản. Thời điểm này rất quan trọng để đạt tỷ lệ ra hoa cao.
+                    </div>
+
+                    <div class="stress-indicator">
+                        <h3>🌸 Tín hiệu Ra hoa</h3>
+                        <div class="stress-level">
+                            <span>📈</span>
+                            <span>Khởi động (30-40%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="works-container">
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Phun hormone kích thích ra hoa</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>3-4 lần/2 tuần</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>800k-1.2tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Cực kỳ quan trọng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Kích hoạt hoa</div>
+                        </div>
+                        <div class="work-description">
+                            Sử dụng cocktail hormone bao gồm Paclobutrazol, KNO₃, và các acid amin để kích thích sự hình thành nụ hoa. Phun vào sáng sớm hoặc chiều mát để đạt hiệu quả tối ưu.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Công thức kích hoa hiệu quả:</div>
+                            <ul class="conditions-list">
+                                <li>Paclobutrazol: 200-300 ppm (0.6-1ml/L)</li>
+                                <li>KNO₃ (Potassium Nitrate): 0.5-1% (5-10g/L)</li>
+                                <li>Acid amin tổng hợp: 2-3ml/L</li>
+                                <li>Boric acid (H₃BO₃): 0.1% (1g/L)</li>
+                                <li>Chất dính và lan tỏa: 1-2ml/L</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Hormone và chất kích hoa:</div>
+                            <ul class="materials-list">
+                                <li>Paclobutrazol 25% EC: 200-300ml/ha</li>
+                                <li>KNO₃ tinh khiết: 2-3kg/ha</li>
+                                <li>Acid amin hỗn hợp: 500ml-1L/ha</li>
+                                <li>Máy phun áp lực cao đều tỏa</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('hormone-flowering')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('hormone-flowering')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('hormone-flowering')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Tưới nước nhẹ và bón phân kích hoa</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>2-3 lần/tuần</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>500k-800k</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Quan trọng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Phục hồi nhẹ</div>
+                        </div>
+                        <div class="work-description">
+                            Bắt đầu tưới nước nhẹ (30-50% nhu cầu bình thường) và bón phân có tỷ lệ P cao để hỗ trợ quá trình ra hoa. Không tưới quá nhiều để tránh cây quay lại sinh trưởng thân lá.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Nguyên tắc tưới và bón trong giai đoạn kích hoa:</div>
+                            <ul class="conditions-list">
+                                <li>Tưới nhẹ 100-150L/cây/lần, cách 2-3 ngày</li>
+                                <li>Chỉ tưới khi đất khô 70-80%</li>
+                                <li>Bón phân NPK tỷ lệ 10-30-10 hoặc 15-30-15</li>
+                                <li>Ưu tiên phân bón lá hơn phân gốc</li>
+                                <li>Kiểm tra phản ứng cây sau mỗi lần tưới</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Phân bón kích hoa:</div>
+                            <ul class="materials-list">
+                                <li>NPK 15-30-15: 200-300g/cây</li>
+                                <li>Phân lá giàu P: 2-3g/L nước</li>
+                                <li>Super Phosphate: 100-150g/cây</li>
+                                <li>Phân hữu cơ ủ hoai mục: 5-10kg/cây</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('light-watering-fertilizing')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('light-watering-fertilizing')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('light-watering-fertilizing')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Theo dõi sự xuất hiện nụ hoa</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Hàng ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>100k/tháng</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Quan sát kỹ</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Giám sát</div>
+                        </div>
+                        <div class="work-description">
+                            Theo dõi sát sao sự xuất hiện của nụ hoa đầu tiên, thường xuất hiện sau 10-15 ngày kể từ khi phun hormone. Ghi chép tỷ lệ cây ra hoa để đánh giá hiệu quả.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Dấu hiệu nụ hoa bắt đầu hình thành:</div>
+                            <ul class="conditions-list">
+                                <li>Các chồi ở nách lá bắt đầu phình to</li>
+                                <li>Xuất hiện điểm sinh trưởng mới màu hồng nhạt</li>
+                                <li>Chồi có hình dạng tròn hơn so với chồi lá</li>
+                                <li>Cây dừng phát triển lá non</li>
+                                <li>Tỷ lệ ra hoa mong đợi: 70-85%</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Công cụ theo dõi:</div>
+                            <ul class="materials-list">
+                                <li>Kính lúp 5-10x để quan sát chi tiết</li>
+                                <li>Thước đo và máy ảnh macro</li>
+                                <li>Sổ ghi chép theo từng cây</li>
+                                <li>Thẻ đánh dấu cây đã ra hoa</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('flower-bud-monitoring')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('flower-bud-monitoring')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('flower-bud-monitoring')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 3: Chăm sóc giai đoạn hoa nở -->
+            <div class="stage stage-3">
+                <div class="stage-header" data-stage="3">
+                    <div class="stage-title">
+                        <div class="stage-name">🌺 Chăm sóc giai đoạn hoa nở và thụ phấn</div>
+                        <div class="stage-status">Giai đoạn sinh sản</div>
+                    </div>
+                    <div class="stage-meta">
+                        <div class="stage-meta-item">
+                            <span>⏰</span>
+                            <span>Thời gian: 20-30 ngày</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🗓️</span>
+                            <span>Theo chu kỳ hoa nở</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🔄</span>
+                            <span>Quan trọng nhất</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>💰</span>
+                            <span>Chi phí: 2-4 triệu/ha</span>
+                        </div>
+                    </div>
+                    <div class="stage-description">
+                        Đây là giai đoạn quyết định tỷ lệ đậu trái. Cần chăm sóc đặc biệt để đảm bảo hoa nở đều, thụ phấn tốt và tránh rụng hoa hàng loạt do stress hoặc điều kiện môi trường bất lợi.
+                    </div>
+
+                    <div class="stress-indicator">
+                        <h3>🌺 Trạng thái Hoa</h3>
+                        <div class="stress-level">
+                            <span>🌸</span>
+                            <span>Nở rộ (80-90%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="works-container">
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Cung cấp nước và dinh dưỡng cho giai đoạn hoa</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Hàng ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>800k-1.5tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Cân bằng quan trọng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Cân bằng nước</div>
+                        </div>
+                        <div class="work-description">
+                            Tăng dần lượng nước tưới lên 70-80% nhu cầu bình thường, đảm bảo đủ ẩm để hoa nở tốt nhưng không quá ướt gây rụng hoa. Bón phân lá giàu P và K.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Chế độ tưới nước cho giai đoạn hoa:</div>
+                            <ul class="conditions-list">
+                                <li>Tưới đều đặn 200-300L/cây, cách ngày</li>
+                                <li>Tưới sáng sớm (5-7h) tránh làm ướt hoa</li>
+                                <li>Độ ẩm đất duy trì 60-70%</li>
+                                <li>Tránh tưới vào lúc hoa đang nở</li>
+                                <li>Có hệ thống tưới nhỏ giọt là tối ưu nhất</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Phân bón giai đoạn hoa:</div>
+                            <ul class="materials-list">
+                                <li>Phân lá 20-20-20+TE: 2-3g/L</li>
+                                <li>Calcium chloride 0.2%: tăng cường tế bào</li>
+                                <li>Kali sulfate: 1-2g/L (tuần 1 lần)</li>
+                                <li>Acid amin + vitamin B: 1-2ml/L</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('flower-stage-watering')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('flower-stage-watering')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('flower-stage-watering')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Hỗ trợ thụ phấn và phòng chống rụng hoa</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Trong thời gian hoa nở</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>600k-1tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Tăng tỷ lệ đậu trái</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Hỗ trợ thụ phấn</div>
+                        </div>
+                        <div class="work-description">
+                            Sử dụng các biện pháp hỗ trợ thụ phấn tự nhiên và nhân tạo. Phun hormone chống rụng hoa và tạo điều kiện thuận lợi cho côn trùng thụ phấn hoạt động.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Biện pháp hỗ trợ thụ phấn:</div>
+                            <ul class="conditions-list">
+                                <li>Thả ong mật hoặc ong địa phương vào vườn</li>
+                                <li>Thụ phấn nhân tạo cho cụm hoa chất lượng cao</li>
+                                <li>Phun hormone chống rụng hoa NAA 10-20 ppm</li>
+                                <li>Tránh phun thuốc trừ sâu khi hoa đang nở</li>
+                                <li>Duy trì độ ẩm không khí 70-80%</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Vật tư hỗ trợ thụ phấn:</div>
+                            <ul class="materials-list">
+                                <li>Tổ ong mật: 2-3 tổ/ha</li>
+                                <li>Cọ nhỏ cho thụ phấn nhân tạo</li>
+                                <li>NAA (1-Naphthaleneacetic acid): 20-50g/ha</li>
+                                <li>Máy phun sương tạo độ ẩm</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('pollination-support')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('pollination-support')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('pollination-support')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Bảo vệ hoa khỏi sâu bệnh và thời tiết xấu</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Theo tình hình</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>400k-800k</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Bảo vệ hoa</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Bảo vệ</div>
+                        </div>
+                        <div class="work-description">
+                            Bảo vệ cụm hoa khỏi mưa to, gió mạnh và các loại sâu bệnh có thể phá hoại hoa. Sử dụng thuốc sinh học và biện pháp cơ học để không làm hại côn trùng thụ phấn.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Biện pháp bảo vệ hoa:</div>
+                            <ul class="conditions-list">
+                                <li>Che chắn tạm thời khi có mưa to, gió lớn</li>
+                                <li>Sử dụng thuốc trừ nấm sinh học</li>
+                                <li>Thu gom côn trùng hại bằng bẫy dính</li>
+                                <li>Tránh phun thuốc hóa học khi hoa nở</li>
+                                <li>Cắt tỉa cành che khuất ánh sáng cho hoa</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Vật tư bảo vệ hoa:</div>
+                            <ul class="materials-list">
+                                <li>Lưới che mưa tạm thời</li>
+                                <li>Thuốc nấm sinh học Trichoderma: 5-10g/L</li>
+                                <li>Bẫy dính vàng cho ruồi đục hoa</li>
+                                <li>Dầu Neem: 3-5ml/L (nếu cần thiết)</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('flower-protection')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('flower-protection')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('flower-protection')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 4: Chăm sóc trái non -->
+            <div class="stage stage-4">
+                <div class="stage-header" data-stage="4">
+                    <div class="stage-title">
+                        <div class="stage-name">🥭 Chăm sóc và phát triển trái non</div>
+                        <div class="stage-status">Giai đoạn phát triển trái</div>
+                    </div>
+                    <div class="stage-meta">
+                        <div class="stage-meta-item">
+                            <span>⏰</span>
+                            <span>Thời gian: 60-75 ngày</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🗓️</span>
+                            <span>Từ đậu trái đến trái lớn</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🔄</span>
+                            <span>Chăm sóc tích cực</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>💰</span>
+                            <span>Chi phí: 3-6 triệu/ha</span>
+                        </div>
+                    </div>
+                    <div class="stage-description">
+                        Giai đoạn quan trọng quyết định số lượng và chất lượng trái. Cần tưới nước đầy đủ, bón phân cân đối và bảo vệ trái non khỏi rụng trái và sâu bệnh hại.
+                    </div>
+
+                    <div class="stress-indicator">
+                        <h3>🥭 Trạng thái Trái</h3>
+                        <div class="stress-level">
+                            <span>📈</span>
+                            <span>Phát triển (60-70%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="works-container">
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Tỉa trái và lựa chọn trái để lại</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Khi trái 2-3cm</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>800k-1.5tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Tăng chất lượng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Chọn lọc trái</div>
+                        </div>
+                        <div class="work-description">
+                            Tỉa bỏ trái dị dạng, trái yếu và trái thừa, chỉ giữ lại 1-2 trái đẹp nhất mỗi cụm để tập trung dinh dưỡng. Với cây Dona, mỗi cây nên giữ 40-60 trái để đảm bảo chất lượng.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Nguyên tắc tỉa trái:</div>
+                            <ul class="conditions-list">
+                                <li>Tỉa khi trái còn nhỏ 2-3cm để tránh lãng phí</li>
+                                <li>Giữ trái có hình dáng đều, không dị tật</li>
+                                <li>Chọn trái ở vị trí dễ thu hoạch</li>
+                                <li>Cây 4-6 tuổi: 40-50 trái/cây</li>
+                                <li>Cây trên 7 tuổi: 50-60 trái/cây</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Dụng cụ tỉa trái:</div>
+                            <ul class="materials-list">
+                                <li>Kéo cắt nhỏ, sắc bén</li>
+                                <li>Thang di động để lên cao</li>
+                                <li>Thuốc khử trùng dụng cụ</li>
+                                <li>Túi đựng trái tỉa để tiêu hủy</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('fruit-thinning')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('fruit-thinning')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('fruit-thinning')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Tưới nước và bón phân phát triển trái</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Đều đặn hàng tuần</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>1.5-2.5tr/tháng</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Cực kỳ quan trọng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Dinh dưỡng trái</div>
+                        </div>
+                        <div class="work-description">
+                            Tăng cường tưới nước lên 100% nhu cầu và bón phân NPK cân bằng để trái phát triển tốt. Giai đoạn này trái cần rất nhiều nước và dinh dưỡng để tăng kích thước.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Chế độ tưới nước cho trái phát triển:</div>
+                            <ul class="conditions-list">
+                                <li>Tưới 300-500L/cây, 2-3 lần/tuần</li>
+                                <li>Duy trì độ ẩm đất 70-80%</li>
+                                <li>Tưới sâu hơn tưới nông thường xuyên</li>
+                                <li>Tăng tần suất tưới trong thời tiết nóng</li>
+                                <li>Phủ rơm quanh gốc để giữ ẩm</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Phân bón giai đoạn trái phát triển:</div>
+                            <ul class="materials-list">
+                                <li>NPK 16-16-8: 400-600g/cây/tháng</li>
+                                <li>Phân lá NPK 20-20-20: 2-3g/L (tuần 1 lần)</li>
+                                <li>Calcium chloride: 0.2% (chống nứt trái)</li>
+                                <li>Phân hữu cơ hoai mục: 15-20kg/cây</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('fruit-development-care')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('fruit-development-care')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('fruit-development-care')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Phòng chống rụng trái và bệnh trái non</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>Theo dõi thường xuyên</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>600k-1.2tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Bảo vệ sản phẩm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Phòng bệnh</div>
+                        </div>
+                        <div class="work-description">
+                            Theo dõi và xử lý kịp thời các nguyên nhân gây rụng trái non như thiếu nước, thiếu dinh dưỡng, sâu bệnh và stress môi trường. Tỷ lệ rụng trái tự nhiên khoảng 10-15%.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Nguyên nhân rụng trái phổ biến:</div>
+                            <ul class="conditions-list">
+                                <li>Thiếu nước trong thời kỳ khô hạn</li>
+                                <li>Bất cân bằng dinh dưỡng NPK</li>
+                                <li>Sâu đục trái, bệnh thán thư</li>
+                                <li>Thời tiết bất thường (mưa to, gió lớn)</li>
+                                <li>Cây quá tải trái so với khả năng</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Biện pháp phòng chống:</div>
+                            <ul class="materials-list">
+                                <li>Hormone chống rụng trái NAA: 10-15 ppm</li>
+                                <li>Thuốc trừ nấm Mancozeb: 2-2.5g/L</li>
+                                <li>Bẫy pheromone sâu đục trái</li>
+                                <li>Calcium borate tăng cường thành tế bào</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('young-fruit-protection')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('young-fruit-protection')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('young-fruit-protection')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 5: Chăm sóc trái lớn và chín -->
+            <div class="stage stage-5">
+                <div class="stage-header" data-stage="5">
+                    <div class="stage-title">
+                        <div class="stage-name">🍎 Chăm sóc trái lớn và quá trình chín</div>
+                        <div class="stage-status">Giai đoạn hoàn thiện</div>
+                    </div>
+                    <div class="stage-meta">
+                        <div class="stage-meta-item">
+                            <span>⏰</span>
+                            <span>Thời gian: 45-60 ngày</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🗓️</span>
+                            <span>Trước thu hoạch 2 tháng</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🔄</span>
+                            <span>Hoàn thiện chất lượng</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>💰</span>
+                            <span>Chi phí: 2-4 triệu/ha</span>
+                        </div>
+                    </div>
+                    <div class="stage-description">
+                        Giai đoạn cuối quyết định chất lượng trái cuối cùng. Tập trung vào việc tăng cường hương vị, màu sắc và tránh các bệnh hại ảnh hưởng đến chất lượng thu hoạch.
+                    </div>
+
+                    <div class="stress-indicator">
+                        <h3>🍎 Trạng thái Trái</h3>
+                        <div class="stress-level">
+                            <span>🎯</span>
+                            <span>Hoàn thiện (85-95%)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="works-container">
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Điều chỉnh dinh dưỡng tăng chất lượng trái</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>2 tháng cuối</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>800k-1.5tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Tăng chất lượng</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Hoàn thiện</div>
+                        </div>
+                        <div class="work-description">
+                            Giảm đạm, tăng kali và phospho để cải thiện hương vị, màu sắc và độ ngọt của trái. Bổ sung các vi lượng cần thiết cho quá trình chín và tích lũy chất khô.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Công thức phân bón giai đoạn cuối:</div>
+                            <ul class="conditions-list">
+                                <li>Giảm 50% lượng đạm so với giai đoạn trước</li>
+                                <li>Tăng gấp đôi lượng kali (K₂O)</li>
+                                <li>Bổ sung Calcium và Magnesium</li>
+                                <li>Phun phân lá giàu Boron và Zinc</li>
+                                <li>Ngừng bón đạm 30 ngày trước thu hoạch</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Phân bón hoàn thiện trái:</div>
+                            <ul class="materials-list">
+                                <li>NPK 5-10-30: 300-400g/cây/tháng</li>
+                                <li>Kali sulfate (K₂SO₄): 200-300g/cây</li>
+                                <li>Calcium chelate: 1-2g/L (phun lá)</li>
+                                <li>Phân lá giàu vi lượng: 2-3g/L</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('fruit-quality-enhancement')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('fruit-quality-enhancement')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('fruit-quality-enhancement')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Bao trái và bảo vệ trái gần thu hoạch</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>30-45 ngày trước thu hoạch</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>1-2tr/ha</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Bảo vệ sản phẩm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="work-status-badge">Bảo vệ cuối</div>
+                        </div>
+                        <div class="work-description">
+                            Bao trái bằng túi nilon hoặc lưới để bảo vệ khỏi côn trùng, chim ăn trái và các tác nhân gây hại. Đặc biệt quan trọng với sầu riêng Dona có mùi thơm mạnh thu hút côn trùng.
+                        </div>
+                        <div class="work-conditions">
+                            <div class="conditions-title">📋 Kỹ thuật bao trái hiệu quả:</div>
+                            <ul class="conditions-list">
+                                <li>Bao khi trái đạt 70-80% kích thước cuối</li>
+                                <li>Sử dụng túi có lỗ thoát khí, thoát nước</li>
+                                <li>Buộc chặt miệng túi tránh côn trùng chui vào</li>
+                                <li>Kiểm tra và thay túi bị rách định kỳ</li>
+                                <li>Đánh dấu ngày bao để tính thời gian thu hoạch</li>
+                            </ul>
+                        </div>
+                        <div class="work-materials">
+                            <div class="materials-title">🧪 Vật tư bao trái:</div>
+                            <ul class="materials-list">
+                                <li>Túi nilon có lỗ: 1.5-2 túi/trái (dự phòng)</li>
+                                <li>Dây buộc hoặc kẹp nhựa</li>
+                                <li>Thang nhôm để lên cao</li>
+                                <li>Nhãn đánh dấu ngày bao</li>
+                            </ul>
+                        </div>
+                        <div class="work-actions">
+                            <button class="btn btn-sm btn-info" onclick="viewWorkDetails('fruit-bagging')">
+                                👁️ Xem chi tiết
+                            </button>
+                            <button class="btn btn-sm" onclick="viewEvaluationCriteria('fruit-bagging')">
+                                📋 Tiêu chuẩn đánh giá
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="customizeWork('fruit-bagging')">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div>
+                                <div class="work-title">Theo dõi quá trình chín và chuẩn bị thu hoạch</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>15-20 ngày cuối</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>300k-500k</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>

@@ -1,0 +1,2186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper - Xây dựng Quy trình Canh tác Toàn diện</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .main-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        
+        .card-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .phase-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+        
+        .phase-card.setup-phase {
+            border-left: 8px solid #6366f1;
+        }
+        
+        .phase-card.recurring-phase {
+            border-left: 8px solid #22c55e;
+        }
+        
+        .phase-card.active {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+        }
+        
+        .phase-header {
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 14px 14px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            position: relative;
+        }
+        
+        .phase-header.phase-1 { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); }
+        .phase-header.phase-2 { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .phase-header.phase-3 { background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); }
+        .phase-header.phase-4 { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
+        .phase-header.phase-5 { background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%); }
+        .phase-header.phase-6 { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .phase-header.phase-7 { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        
+        .cycle-indicator {
+            position: absolute;
+            top: -8px;
+            right: 16px;
+            background: white;
+            color: #22c55e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 2px solid #22c55e;
+        }
+        
+        .setup-indicator {
+            background: white;
+            color: #6366f1;
+            border-color: #6366f1;
+        }
+        
+        .phase-content {
+            padding: 1.5rem;
+        }
+        
+        .task-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .task-card:hover {
+            background: #f1f5f9;
+            border-color: #22c55e;
+            transform: translateX(4px);
+        }
+        
+        .task-card.selected {
+            background: #f0fdf4;
+            border-color: #22c55e;
+            border-width: 2px;
+        }
+        
+        .add-task-btn {
+            border: 2px dashed #cbd5e1;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            color: #64748b;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .add-task-btn:hover {
+            border-color: #22c55e;
+            background: #f0fdf4;
+            color: #22c55e;
+        }
+        
+        .cycle-divider {
+            border: 3px dashed #22c55e;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            margin: 32px 0;
+            padding: 16px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .cycle-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 3px solid #22c55e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        
+        .resource-tag {
+            background: #e0f2fe;
+            color: #0277bd;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin: 2px 4px 2px 0;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .skill-tag {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .form-section {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1.5rem;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .sidebar-info {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .cycle-config {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 2px solid rgba(34, 197, 94, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #22c55e;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+    </style>
+</head>
+<body class="main-container">
+    <div class="container mx-auto px-6 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="card-modern mb-8">
+            <div class="p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">Xây dựng Quy trình Canh tác Toàn diện</h1>
+                        <p class="text-gray-600">Tạo quy trình đầy đủ từ trồng mới đến sản xuất lặp lại</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="btn-secondary" onclick="saveTemplate()">
+                            <i class="fas fa-save mr-2"></i>Lưu Template
+                        </button>
+                        <button class="btn-primary" onclick="publishProcess()">
+                            <i class="fas fa-rocket mr-2"></i>Xuất bản
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-3">
+                <!-- Process Info -->
+                <div class="card-modern mb-8">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Thông tin Quy trình</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Đối tượng sản xuất</label>
+                                <select class="form-input" id="crop-type" onchange="updateCropType()">
+                                    <option value="durian" selected>Sầu riêng</option>
+                                    <option value="mango">Xoài</option>
+                                    <option value="avocado">Bơ</option>
+                                    <option value="rambutan">Chôm chôm</option>
+                                    <option value="longan">Nhãn</option>
+                                    <option value="coconut">Dừa</option>
+                                    <option value="coffee">Cà phê</option>
+                                    <option value="pepper">Tiêu</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Giống</label>
+                                <select class="form-input" id="variety">
+                                    <option value="ri6" selected>Ri 6</option>
+                                    <option value="monthong">Monthong</option>
+                                    <option value="chanee">Chanee</option>
+                                    <option value="kanyao">Kan Yao</option>
+                                    <option value="custom">Giống khác</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Khu vực áp dụng</label>
+                            <div class="flex flex-wrap gap-2">
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                    <span class="text-sm">Tây Nguyên</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                    <span class="text-sm">Đông Nam Bộ</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600">
+                                    <span class="text-sm">Tây Nam Bộ</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600">
+                                    <span class="text-sm">Miền Trung</span>
+                                </label>
+                                <label class="flex items-center space-x-2">
+                                    <input type="checkbox" class="w-4 h-4 text-green-600">
+                                    <span class="text-sm">Miền Bắc</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả quy trình</label>
+                            <textarea class="form-input" rows="3" placeholder="Mô tả tổng quan về quy trình canh tác này, điều kiện áp dụng và mục tiêu...">Quy trình canh tác sầu riêng Ri6 toàn diện từ giai đoạn trồng mới đến sản xuất ổn định. Bao gồm giai đoạn thiết lập ban đầu (một lần) và chu kỳ sản xuất hàng năm (lặp lại).</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cycle Configuration -->
+                <div class="cycle-config">
+                    <h3 class="text-xl font-bold text-green-800 mb-4 flex items-center">
+                        <i class="fas fa-sync-alt mr-3"></i>
+                        Cấu hình Chu kỳ Lặp lại
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Loại chu kỳ</label>
+                            <select class="form-input" id="cycle-type" onchange="updateCycleType()">
+                                <option value="annual" selected>Hàng năm (Annual)</option>
+                                <option value="seasonal">Theo mùa vụ (Seasonal)</option>
+                                <option value="quarterly">Theo quý (Quarterly)</option>
+                                <option value="monthly">Hàng tháng (Monthly)</option>
+                                <option value="breeding">Theo lứa sinh sản</option>
+                                <option value="custom">Tùy chỉnh</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Thời gian chu kỳ</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" class="form-input w-20" value="12" min="1">
+                                <select class="form-input flex-1">
+                                    <option value="months" selected>Tháng</option>
+                                    <option value="weeks">Tuần</option>
+                                    <option value="days">Ngày</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Giai đoạn bắt đầu lặp lại</label>
+                            <select class="form-input" id="start-recurring">
+                                <option value="3">Từ giai đoạn 3</option>
+                                <option value="4" selected>Từ giai đoạn 4</option>
+                                <option value="5">Từ giai đoạn 5</option>
+                                <option value="6">Từ giai đoạn 6</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-4 bg-white/70 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-semibold text-gray-800">Kích hoạt chu kỳ lặp lại</h4>
+                                <p class="text-sm text-gray-600">Các giai đoạn từ "Chuẩn bị ra hoa" sẽ lặp lại hàng năm</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked onchange="toggleRecurringCycle()">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Setup Phases (One-time) -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-indigo-700 mb-4 flex items-center">
+                        <i class="fas fa-rocket mr-3"></i>
+                        Giai đoạn Thiết lập Ban đầu (Một lần)
+                    </h2>
+                    
+                    <!-- Phase 1: Plantation Setup -->
+                    <div class="phase-card setup-phase" data-phase="1">
+                        <div class="cycle-indicator setup-indicator">Một lần</div>
+                        <div class="phase-header phase-1">
+                            <div class="flex items-center flex-1">
+                                <i class="fas fa-shovel mr-3 text-xl"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold">Giai đoạn 1: Trồng cây mới</h3>
+                                    <p class="text-sm opacity-90">Chuẩn bị đất và trồng cây giống</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-white hover:text-indigo-200 p-2" onclick="editPhase(1)" title="Chỉnh sửa giai đoạn">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-white hover:text-red-200 p-2" onclick="deletePhase(1)" title="Xóa giai đoạn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-content">
+                            <!-- Task 1 -->
+                            <div class="task-card" onclick="editTask(1, 1)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Khảo sát và phân tích đất</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Lấy mẫu đất phân tích pH, NPK, chất hữu cơ và độ ẩm</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-vial mr-1"></i>Kit phân tích đất
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-map-marked-alt mr-1"></i>GPS mapping
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1 kỹ thuật + 2 hỗ trợ
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Chuyên gia</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 2 -->
+                            <div class="task-card" onclick="editTask(1, 2)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Làm đất và cải tạo</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Cày bừa, bón vôi (nếu cần), bón phân hữu cơ lót</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tractor mr-1"></i>Máy cày bừa
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-seedling mr-1"></i>Phân chuồng: 20-30 tấn/ha
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>3-5 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 3 -->
+                            <div class="task-card" onclick="editTask(1, 3)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Tạo hố trồng tiêu chuẩn</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Đào hố 1m x 1m x 1m, khoảng cách 8m x 8m</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-shovel mr-1"></i>Máy đào hố
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-ruler mr-1"></i>156 hố/12.5ha
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>4-6 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Cơ bản</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 4 -->
+                            <div class="task-card" onclick="editTask(1, 4)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Chọn và trồng cây giống</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Chọn cây giống Ri6 chất lượng, trồng đúng kỹ thuật</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-seedling mr-1"></i>156 cây giống Ri6
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-shield-alt mr-1"></i>Phân bón lót
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>4-6 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Nâng cao</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 5 -->
+                            <div class="task-card" onclick="editTask(1, 5)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Thiết lập hệ thống tưới</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Lắp đặt hệ thống tưới nhỏ giọt hoặc phun mưa</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tint mr-1"></i>Ống nhỏ giọt 2km
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tools mr-1"></i>Máy bơm + Timer
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2-3 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 6 -->
+                            <div class="task-card" onclick="editTask(1, 6)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Dựng cọc chống đỡ</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Dựng cọc tre hoặc gỗ để chống đỡ cây non</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tree mr-1"></i>156 cọc tre
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-rope mr-1"></i>Dây buộc
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Cơ bản</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="add-task-btn" onclick="addTask(1)">
+                                <i class="fas fa-plus mr-2"></i>
+                                Thêm công việc vào giai đoạn này
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 2: Young Tree Care -->
+                    <div class="phase-card setup-phase" data-phase="2">
+                        <div class="cycle-indicator setup-indicator">Một lần</div>
+                        <div class="phase-header phase-2">
+                            <div class="flex items-center flex-1">
+                                <i class="fas fa-spa mr-3 text-xl"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold">Giai đoạn 2: Chăm sóc cây non</h3>
+                                    <p class="text-sm opacity-90">Nuôi dưỡng cây từ 1-4 năm tuổi</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-white hover:text-purple-200 p-2" onclick="editPhase(2)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-white hover:text-red-200 p-2" onclick="deletePhase(2)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-content">
+                            <!-- Task 1 -->
+                            <div class="task-card" onclick="editTask(2, 1)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Tưới nước định kỳ cho cây non</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Tưới nước đều đặn để cây phát triển tốt, tránh úng ngập</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tint mr-1"></i>20-30L/cây/tuần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>2-3 lần/tuần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1-2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Cơ bản</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 2 -->
+                            <div class="task-card" onclick="editTask(2, 2)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Bón phân thúc đẩy sinh trưởng</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Bón phân NPK cân bằng để cây phát triển khỏe mạnh</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-seedling mr-1"></i>NPK 16-16-8: 200-300g/cây
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>Mỗi 2-3 tháng
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2-3 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 3 -->
+                            <div class="task-card" onclick="editTask(2, 3)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Tỉa cành tạo tán</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Tỉa bỏ cành yếu, cành chồng chéo để tạo tán cây cân đối</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-cut mr-1"></i>Kéo tỉa cành
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>2-3 lần/năm
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>3-4 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Nâng cao</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 4 -->
+                            <div class="task-card" onclick="editTask(2, 4)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Phòng trừ sâu bệnh cho cây non</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Giám sát và xử lý sâu bệnh hại cây non</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-spray-can mr-1"></i>Thuốc sinh học
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>Theo dõi hàng tháng
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 5 -->
+                            <div class="task-card" onclick="editTask(2, 5)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Che chắn cây non</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Dựng lưới che để bảo vệ cây khỏi nắng gắt và mưa to</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-shield-alt mr-1"></i>Lưới che 70%
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-hammer mr-1"></i>Khung sắt
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>4 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 6 -->
+                            <div class="task-card" onclick="editTask(2, 6)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Xới đất và làm cỏ</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Xới đất xung quanh gốc cây và làm cỏ dại</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tools mr-1"></i>Cuốc xới
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>Mỗi tháng
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2-3 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Cơ bản</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 7 -->
+                            <div class="task-card" onclick="editTask(2, 7)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Thay thế cây chết yếu</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Theo dõi và thay thế các cây chết hoặc phát triển kém</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-seedling mr-1"></i>Cây giống dự phòng
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-percentage mr-1"></i>Tỷ lệ sống >95%
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Nâng cao</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="add-task-btn" onclick="addTask(2)">
+                                <i class="fas fa-plus mr-2"></i>
+                                Thêm công việc vào giai đoạn này
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recurring Cycle Divider -->
+                <div class="cycle-divider">
+                    <div class="flex items-center justify-center space-x-4">
+                        <i class="fas fa-sync-alt text-3xl text-green-600"></i>
+                        <div class="text-center">
+                            <h3 class="text-xl font-bold text-green-800">Chu kỳ Sản xuất Lặp lại</h3>
+                            <p class="text-green-700">Các giai đoạn bên dưới sẽ lặp lại hàng năm</p>
+                        </div>
+                        <i class="fas fa-sync-alt text-3xl text-green-600"></i>
+                    </div>
+                </div>
+
+                <!-- Production Phases (Recurring) -->
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-green-700 mb-4 flex items-center">
+                        <i class="fas fa-sync-alt mr-3"></i>
+                        Chu kỳ Sản xuất (Lặp lại hàng năm)
+                    </h2>
+                    
+                    <!-- Phase 3: Flowering Preparation -->
+                    <div class="phase-card recurring-phase" data-phase="3">
+                        <div class="cycle-indicator">Lặp lại</div>
+                        <div class="phase-header phase-3">
+                            <div class="flex items-center flex-1">
+                                <i class="fas fa-seedling mr-3 text-xl"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold">Giai đoạn 3: Chuẩn bị ra hoa</h3>
+                                    <p class="text-sm opacity-90">Stress nước và kích thích ra hoa</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-white hover:text-green-200 p-2" onclick="editPhase(3)" title="Chỉnh sửa giai đoạn">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-white hover:text-red-200 p-2" onclick="deletePhase(3)" title="Xóa giai đoạn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-content">
+                            <!-- Task 1 -->
+                            <div class="task-card" onclick="editTask(3, 1)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Ngừng tưới nước (Stress)</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Giảm 80% lượng nước tưới trong 2-3 tuần để kích thích cây ra hoa</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tint mr-1"></i>Giảm tưới 80%
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>2-3 tuần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Cơ bản</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 2 -->
+                            <div class="task-card" onclick="editTask(3, 2)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Bón phân kích hoa</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Bón phân có hàm lượng P2O5 cao để kích thích ra hoa</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-seedling mr-1"></i>P2O5: 400g/cây
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>1 lần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 3 -->
+                            <div class="task-card" onclick="editTask(3, 3)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Tỉa lá chuẩn bị</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Tỉa bớt 30% lá để giảm diện tích thoát hơi nước</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-cut mr-1"></i>Kéo tỉa
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-percent mr-1"></i>30% lá
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>3 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Nâng cao</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 4 -->
+                            <div class="task-card" onclick="editTask(3, 4)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Phun hormone kích hoa</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Phun Paclobutrazol để kích thích ra hoa đồng đều</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-spray-can mr-1"></i>Paclobutrazol 2-3g/cây
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>1 lần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Chuyên gia</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 5 -->
+                            <div class="task-card" onclick="editTask(3, 5)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Theo dõi độ ẩm đất</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Kiểm tra độ ẩm đất hàng ngày, đảm bảo < 30%</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-thermometer mr-1"></i>Máy đo độ ẩm
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-chart-line mr-1"></i>< 30% độ ẩm
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="add-task-btn" onclick="addTask(3)">
+                                <i class="fas fa-plus mr-2"></i>
+                                Thêm công việc vào giai đoạn này
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 4: Flowering -->
+                    <div class="phase-card recurring-phase" data-phase="4">
+                        <div class="cycle-indicator">Lặp lại</div>
+                        <div class="phase-header phase-4">
+                            <div class="flex items-center flex-1">
+                                <i class="fas fa-flower mr-3 text-xl"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold">Giai đoạn 4: Ra hoa và thụ phấn</h3>
+                                    <p class="text-sm opacity-90">Quản lý hoa và tối ưu thụ phấn</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-white hover:text-blue-200 p-2" onclick="editPhase(4)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-white hover:text-red-200 p-2" onclick="deletePhase(4)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-content">
+                            <!-- Task 1 -->
+                            <div class="task-card" onclick="editTask(4, 1)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Tưới nước trở lại</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Khi thấy nụ hoa, bắt đầu tưới nước trở lại với lượng vừa phải</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tint mr-1"></i>60-80L/cây/tuần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-clock mr-1"></i>2 lần/tuần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Cơ bản</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 2 -->
+                            <div class="task-card" onclick="editTask(4, 2)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Bón phân cân bằng</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Bón phân NPK 15-15-15 để hỗ trợ quá trình ra hoa</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-seedling mr-1"></i>NPK 15-15-15: 500g/cây
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>1 lần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 3 -->
+                            <div class="task-card" onclick="editTask(4, 3)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Phun bảo vệ hoa</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Phun thuốc bảo vệ thực vật để phòng sâu hại hoa</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-spray-can mr-1"></i>Imidacloprid + Copper
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>2 tuần/lần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 4 -->
+                            <div class="task-card" onclick="editTask(4, 4)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Hỗ trợ thụ phấn</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Làm thụ phấn nhân tạo nếu cần, thu thập phấn hoa đực</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-paintbrush mr-1"></i>Cọ thụ phấn
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-clock mr-1"></i>6-8h sáng
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>3-4 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Chuyên gia</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 5 -->
+                            <div class="task-card" onclick="editTask(4, 5)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Quan sát và ghi nhận</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Theo dõi tỷ lệ ra hoa, chất lượng hoa và thời gian nở</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-clipboard mr-1"></i>Form ghi nhận
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-camera mr-1"></i>Chụp ảnh
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="add-task-btn" onclick="addTask(4)">
+                                <i class="fas fa-plus mr-2"></i>
+                                Thêm công việc vào giai đoạn này
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 5: Fruit Development -->
+                    <div class="phase-card recurring-phase" data-phase="5">
+                        <div class="cycle-indicator">Lặp lại</div>
+                        <div class="phase-header phase-5">
+                            <div class="flex items-center flex-1">
+                                <i class="fas fa-apple-alt mr-3 text-xl"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold">Giai đoạn 5: Nuôi quả và phát triển</h3>
+                                    <p class="text-sm opacity-90">Chăm sóc quả non đến khi thu hoạch</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-white hover:text-purple-200 p-2" onclick="editPhase(5)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-white hover:text-red-200 p-2" onclick="deletePhase(5)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-content">
+                            <!-- Task 1 -->
+                            <div class="task-card" onclick="editTask(5, 1)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Tỉa trái định kỳ</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Tỉa bỏ trái non yếu, dị tật, giữ lại trái tốt nhất</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-cut mr-1"></i>Kéo tỉa chuyên dụng
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-repeat mr-1"></i>3 lần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>3 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Nâng cao</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 2 -->
+                            <div class="task-card" onclick="editTask(5, 2)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Bao trái bảo vệ</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Bao trái khi đạt 5-8cm để chống sâu đục quả</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-shield-alt mr-1"></i>Túi bao trái
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-hashtag mr-1"></i>Theo số quả
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>4 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 3 -->
+                            <div class="task-card" onclick="editTask(5, 3)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Bón phân nuôi quả</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Bón phân NPK 10-5-30 với hàm lượng Kali cao</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-seedling mr-1"></i>NPK 10-5-30: 600g/cây
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>Mỗi tháng
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2-3 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 4 -->
+                            <div class="task-card" onclick="editTask(5, 4)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Tưới nước đều đặn</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Tưới 100-150L/cây/tuần để quả phát triển tốt</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tint mr-1"></i>100-150L/cây/tuần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-clock mr-1"></i>3 lần/tuần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1-2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Cơ bản</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 5 -->
+                            <div class="task-card" onclick="editTask(5, 5)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Phun thuốc phòng sâu đục quả</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Phun thuốc định kỳ để phòng sâu đục quả</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-spray-can mr-1"></i>Imidacloprid 1.5L/ha
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>2 tuần/lần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 6 -->
+                            <div class="task-card" onclick="editTask(5, 6)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Kiểm tra tình trạng quả</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Theo dõi tăng trưởng, phát hiện sớm quả bệnh tật</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-search mr-1"></i>Kiểm tra hàng tuần
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-camera mr-1"></i>Ghi nhận ảnh
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 7 -->
+                            <div class="task-card" onclick="editTask(5, 7)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Dựng giá đỡ quả</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Dựng giá đỡ cho những quả to nặng để tránh gãy cành</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-tools mr-1"></i>Giá đỡ tre/gỗ
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-weight mr-1"></i>Quả > 1.5kg
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>2-3 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Cơ bản</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="add-task-btn" onclick="addTask(5)">
+                                <i class="fas fa-plus mr-2"></i>
+                                Thêm công việc vào giai đoạn này
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 6: Harvest -->
+                    <div class="phase-card recurring-phase" data-phase="6">
+                        <div class="cycle-indicator">Lặp lại</div>
+                        <div class="phase-header phase-6">
+                            <div class="flex items-center flex-1">
+                                <i class="fas fa-harvest mr-3 text-xl"></i>
+                                <div>
+                                    <h3 class="text-lg font-bold">Giai đoạn 6: Thu hoạch và sau thu hoạch</h3>
+                                    <p class="text-sm opacity-90">Thu hoạch và phục hồi cây cho vụ mới</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="text-white hover:text-orange-200 p-2" onclick="editPhase(6)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-white hover:text-red-200 p-2" onclick="deletePhase(6)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="phase-content">
+                            <!-- Task 1 -->
+                            <div class="task-card" onclick="editTask(6, 1)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Đánh giá độ chín</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Kiểm tra độ ngọt (Brix), màu sắc, mùi thơm để xác định thời điểm thu hoạch</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-search mr-1"></i>Brix meter
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-calendar mr-1"></i>Hàng ngày
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>1 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Chuyên gia</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Task 2 -->
+                            <div class="task-card" onclick="editTask(6, 2)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-gray-800">Phục hồi cây sau thu hoạch</h4>
+                                        <p class="text-sm text-gray-600 mt-1">Bón phân phục hồi, tỉa cành, chuẩn bị cho vụ mới</p>
+                                        
+                                        <div class="flex flex-wrap mt-3">
+                                            <span class="resource-tag">
+                                                <i class="fas fa-seedling mr-1"></i>Phân hữu cơ
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-cut mr-1"></i>Tỉa cành
+                                            </span>
+                                            <span class="resource-tag">
+                                                <i class="fas fa-users mr-1"></i>4-5 người
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="skill-tag">Trung bình</span>
+                                        <i class="fas fa-chevron-right text-gray-400"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="add-task-btn" onclick="addTask(6)">
+                                <i class="fas fa-plus mr-2"></i>
+                                Thêm công việc vào giai đoạn này
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add New Phase -->
+                <div class="card-modern">
+                    <div class="p-6 text-center">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <button class="btn-primary" onclick="addNewPhase('setup')">
+                                <i class="fas fa-plus mr-2"></i>Thêm Giai đoạn Thiết lập
+                            </button>
+                            <button class="btn-primary" onclick="addNewPhase('recurring')">
+                                <i class="fas fa-sync-alt mr-2"></i>Thêm Giai đoạn Lặp lại
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="sidebar-info">
+                    <!-- Process Stats -->
+                    <div class="card-modern mb-6">
+                        <div class="p-6">
+                            <h3 class="font-bold text-gray-800 mb-4">Thống kê Quy trình</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Tổng giai đoạn:</span>
+                                    <span class="font-bold text-lg text-gray-800" id="total-phases">6</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Thiết lập:</span>
+                                    <span class="font-bold text-lg text-indigo-600" id="setup-phases">2</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Lặp lại:</span>
+                                    <span class="font-bold text-lg text-green-600" id="recurring-phases">4</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Tổng công việc:</span>
+                                    <span class="font-bold text-lg text-blue-600" id="task-count">13</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-600">Chu kỳ:</span>
+                                    <span class="font-bold text-lg text-green-600" id="cycle-info">12 tháng</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cycle Information -->
+                    <div class="card-modern mb-6">
+                        <div class="p-6">
+                            <h3 class="font-bold text-gray-800 mb-4">Thông tin Chu kỳ</h3>
+                            <div class="space-y-3">
+                                <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-rocket text-indigo-600"></i>
+                                        <span class="font-medium text-indigo-800">Giai đoạn Thiết lập</span>
+                                    </div>
+                                    <p class="text-xs text-indigo-700">Thực hiện một lần khi bắt đầu dự án. Bao gồm trồng mới và chăm sóc cây non.</p>
+                                </div>
+                                
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-sync-alt text-green-600"></i>
+                                        <span class="font-medium text-green-800">Chu kỳ Sản xuất</span>
+                                    </div>
+                                    <p class="text-xs text-green-700">Lặp lại hàng năm khi cây trưởng thành. Từ ra hoa đến thu hoạch.</p>
+                                </div>
+                                
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-clock text-yellow-600"></i>
+                                        <span class="font-medium text-yellow-800">Thời gian linh hoạt</span>
+                                    </div>
+                                    <p class="text-xs text-yellow-700">Các giai đoạn có thể điều chỉnh theo điều kiện thực tế.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Template Library -->
+                    <div class="card-modern mb-6">
+                        <div class="p-6">
+                            <h3 class="font-bold text-gray-800 mb-4">Thư viện Template</h3>
+                            <div class="space-y-3">
+                                <div class="text-sm">
+                                    <div class="font-medium text-gray-700 mb-2">Giai đoạn mẫu:</div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+                                            <span>Chuẩn bị đất</span>
+                                            <button class="text-green-600 hover:text-green-800" onclick="quickAddPhase('soil-prep')">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+                                            <span>Ghép cành</span>
+                                            <button class="text-green-600 hover:text-green-800" onclick="quickAddPhase('grafting')">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+                                            <span>Bảo quản</span>
+                                            <button class="text-green-600 hover:text-green-800" onclick="quickAddPhase('storage')">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-sm">
+                                    <div class="font-medium text-gray-700 mb-2">Công việc phổ biến:</div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+                                            <span>Tưới nước</span>
+                                            <button class="text-green-600 hover:text-green-800" onclick="quickAddTask('watering')">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+                                            <span>Bón phân</span>
+                                            <button class="text-green-600 hover:text-green-800" onclick="quickAddTask('fertilizing')">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-xs">
+                                            <span>Phun BVTV</span>
+                                            <button class="text-green-600 hover:text-green-800" onclick="quickAddTask('pesticide')">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process Notes -->
+                    <div class="card-modern">
+                        <div class="p-6">
+                            <h3 class="font-bold text-gray-800 mb-4">Lưu ý Quy trình</h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <div class="flex items-start space-x-2">
+                                        <i class="fas fa-info-circle text-blue-600 mt-0.5"></i>
+                                        <div>
+                                            <p class="font-medium text-blue-800">Quy trình toàn diện</p>
+                                            <p class="text-blue-700">Bao gồm từ giai đoạn trồng mới đến sản xuất ổn định.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <div class="flex items-start space-x-2">
+                                        <i class="fas fa-sync-alt text-green-600 mt-0.5"></i>
+                                        <div>
+                                            <p class="font-medium text-green-800">Chu kỳ tự động</p>
+                                            <p class="text-green-700">Giai đoạn sản xuất sẽ lặp lại theo chu kỳ đã thiết lập.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                                    <div class="flex items-start space-x-2">
+                                        <i class="fas fa-cogs text-purple-600 mt-0.5"></i>
+                                        <div>
+                                            <p class="font-medium text-purple-800">Tùy chỉnh linh hoạt</p>
+                                            <p class="text-purple-700">Mỗi farm có thể điều chỉnh theo điều kiện cụ thể.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Detail Modal -->
+    <div class="modal-overlay" id="task-modal" style="display: none;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="form-section">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-gray-800">Chi tiết Công việc</h3>
+                    <button class="text-gray-400 hover:text-gray-600" onclick="closeTaskModal()">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h4 class="font-semibold text-gray-700 mb-4">Thông tin cơ bản</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tên công việc</label>
+                        <input type="text" class="form-input" id="task-name" placeholder="VD: Bón phân NPK">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Loại công việc</label>
+                        <select class="form-input" id="task-type">
+                            <option value="">Chọn loại</option>
+                            <option value="watering">Tưới nước</option>
+                            <option value="fertilizing">Bón phân</option>
+                            <option value="pruning">Tỉa cành/trái</option>
+                            <option value="pest-control">Phòng trừ sâu bệnh</option>
+                            <option value="monitoring">Giám sát</option>
+                            <option value="harvesting">Thu hoạch</option>
+                            <option value="soil-prep">Chuẩn bị đất</option>
+                            <option value="planting">Trồng cây</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả công việc</label>
+                    <textarea class="form-input" id="task-description" rows="3" 
+                            placeholder="Mô tả chi tiết cách thực hiện công việc..."></textarea>
+                </div>
+                
+                <!-- Phase Assignment -->
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phân loại giai đoạn</label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="phase-type" value="setup" class="w-4 h-4 text-indigo-600">
+                            <span class="text-sm">Thiết lập (một lần)</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="radio" name="phase-type" value="recurring" class="w-4 h-4 text-green-600" checked>
+                            <span class="text-sm">Lặp lại (theo chu kỳ)</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timing -->
+            <div class="form-section">
+                <h4 class="font-semibold text-gray-700 mb-4">Thời gian thực hiện</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Thời điểm bắt đầu</label>
+                        <select class="form-input" id="task-start-timing">
+                            <option value="">Chọn thời điểm</option>
+                            <option value="absolute">Ngày cố định</option>
+                            <option value="relative">Sau công việc khác</option>
+                            <option value="condition">Khi có điều kiện</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Thời lượng</label>
+                        <input type="number" class="form-input" id="task-duration" placeholder="2" min="1">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Đơn vị thời gian</label>
+                        <select class="form-input" id="task-duration-unit">
+                            <option value="days">Ngày</option>
+                            <option value="weeks" selected>Tuần</option>
+                            <option value="months">Tháng</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tần suất thực hiện</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <select class="form-input" id="task-frequency">
+                            <option value="once">Một lần</option>
+                            <option value="daily">Hàng ngày</option>
+                            <option value="weekly">Hàng tuần</option>
+                            <option value="monthly">Hàng tháng</option>
+                            <option value="custom">Tùy chỉnh</option>
+                        </select>
+                        <input type="text" class="form-input" id="task-frequency-detail" placeholder="VD: Mỗi 3 ngày">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resources -->
+            <div class="form-section">
+                <h4 class="font-semibold text-gray-700 mb-4">Vật tư & Nhân sự</h4>
+                
+                <!-- Materials -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Vật tư đầu vào</label>
+                    <div id="materials-list" class="space-y-2">
+                        <div class="flex items-center space-x-2">
+                            <input type="text" class="form-input flex-1" placeholder="Tên vật tư">
+                            <input type="number" class="form-input w-24" placeholder="Số lượng">
+                            <select class="form-input w-32">
+                                <option value="kg">kg</option>
+                                <option value="lit">lít</option>
+                                <option value="cai">cái</option>
+                                <option value="goi">gói</option>
+                            </select>
+                            <button class="btn-secondary" onclick="removeMaterial(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn-secondary mt-2" onclick="addMaterial()">
+                        <i class="fas fa-plus mr-2"></i>Thêm vật tư
+                    </button>
+                </div>
+                
+                <!-- Tools -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Công cụ cần thiết</label>
+                    <div class="flex flex-wrap gap-2" id="tools-list">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="w-4 h-4 text-green-600" value="hose">
+                            <span class="text-sm">Ống nước</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="w-4 h-4 text-green-600" value="sprayer">
+                            <span class="text-sm">Máy phun</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="w-4 h-4 text-green-600" value="ladder">
+                            <span class="text-sm">Thang</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="w-4 h-4 text-green-600" value="scissors">
+                            <span class="text-sm">Kéo tỉa</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="w-4 h-4 text-green-600" value="gloves">
+                            <span class="text-sm">Găng tay</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" class="w-4 h-4 text-green-600" value="protective">
+                            <span class="text-sm">Đồ bảo hộ</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Labor -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Số người cần</label>
+                        <input type="number" class="form-input" id="task-workers" placeholder="2" min="1">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kỹ năng yêu cầu</label>
+                        <select class="form-input" id="task-skill">
+                            <option value="basic">Cơ bản</option>
+                            <option value="intermediate">Trung bình</option>
+                            <option value="advanced">Nâng cao</option>
+                            <option value="expert">Chuyên gia</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conditions & Alerts -->
+            <div class="form-section">
+                <h4 class="font-semibold text-gray-700 mb-4">Điều kiện & Cảnh báo</h4>
+                
+                <!-- Trigger Conditions -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Điều kiện kích hoạt</label>
+                    <div id="conditions-list" class="space-y-2">
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2 flex-1">
+                                    <select class="form-input w-32">
+                                        <option value="weather">Thời tiết</option>
+                                        <option value="soil">Đất</option>
+                                        <option value="plant">Cây trồng</option>
+                                        <option value="time">Thời gian</option>
+                                    </select>
+                                    <select class="form-input w-24">
+                                        <option value="=">=</option>
+                                        <option value=">">&gt;</option>
+                                        <option value="<">&lt;</option>
+                                    </select>
+                                    <input type="text" class="form-input flex-1" placeholder="Giá trị">
+                                </div>
+                                <button class="btn-secondary ml-2" onclick="removeCondition(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-secondary mt-2" onclick="addCondition()">
+                        <i class="fas fa-plus mr-2"></i>Thêm điều kiện
+                    </button>
+                </div>
+                
+                <!-- Alerts -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cảnh báo & Nhắc nhở</label>
+                    <div id="alerts-list" class="space-y-2">
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2 flex-1">
+                                    <select class="form-input w-32">
+                                        <option value="before">Trước khi</option>
+                                        <option value="during">Trong khi</option>
+                                        <option value="after">Sau khi</option>
+                                    </select>
+                                    <input type="number" class="form-input w-20" placeholder="1">
+                                    <select class="form-input w-24">
+                                        <option value="days">ngày</option>
+                                        <option value="hours">giờ</option>
+                                    </select>
+                                    <input type="text" class="form-input flex-1" placeholder="Nội dung cảnh báo">
+                                </div>
+                                <button class="btn-secondary ml-2" onclick="removeAlert(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-secondary mt-2" onclick="addAlert()">
+                        <i class="fas fa-plus mr-2"></i>Thêm cảnh báo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="form-section">
+                <h4 class="font-semibold text-gray-700 mb-4">Hướng dẫn thực hiện</h4>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Các bước thực hiện</label>
+                    <textarea class="form-input" id="task-instructions" rows="4" 
+                            placeholder="1. Chuẩn bị dụng cụ&#10;2. Kiểm tra thời tiết&#10;3. Thực hiện công việc&#10;4. Ghi nhận kết quả"></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Lưu ý an toàn</label>
+                        <textarea class="form-input" id="task-safety" rows="2" 
+                                placeholder="Đeo găng tay, mặc quần áo bảo hộ..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu chuẩn hoàn thành</label>
+                        <textarea class="form-input" id="task-completion" rows="2" 
+                                placeholder="Tất cả cây được tưới đủ nước, đất ẩm 70-80%..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-section">
+                <div class="flex justify-between">
+                    <button class="btn-secondary" onclick="closeTaskModal()">
+                        <i class="fas fa-times mr-2"></i>Hủy
+                    </button>
+                    <div class="space-x-2">
+                        <button class="btn-secondary" onclick="duplicateTask()">
+                            <i class="fas fa-copy mr-2"></i>Sao chép
+                        </button>
+                        <button class="btn-primary" onclick="saveTask()">
+                            <i class="fas fa-save mr-2"></i>Lưu công việc
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPhase = null;
+        let currentTask = null;
+
+        // Update crop type and varieties
+        function updateCropType() {
+            const cropType = document.getElementById('crop-type').value;
+            const varietySelect = document.getElementById('variety');
+            
+            // Update varieties based on crop type
+            const varieties = {
+                'durian': [
+                    { value: 'ri6', text: 'Ri 6' },
+                    { value: 'monthong', text: 'Monthong' },
+                    { value: 'chanee', text: 'Chanee' },
+                    { value: 'kanyao', text: 'Kan Yao' }
+                ],
+                'mango': [
+                    { value: 'catchu', text: 'Cát Chu' },
+                    { value: 'catngu', text: 'Cát Ngự' },
+                    { value: 'kensington', text: 'Kensington' }
+                ],
+                'coffee': [
+                    { value: 'arabica', text: 'Arabica' },
+                    { value: 'robusta', text: 'Robusta' },
+                    { value: 'liberica', text: 'Liberica' }
+                ]
+            };
+            
+            varietySelect.innerHTML = '';
+            const cropVarieties = varieties[cropType] || [{ value: 'default', text: 'Giống phổ biến' }];
+            cropVarieties.forEach(variety => {
+                const option = new Option(variety.text, variety.value);
+                varietySelect.add(option);
+            });
+        }
+
+        // Update cycle type
+        function updateCycleType() {
+            const cycleType = document.getElementById('cycle-type').value;
+            const cycleInfo = document.getElementById('cycle-info');
+            
+            const cycleTexts = {
+                'annual': '12 tháng',
+                'seasonal': '6 tháng',
+                'quarterly': '3 tháng', 
+                'monthly': '1 tháng',
+                'breeding': 'Theo lứa',
+                'custom': 'Tùy chỉnh'
+            };
+            
+            cycleInfo.textContent = cycleTexts[cycleType] || '12 tháng';
+        }
+
+        // Toggle recurring cycle
+        function toggleRecurringCycle() {
+            const recurringPhases = document.querySelectorAll('.recurring-phase');
+            const isEnabled = event.target.checked;
+            
+            recurringPhases.forEach(phase => {
+                phase.style.opacity = isEnabled ? '1' : '0.5';
+            });
+            
+            if (isEnabled) {
+                alert('Đã kích hoạt chu kỳ lặp lại\n\nCác giai đoạn từ "Chuẩn bị ra hoa" sẽ lặp lại theo chu kỳ đã thiết lập.');
+            } else {
+                alert('Đã tắt chu kỳ lặp lại\n\nQuy trình sẽ chỉ thực hiện một lần.');
+            }
+        }
+
+        // Phase Management
+        function editPhase(phaseId) {
+            alert(`Chỉnh sửa giai đoạn ${phaseId}\n\nTính năng này sẽ mở form chỉnh sửa:\n- Tên giai đoạn và icon\n- Mô tả chi tiết\n- Loại giai đoạn (thiết lập/lặp lại)\n- Điều kiện kích hoạt`);
+        }
+
+        function deletePhase(phaseId) {
+            if (confirm(`Bạn có chắc muốn xóa giai đoạn ${phaseId}?\n\nTất cả công việc trong giai đoạn này cũng sẽ bị xóa.`)) {
+                const phaseCard = document.querySelector(`[data-phase="${phaseId}"]`);
+                if (phaseCard) {
+                    phaseCard.remove();
+                    updateStats();
+                }
+            }
+        }
+
+        function addNewPhase(type = 'recurring') {
+            const newPhaseId = Date.now();
+            const phasesContainer = document.getElementById('phases-container');
+            
+            const isSetup = type === 'setup';
+            const phaseClass = isSetup ? 'setup-phase' : 'recurring-phase';
+            const indicatorClass = isSetup ? 'setup-indicator' : '';
+            const indicatorText = isSetup ? 'Một lần' : 'Lặp lại';
+            const headerClass = isSetup ? 'phase-7' : 'phase-7';
+            const icon = isSetup ? 'fas fa-cog' : 'fas fa-sync-alt';
+            
+            const newPhase = document.createElement('div');
+            newPhase.className = `phase-card ${phaseClass}`;
+            newPhase.setAttribute('data-phase', newPhaseId);
+            
+            newPhase.innerHTML = `
+                <div class="cycle-indicator ${indicatorClass}">${indicatorText}</div>
+                <div class="phase-header ${headerClass}">
+                    <div class="flex items-center flex-1">
+                        <i class="${icon} mr-3 text-xl"></i>
+                        <div>
+                            <h3 class="text-lg font-bold">Giai đoạn mới</h3>
+                            <p class="text-sm opacity-90">Nhấp để chỉnh sửa thông tin</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="text-white hover:text-red-200 p-2" onclick="editPhase(${newPhaseId})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-white hover:text-red-200 p-2" onclick="deletePhase(${newPhaseId})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="phase-content">
+                    <div class="add-task-btn" onclick="addTask(${newPhaseId})">
+                        <i class="fas fa-plus mr-2"></i>
+                        Thêm công việc vào giai đoạn này
+                    </div>
+                </div>
+            `;
+            
+            phasesContainer.appendChild(newPhase);
+            updateStats();
+        }
+
+        // Task Management
+        function editTask(phaseId, taskId) {
+            currentPhase = phaseId;
+            currentTask = taskId;
+            
+            // Set phase type based on phase
+            const phaseCard = document.querySelector(`[data-phase="${phaseId}"]`);
+            const isSetupPhase = phaseCard.classList.contains('setup-phase');
+            
+            document.querySelector(`input[name="phase-type"][value="${isSetupPhase ? 'setup' : 'recurring'}"]`).checked = true;
+            
+            // Show modal
+            document.getElementById('task-modal').style.display = 'flex';
+        }
+
+        function addTask(phaseId) {
+            currentPhase = phaseId;
+            currentTask = 'new';
+            
+            // Clear form
+            document.getElementById('task-name').value = '';
+            document.getElementById('task-description').value = '';
+            
+            // Set phase type
+            const phaseCard = document.querySelector(`[data-phase="${phaseId}"]`);
+            const isSetupPhase = phaseCard.classList.contains('setup-phase');
+            
+            document.querySelector(`input[name="phase-type"][value="${isSetupPhase ? 'setup' : 'recurring'}"]`).checked = true;
+            
+            // Show modal
+            document.getElementById('task-modal').style.display = 'flex';
+        }
+
+        function closeTaskModal() {
+            document.getElementById('task-modal').style.display = 'none';
+            currentPhase = null;
+            currentTask = null;
+        }
+
+        function saveTask() {
+            const taskName = document.getElementById('task-name').value;
+            if (!taskName) {
+                alert('Vui lòng nhập tên công việc!');
+                return;
+            }
+            
+            const phaseType = document.querySelector('input[name="phase-type"]:checked').value;
+            const typeText = phaseType === 'setup' ? 'thiết lập' : 'lặp lại';
+            
+            alert(`Đã lưu công việc: ${taskName}\n\nLoại: ${typeText}\nGiai đoạn: ${currentPhase}`);
+            closeTaskModal();
+            updateStats();
+        }
+
+        function duplicateTask() {
+            alert('Tính năng sao chép công việc\n\nSẽ tạo một công việc mới với thông tin tương tự.');
+        }
+
+        function quickAddTask(taskType) {
+            alert(`Thêm nhanh công việc: ${taskType}\n\nTính năng này sẽ tự động thêm công việc từ template vào giai đoạn đã chọn.`);
+        }
+
+        function quickAddPhase(phaseType) {
+            alert(`Thêm nhanh giai đoạn: ${phaseType}\n\nTính năng này sẽ tự động tạo giai đoạn từ template.`);
+        }
+
+        // Global Functions
+        function updateStats() {
+            const totalPhases = document.querySelectorAll('.phase-card').length;
+            const setupPhases = document.querySelectorAll('.setup-phase').length;
+            const recurringPhases = document.querySelectorAll('.recurring-phase').length;
+            const totalTasks = document.querySelectorAll('.task-card').length;
+            
+            document.getElementById('total-phases').textContent = totalPhases;
+            document.getElementById('setup-phases').textContent = setupPhases;
+            document.getElementById('recurring-phases').textContent = recurringPhases;
+            document.getElementById('task-count').textContent = totalTasks;
+        }
+
+        function saveTemplate() {
+            alert('Lưu template thành công!\n\nQuy trình toàn diện này đã được lưu và có thể sử dụng cho các farm khác.');
+        }
+
+        function publishProcess() {
+            if (confirm('Xuất bản quy trình này?\n\nSau khi xuất bản, nó sẽ có sẵn trong thư viện cho tất cả người dùng.')) {
+                alert('✅ Đã xuất bản quy trình thành công!\n\nQuy trình canh tác sầu riêng toàn diện đã được thêm vào thư viện.');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            updateCycleType();
+        });
+    </script>
+</body>
+</html>

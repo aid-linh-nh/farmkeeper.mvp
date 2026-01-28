@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiêu chuẩn Đánh giá Kết quả Công việc</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: rgba(0, 0, 0, 0.5);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .modal-container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .header-left {
+            flex: 1;
+        }
+        
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .header-left p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 60px;
+        }
+        
+        .stat-number {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            margin-left: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .modal-body {
+            overflow-y: auto;
+            flex: 1;
+            padding: 1.5rem;
+        }
+        
+        .section {
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #f9fafb;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            background: #7c3aed;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .section-body {
+            padding: 1rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            position: relative;
+        }
+        
+        .form-group.span-full {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            color: white;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .completion-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .status-option {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            position: relative;
+        }
+        
+        .status-option:hover {
+            border-color: #7c3aed;
+            background: #faf5ff;
+        }
+        
+        .status-option.selected {
+            border-color: #7c3aed;
+            background: #f3e8ff;
+        }
+        
+        .status-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .status-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        
+        .status-desc {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .parameter-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .parameter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .parameter-title {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+        
+        .parameter-badge {
+            background: #7c3aed;
+            color: white;
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+        
+        .star-rating {
+            display: flex;
+            gap: 0.25rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        
+        .star {
+            font-size: 2rem;
+            color: #d1d5db;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .star:hover,
+        .star.active {
+            color: #fbbf24;
+        }
+        
+        .star:hover {
+            transform: scale(1.1);
+        }
+        
+        .rating-text {
+            text-align: center;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+        
+        .evidence-upload {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-card {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .upload-card:hover {
+            border-color: #7c3aed;
+            background: #faf5ff;
+        }
+        
+        .upload-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-title {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .upload-desc {
+            font-size: 0.7rem;
+            color: #6b7280;
+        }
+        
+        .evidence-list {
+            margin-top: 1rem;
+        }
+        
+        .evidence-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: #f3f4f6;
+            border-radius: 4px;
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+        }
+        
+        .template-suggestions {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .suggestion-chip {
+            background: #f3e8ff;
+            color: #7c3aed;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .suggestion-chip:hover {
+            background: #e9d5ff;
+        }
+        
+        .modal-footer {
+            background: #f9fafb;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 0.625rem 1.25rem;
+            font-weight: 600;
+        }
+        
+        .notes-highlight {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 0.75rem;
+        }
+        
+        .notes-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .autocomplete-container {
+            position: relative;
+        }
+        
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .autocomplete-suggestion {
+            padding: 0.5rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.8rem;
+        }
+        
+        .autocomplete-suggestion:hover {
+            background: #f9fafb;
+        }
+        
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-container {
+                width: 95vw;
+                max-height: 95vh;
+            }
+            
+            .modal-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-stats {
+                justify-content: center;
+            }
+            
+            .form-grid,
+            .form-grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .completion-status {
+                grid-template-columns: 1fr;
+            }
+            
+            .evidence-upload {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-container">
+        <div class="modal-header">
+            <div class="header-left">
+                <h1>📋 Tiêu chuẩn Đánh giá Kết quả Công việc</h1>
+                <p><strong>Làm đất và bón phân cơ bản</strong> - Chuẩn bị và xử lý đất</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="parameters-count">0</div>
+                    <div class="stat-label">Tham số</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="evidence-count">0</div>
+                    <div class="stat-label">Bằng chứng</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="quality-rating">0</div>
+                    <div class="stat-label">Sao đánh giá</div>
+                </div>
+            </div>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- Template suggestions -->
+            <div class="template-suggestions">
+                <button class="btn btn-sm btn-secondary" onclick="applyTemplate('soil-preparation')">🌱 Chuẩn bị đất</button>
+                <button class="btn btn-sm btn-secondary" onclick="applyTemplate('fertilizer-application')">🧪 Bón phân</button>
+                <button class="btn btn-sm btn-secondary" onclick="applyTemplate('pest-control')">🐛 Phòng trừ sâu bệnh</button>
+                <button class="btn btn-sm btn-secondary" onclick="applyTemplate('irrigation')">💧 Tưới nước</button>
+            </div>
+
+            <!-- Thông tin công việc -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">📝</span>
+                        Thông tin công việc
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label for="work-name">Tên công việc</label>
+                        <input type="text" id="work-name" value="Làm đất và bón phân cơ bản" readonly style="background: #f9fafb;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tình trạng hoàn thành -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">✅</span>
+                        Tình trạng hoàn thành
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="completion-status">
+                        <div class="status-option" onclick="selectCompletionStatus('complete')">
+                            <input type="radio" name="completion-status" value="complete">
+                            <div class="status-icon">✅</div>
+                            <div class="status-title">Hoàn thành đầy đủ</div>
+                            <div class="status-desc">Công việc được thực hiện 100%</div>
+                        </div>
+                        <div class="status-option" onclick="selectCompletionStatus('partial')">
+                            <input type="radio" name="completion-status" value="partial">
+                            <div class="status-icon">🟡</div>
+                            <div class="status-title">Hoàn thành một phần</div>
+                            <div class="status-desc">Một số phần chưa hoàn thành</div>
+                        </div>
+                        <div class="status-option" onclick="selectCompletionStatus('incomplete')">
+                            <input type="radio" name="completion-status" value="incomplete">
+                            <div class="status-icon">❌</div>
+                            <div class="status-title">Không hoàn thành</div>
+                            <div class="status-desc">Chưa thực hiện hoặc thất bại</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="completion-notes">Ghi chú tình trạng hoàn thành</label>
+                        <textarea id="completion-notes" placeholder="Mô tả chi tiết về tình trạng hoàn thành, lý do nếu chưa hoàn thành đầy đủ..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kết quả đo lường chi tiết -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">📊</span>
+                        Kết quả đo lường chi tiết
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div id="parameters-container">
+                        <!-- Dynamic parameters will be added here -->
+                    </div>
+                    <button type="button" class="btn btn-sm" onclick="addParameter()">➕ Thêm tham số đo lường</button>
+                </div>
+            </div>
+
+            <!-- Đánh giá chất lượng -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">⭐</span>
+                        Đánh giá chất lượng
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="rating-text" id="rating-text">Chưa đánh giá</div>
+                    <div class="star-rating">
+                        <span class="star" data-rating="1" onclick="setRating(1)">★</span>
+                        <span class="star" data-rating="2" onclick="setRating(2)">★</span>
+                        <span class="star" data-rating="3" onclick="setRating(3)">★</span>
+                        <span class="star" data-rating="4" onclick="setRating(4)">★</span>
+                        <span class="star" data-rating="5" onclick="setRating(5)">★</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="quality-notes">Nhận xét về chất lượng</label>
+                        <textarea id="quality-notes" placeholder="Mô tả chi tiết về chất lượng thực hiện công việc..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bằng chứng -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">📸</span>
+                        Bằng chứng
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="evidence-upload">
+                        <div class="upload-card" onclick="document.getElementById('photo-input').click()">
+                            <div class="upload-icon">📷</div>
+                            <div class="upload-title">Chụp ảnh</div>
+                            <div class="upload-desc">JPG, PNG (max 5MB)</div>
+                            <input type="file" id="photo-input" accept="image/*" multiple style="display: none;" onchange="handleFileUpload('photo', this)">
+                        </div>
+                        <div class="upload-card" onclick="document.getElementById('video-input').click()">
+                            <div class="upload-icon">🎥</div>
+                            <div class="upload-title">Quay video</div>
+                            <div class="upload-desc">MP4, MOV (max 50MB)</div>
+                            <input type="file" id="video-input" accept="video/*" multiple style="display: none;" onchange="handleFileUpload('video', this)">
+                        </div>
+                        <div class="upload-card" onclick="document.getElementById('document-input').click()">
+                            <div class="upload-icon">📄</div>
+                            <div class="upload-title">Tài liệu chứng nhận</div>
+                            <div class="upload-desc">PDF, DOC (max 10MB)</div>
+                            <input type="file" id="document-input" accept=".pdf,.doc,.docx" multiple style="display: none;" onchange="handleFileUpload('document', this)">
+                        </div>
+                    </div>
+                    <div id="evidence-list" class="evidence-list"></div>
+                </div>
+            </div>
+
+            <!-- Khuyến nghị -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">💡</span>
+                        Khuyến nghị cho giai đoạn/công việc tiếp theo
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="notes-highlight">
+                        <div class="notes-title">
+                            💡 Ghi chú quan trọng cho người thực hiện
+                        </div>
+                        <textarea rows="4" placeholder="Nhập khuyến nghị, lưu ý cho giai đoạn tiếp theo:&#10;- Điều chỉnh kỹ thuật&#10;- Cải thiện quy trình&#10;- Lưu ý môi trường&#10;- Kinh nghiệm học được"></textarea>
+                    </div>
+                    
+                    <div class="form-grid" style="margin-top: 1rem;">
+                        <div class="form-group">
+                            <label>Giai đoạn/Công việc tiếp theo cần chú ý</label>
+                            <select>
+                                <option>Chọn giai đoạn tiếp theo</option>
+                                <option>Trồng và chăm sóc ban đầu</option>
+                                <option>Bón phân và tưới nước</option>
+                                <option>Phòng trừ sâu bệnh</option>
+                                <option>Thu hoạch</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Mức độ ưu tiên khuyến nghị</label>
+                            <select>
+                                <option>Rất quan trọng</option>
+                                <option>Quan trọng</option>
+                                <option>Trung bình</option>
+                                <option>Tham khảo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <div class="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="completion-progress" style="width: 0%"></div>
+                </div>
+                <div class="progress-text" id="completion-text">0% hoàn thành</div>
+            </div>
+            
+            <div class="action-buttons">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">❌ Hủy</button>
+                <button type="button" class="btn btn-secondary" onclick="saveAsDraft()">💾 Lưu nháp</button>
+                <button type="button" class="btn btn-primary" onclick="saveCriteria()">✅ Lưu tiêu chuẩn</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let parameterCounter = 0;
+        let currentRating = 0;
+        let uploadedFiles = {
+            photo: [],
+            video: [],
+            document: []
+        };
+
+        // Parameter suggestions based on work type
+        const parameterTemplates = {
+            'soil-preparation': [
+                'Diện tích đất được xử lý (m²)',
+                'Độ sâu làm đất (cm)',
+                'pH đất sau xử lý',
+                'Lượng phân hữu cơ bón (kg/m²)',
+                'Độ ẩm đất (%)'
+            ],
+            'fertilizer-application': [
+                'Lượng phân NPK sử dụng (kg)',
+                'Nồng độ dung dịch (%)',
+                'Diện tích bón phân (m²)',
+                'Thời gian hoàn thành (phút)',
+                'Số cây được bón phân'
+            ],
+            'pest-control': [
+                'Diện tích xử lý (m²)',
+                'Nồng độ thuốc (%)',
+                'Lượng thuốc sử dụng (ml)',
+                'Số lượng sâu bệnh phát hiện',
+                'Hiệu quả diệt sâu (%)'
+            ],
+            'irrigation': [
+                'Lượng nước tưới (lít)',
+                'Thời gian tưới (phút)',
+                'Áp suất nước (bar)',
+                'Diện tích tưới (m²)',
+                'Độ ẩm đất sau tưới (%)'
+            ]
+        };
+
+        function createAutocomplete(input, suggestions) {
+            const container = document.createElement('div');
+            container.className = 'autocomplete-container';
+            input.parentNode.insertBefore(container, input);
+            container.appendChild(input);
+            
+            const suggestionsList = document.createElement('div');
+            suggestionsList.className = 'autocomplete-suggestions';
+            container.appendChild(suggestionsList);
+            
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                suggestionsList.innerHTML = '';
+                
+                if (value) {
+                    const filtered = suggestions.filter(item => 
+                        item.toLowerCase().includes(value)
+                    );
+                    
+                    if (filtered.length > 0) {
+                        filtered.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-suggestion';
+                            div.textContent = item;
+                            div.onclick = () => {
+                                input.value = item;
+                                suggestionsList.style.display = 'none';
+                            };
+                            suggestionsList.appendChild(div);
+                        });
+                        suggestionsList.style.display = 'block';
+                    }
+                } else {
+                    suggestionsList.style.display = 'none';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!container.contains(e.target)) {
+                    suggestionsList.style.display = 'none';
+                }
+            });
+        }
+
+        function selectCompletionStatus(status) {
+            document.querySelectorAll('.status-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            event.target.closest('.status-option').classList.add('selected');
+            event.target.closest('.status-option').querySelector('input').checked = true;
+            updateStats();
+        }
+
+        function addParameter() {
+            parameterCounter++;
+            const container = document.getElementById('parameters-container');
+            
+            const parameterHtml = `
+                <div class="parameter-item" id="parameter-${parameterCounter}">
+                    <div class="parameter-header">
+                        <div class="parameter-title">
+                            <span class="parameter-badge">Tham số ${parameterCounter}</span>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="removeParameter(${parameterCounter})">🗑️</button>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label>Tên tham số</label>
+                            <input type="text" id="param-name-${parameterCounter}" placeholder="VD: Diện tích đất xử lý...">
+                        </div>
+                        <div class="form-group">
+                            <label>Thông số kết quả</label>
+                            <input type="text" placeholder="VD: 500 m², 6.5 pH...">
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn vị đo</label>
+                            <input type="text" placeholder="VD: m², kg, %, cm...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả chi tiết bổ sung</label>
+                        <textarea placeholder="Mô tả chi tiết về tham số này, phương pháp đo, điều kiện đo..."></textarea>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', parameterHtml);
+            
+            // Add autocomplete for parameter name
+            const allSuggestions = [
+                ...parameterTemplates['soil-preparation'],
+                ...parameterTemplates['fertilizer-application'], 
+                ...parameterTemplates['pest-control'],
+                ...parameterTemplates['irrigation']
+            ];
+            
+            setTimeout(() => {
+                const paramInput = document.getElementById(`param-name-${parameterCounter}`);
+                createAutocomplete(paramInput, allSuggestions);
+            }, 100);
+            
+            updateStats();
+        }
+
+        function removeParameter(id) {
+            if (confirm('Xóa tham số này?')) {
+                document.getElementById(`parameter-${id}`).remove();
+                updateStats();
+            }
+        }
+
+        function setRating(rating) {
+            currentRating = rating;
+            
+            // Update star display
+            document.querySelectorAll('.star').forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            
+            // Update rating text
+            const ratingTexts = [
+                '', 'Rất kém', 'Kém', 'Trung bình', 'Tốt', 'Xuất sắc'
+            ];
+            document.getElementById('rating-text').textContent = `${rating} sao - ${ratingTexts[rating]}`;
+            
+            updateStats();
+        }
+
+        function handleFileUpload(type, input) {
+            const files = input.files;
+            const evidenceList = document.getElementById('evidence-list');
+            
+            for (let file of files) {
+                let maxSize = 5 * 1024 * 1024; // 5MB default
+                if (type === 'video') maxSize = 50 * 1024 * 1024; // 50MB for video
+                if (type === 'document') maxSize = 10 * 1024 * 1024; // 10MB for documents
+                
+                if (file.size > maxSize) {
+                    alert(`File ${file.name} quá lớn (>${Math.round(maxSize/1024/1024)}MB)`);
+                    continue;
+                }
+                
+                uploadedFiles[type].push(file);
+                
+                const typeIcons = {
+                    photo: '📷',
+                    video: '🎥', 
+                    document: '📄'
+                };
+                
+                const evidenceItem = document.createElement('div');
+                evidenceItem.className = 'evidence-item';
+                evidenceItem.innerHTML = `
+                    <span>${typeIcons[type]} ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)</span>
+                    <button class="btn btn-danger btn-sm" onclick="removeEvidence('${type}', '${file.name}', this)">🗑️</button>
+                `;
+                evidenceList.appendChild(evidenceItem);
+            }
+            
+            updateStats();
+        }
+
+        function removeEvidence(type, fileName, button) {
+            uploadedFiles[type] = uploadedFiles[type].filter(f => f.name !== fileName);
+            button.closest('.evidence-item').remove();
+            updateStats();
+        }
+
+        function updateStats() {
+            const parametersCount = document.querySelectorAll('.parameter-item').length;
+            const totalEvidenceCount = Object.values(uploadedFiles).reduce((sum, arr) => sum + arr.length, 0);
+            
+            document.getElementById('parameters-count').textContent = parametersCount;
+            document.getElementById('evidence-count').textContent = totalEvidenceCount;
+            document.getElementById('quality-rating').textContent = currentRating;
+            
+            // Calculate completion percentage
+            const hasCompletionStatus = document.querySelector('.status-option.selected');
+            const hasRating = currentRating > 0;
+            const hasParameters = parametersCount > 0;
+            const hasEvidence = totalEvidenceCount > 0;
+            
+            const completedItems = [hasCompletionStatus, hasRating, hasParameters, hasEvidence].filter(Boolean).length;
+            const completion = Math.round((completedItems / 4) * 100);
+            
+            document.getElementById('completion-progress').style.width = completion + '%';
+            document.getElementById('completion-text').textContent = completion + '% hoàn thành';
+        }
+
+        function applyTemplate(templateType) {
+            const parameters = parameterTemplates[templateType];
+            if (!parameters) return;
+            
+            if (confirm(`Áp dụng template "${templateType}"?\nSẽ thêm ${parameters.length} tham số mẫu.`)) {
+                parameters.forEach(paramName => {
+                    addParameter();
+                    setTimeout(() => {
+                        const latestParamInput = document.querySelector(`#param-name-${parameterCounter}`);
+                        if (latestParamInput) latestParamInput.value = paramName;
+                    }, 100);
+                });
+                
+                // Set default rating
+                setRating(4);
+                
+                // Select completion status
+                setTimeout(() => {
+                    document.querySelector('.status-option').click();
+                }, 200);
+                
+                alert('✅ Đã áp dụng template thành công!');
+            }
+        }
+
+        function closeModal() {
+            if (confirm('Đóng popup? Các thay đổi chưa lưu sẽ bị mất.')) {
+                document.body.style.display = 'none';
+                alert('Quay về quy trình chính...');
+            }
+        }
+
+        function saveAsDraft() {
+            alert('💾 Đã lưu nháp tiêu chuẩn đánh giá thành công!');
+        }
+
+        function saveCriteria() {
+            const hasCompletionStatus = document.querySelector('.status-option.selected');
+            
+            if (!hasCompletionStatus) {
+                alert('⚠️ Vui lòng chọn tình trạng hoàn thành!');
+                return;
+            }
+            
+            if (currentRating === 0) {
+                alert('⚠️ Vui lòng đánh giá chất lượng (số sao)!');
+                return;
+            }
+            
+            alert('✅ Đã lưu tiêu chuẩn đánh giá thành công!\nTiêu chuẩn sẽ được áp dụng cho công việc này.');
+            closeModal();
+        }
+
+        // Initialize
+        document.addEventListener('input', updateStats);
+        document.addEventListener('change', updateStats);
+        
+        // Sample data
+        setTimeout(() => {
+            addParameter();
+            updateStats();
+        }, 500);
+    </script>
+</body>
+</html>

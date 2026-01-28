@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper Technician - Tối ưu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Mobile-first optimized design */
+        .mobile-container {
+            max-width: 390px;
+            margin: 0 auto;
+            background: #f8fafc;
+            min-height: 100vh;
+            position: relative;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding-bottom: 80px;
+            overflow-y: auto;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 8px 0;
+            display: flex;
+            justify-content: around;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            color: #6b7280;
+            transition: all 0.2s;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .nav-item.active {
+            color: #3b82f6;
+        }
+        
+        .nav-item i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        /* Optimized Card System */
+        .unified-card {
+            background: white;
+            border-radius: 12px;
+            margin: 8px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 16px 16px 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            background: #fafbfc;
+        }
+        
+        .card-content {
+            padding: 12px 16px;
+        }
+        
+        .card-actions {
+            padding: 8px 16px 16px 16px;
+            background: #fafbfc;
+            border-top: 1px solid #f1f5f9;
+        }
+        
+        /* Status System */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-critical {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+        
+        .status-warning {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fed7aa;
+        }
+        
+        .status-success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
+        
+        .status-info {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #dbeafe;
+        }
+        
+        /* Metric Grid */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        
+        .metric-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        /* Unified List Items */
+        .list-item {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .list-item:active {
+            background: #f8fafc;
+            transform: scale(0.98);
+        }
+        
+        .list-item-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .list-item-title {
+            font-weight: 600;
+            color: #1f2937;
+            flex: 1;
+        }
+        
+        .list-item-meta {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .list-item-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* Action Buttons */
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        /* Quick Access Floating Button */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            z-index: 90;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 0 16px 16px 16px;
+            margin-top: 16px;
+        }
+        
+        .filter-tab {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .filter-tab.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        /* Alert Badge */
+        .alert-badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Priority Indicators */
+        .priority-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .priority-critical {
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+        
+        .priority-high {
+            background: #f59e0b;
+        }
+        
+        .priority-medium {
+            background: #3b82f6;
+        }
+        
+        .priority-low {
+            background: #10b981;
+        }
+        
+        /* Progress Bars */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f1f5f9;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+        }
+        
+        /* Enhanced Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .slide-in {
+            animation: slideInUp 0.3s ease-out;
+        }
+        
+        /* Data Grid for metrics */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin: 8px 0;
+        }
+        
+        .data-item {
+            text-align: center;
+        }
+        
+        .data-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        
+        .data-label {
+            font-size: 10px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="mobile-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>09:41</span>
+            <span>📶 📶 📶 💾 🔋</span>
+        </div>
+        
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-user-tie text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold">KS. Phạm Văn Minh</h1>
+                        <p class="text-sm opacity-90">ID: KTV001 • Rank: #1 • 98% hiệu suất</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="flex items-center space-x-1">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-xs opacity-80">Sync</span>
+                    </div>
+                    <div class="relative">
+                        <button class="bg-white bg-opacity-20 p-2 rounded-lg" onclick="openNotifications()">
+                            <i class="fas fa-bell text-white"></i>
+                        </button>
+                        <div class="alert-badge">7</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterContent('all')">Tất cả</button>
+            <button class="filter-tab" onclick="filterContent('urgent')">Khẩn cấp</button>
+            <button class="filter-tab" onclick="filterContent('today')">Hôm nay</button>
+            <button class="filter-tab" onclick="filterContent('farms')">Vườn</button>
+            <button class="filter-tab" onclick="filterContent('tasks')">Công việc</button>
+            <button class="filter-tab" onclick="filterContent('reports')">Báo cáo</button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <!-- Critical Alerts - Tích hợp tất cả cảnh báo quan trọng -->
+                <div class="unified-card slide-in">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-red-800 flex items-center">
+                                <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                                Cảnh báo khẩn cấp
+                            </h3>
+                            <span class="status-critical">7 vấn đề</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="space-y-3">
+                            <div class="list-item">
+                                <div class="list-item-header">
+                                    <div class="flex items-center">
+                                        <div class="priority-dot priority-critical"></div>
+                                        <span class="list-item-title text-red-800">Sâu phủ quả</span>
+                                    </div>
+                                    <span class="status-critical">4 vườn</span>
+                                </div>
+                                <div class="list-item-meta">
+                                    Vườn Anh Hiền, Chú Dũng, Bác Tâm, Cô Lan
+                                </div>
+                                <div class="list-item-actions">
+                                    <button class="action-btn btn-danger" onclick="handleMassEmergency('pest')">
+                                        🚨 Xử lý hàng loạt
+                                    </button>
+                                    <button class="action-btn btn-primary" onclick="createGroupChat('pest')">
+                                        💬 Chat nhóm
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="list-item-header">
+                                    <div class="flex items-center">
+                                        <div class="priority-dot priority-high"></div>
+                                        <span class="list-item-title text-yellow-800">Thiếu phân NPK</span>
+                                    </div>
+                                    <span class="status-warning">3 vườn</span>
+                                </div>
+                                <div class="list-item-meta">
+                                    Cần đặt hàng khẩn cấp trong hôm nay
+                                </div>
+                                <div class="list-item-actions">
+                                    <button class="action-btn btn-warning" onclick="orderFertilizer()">
+                                        📦 Đặt hàng ngay
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Dashboard - Tích hợp metrics và AI -->
+                <div class="unified-card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-chart-pie text-blue-600 mr-2"></i>
+                            Dashboard hiệu suất
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="metric-grid">
+                            <div class="metric-item">
+                                <div class="metric-value text-blue-700">23</div>
+                                <div class="metric-label">Vườn quản lý</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value text-green-700">18</div>
+                                <div class="metric-label">Hoàn thành hôm nay</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value text-orange-700">5</div>
+                                <div class="metric-label">Đang thực hiện</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value text-purple-700">94%</div>
+                                <div class="metric-label">Hiệu suất tuần</div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Assistant Integration -->
+                        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-3 border border-blue-200 mt-4">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-robot text-blue-600"></i>
+                                <span class="font-bold text-blue-800">AI Assistant</span>
+                                <span class="status-info">Beta</span>
+                            </div>
+                            <p class="text-sm text-blue-700 mb-2">"Hôm nay nên ưu tiên xử lý sâu phủ quả ở vườn Anh Hiền trước khi mưa"</p>
+                            <div class="flex space-x-2">
+                                <button class="action-btn btn-primary" onclick="followAIAdvice()">
+                                    ✓ Áp dụng
+                                </button>
+                                <button class="action-btn btn-secondary" onclick="askAI()">
+                                    💬 Hỏi thêm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Unified Workload - Tích hợp lịch và công việc -->
+                <div class="unified-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-calendar-check text-green-600 mr-2"></i>
+                                Công việc hôm nay
+                            </h3>
+                            <div class="flex items-center space-x-2">
+                                <span class="status-info">8 việc</span>
+                                <button class="action-btn btn-success" onclick="optimizeRoute()">
+                                    🗺️ Tối ưu lộ trình
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <!-- Route Optimization -->
+                        <div class="bg-green-50 rounded-lg p-3 border border-green-200 mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-green-800">Lộ trình tối ưu</span>
+                                <span class="text-sm text-green-700">Tiết kiệm 45 phút</span>
+                            </div>
+                            <div class="data-grid">
+                                <div class="data-item">
+                                    <div class="data-value text-green-700">4h15m</div>
+                                    <div class="data-label">Thời gian</div>
+                                </div>
+                                <div class="data-item">
+                                    <div class="data-value text-green-700">67.3km</div>
+                                    <div class="data-label">Quãng đường</div>
+                                </div>
+                                <div class="data-item">
+                                    <div class="data-value text-green-700">8</div>
+                                    <div class="data-label">Điểm đến</div>
+                                </div>
+                            </div>
+                            <button class="action-btn btn-success w-full mt-2" onclick="startOptimizedRoute()">
+                                🚗 Bắt đầu dẫn đường
+                            </button>
+                        </div>
+
+                        <!-- Today's Tasks -->
+                        <div class="space-y-2">
+                            <div class="list-item bg-green-50 border border-green-200 rounded-lg">
+                                <div class="list-item-header">
+                                    <span class="list-item-title text-green-800">8:00 - Vườn Anh Hiền</span>
+                                    <span class="status-success">Hôm nay</span>
+                                </div>
+                                <div class="list-item-meta">
+                                    Kiểm tra sâu phủ quả • Cú M'Gar, DL
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 0%"></div>
+                                </div>
+                                <div class="list-item-actions">
+                                    <button class="action-btn btn-success" onclick="startTask('task-1')">
+                                        🚗 Bắt đầu
+                                    </button>
+                                    <button class="action-btn btn-primary" onclick="callFarmer('farm-1')">
+                                        📞 Gọi
+                                    </button>
+                                    <button class="action-btn btn-secondary" onclick="viewDetails('task-1')">
+                                        ℹ️ Chi tiết
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="list-item-header">
+                                    <span class="list-item-title text-blue-800">14:00 - Vườn Bác Tâm</span>
+                                    <span class="status-info">Sắp tới</span>
+                                </div>
+                                <div class="list-item-meta">
+                                    Hướng dẫn bón phân • Trảng Bom, DN
+                                </div>
+                                <div class="list-item-actions">
+                                    <button class="action-btn btn-primary" onclick="setReminder('task-2')">
+                                        ⏰ Nhắc nhở
+                                    </button>
+                                    <button class="action-btn btn-secondary" onclick="prepareVisit('task-2')">
+                                        📋 Chuẩn bị
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farms & Reports Tab - Tích hợp quản lý vườn và báo cáo -->
+            <div id="farms-tab" class="tab-content">
+                <!-- Farm Status Overview -->
+                <div class="unified-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-map-marked-alt text-green-600 mr-2"></i>
+                                Tổng quan vườn & báo cáo
+                            </h3>
+                            <div class="flex items-center space-x-2">
+                                <button class="action-btn btn-primary" onclick="sendProgressReport()">
+                                    📊 Báo cáo tiến độ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <!-- Progress Summary -->
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 border border-blue-200 mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-bold text-blue-800">Tiến độ hôm nay</span>
+                                <span class="status-success">18/23 hoàn thành</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                            <div class="data-grid mt-2">
+                                <div class="data-item">
+                                    <div class="data-value text-green-700">18</div>
+                                    <div class="data-label">Hoàn thành</div>
+                                </div>
+                                <div class="data-item">
+                                    <div class="data-value text-yellow-700">3</div>
+                                    <div class="data-label">Đang làm</div>
+                                </div>
+                                <div class="data-item">
+                                    <div class="data-value text-red-700">2</div>
+                                    <div class="data-label">Trễ hẹn</div>
+                                </div>
+                                <div class="data-item">
+                                    <div class="data-value text-purple-700">94%</div>
+                                    <div class="data-label">Hiệu suất</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Manager Communication -->
+                        <div class="bg-indigo-50 rounded-lg p-3 border border-indigo-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <img src="https://via.placeholder.com/32x32/6366F1/FFFFFF?text=KS" alt="Manager" class="w-8 h-8 rounded-full">
+                                <div class="flex-1">
+                                    <span class="font-semibold text-indigo-800">KS. Nguyễn Văn Sang</span>
+                                    <span class="text-xs text-indigo-600 ml-2">15 phút trước</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-indigo-700 mb-2">"Anh Minh làm tốt lắm! Vườn Anh Hiền đã xử lý sâu phủ quả hiệu quả."</p>
+                            <div class="flex space-x-2">
+                                <button class="action-btn btn-primary" onclick="thankManager()">
+                                    🙏 Cảm ơn
+                                </button>
+                                <button class="action-btn btn-secondary" onclick="shareAdditionalInfo()">
+                                    ℹ️ Thêm thông tin
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integrated Farm List -->
+                <div class="unified-card">
+                    <div class="card-header">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-seedling text-green-600 mr-2"></i>
+                            Danh sách vườn (23 vườn)
+                        </h3>
+                    </div>
+                    <div class="card-content space-y-3">
+                        <!-- Critical Farm -->
+                        <div class="list-item bg-red-50 border border-red-200 rounded-lg">
+                            <div class="list-item-header">
+                                <div class="flex items-center">
+                                    <div class="priority-dot priority-critical"></div>
+                                    <span class="list-item-title text-red-800">Vườn Anh Hiền</span>
+                                </div>
+                                <span class="status-critical">Khẩn cấp</span>
+                            </div>
+                            <div class="list-item-meta">
+                                12.5ha • 156 cây • Cú M'Gar, DL<br>
+                                <strong>Sâu phủ quả - 35 cây bị ảnh hưởng</strong>
+                            </div>
+                            <div class="data-grid">
+                                <div class="data-item">
+                                    <div class="data-value text-orange-600">34°C</div>
+                                    <div class="data-label">Nhiệt độ</div>
+                                </div>
+                                <div class="data-item">
+                                    <div class="data-value text-blue-600">72%</div>
+                                    <div class="data-label">Độ ẩm</div>
+                                </div>
+                                <div class="data-item">
+                                    <div class="data-value text-green-600">6.2</div>
+                                    <div class="data-label">pH đất</div>
+                                </div>
+                            </div>
+                            <div class="list-item-actions">
+                                <button class="action-btn btn-danger" onclick="handleFarmEmergency('farm-1')">
+                                    🚨 Xử lý ngay
+                                </button>
+                                <button class="action-btn btn-primary" onclick="openAICamera('farm-1')">
+                                    📸 AI Scan
+                                </button>
+                                <button class="action-btn btn-success" onclick="startNavigation('farm-1')">
+                                    🧭 Dẫn đường
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Warning Farm -->
+                        <div class="list-item bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div class="list-item-header">
+                                <div class="flex items-center">
+                                    <div class="priority-dot priority-high"></div>
+                                    <span class="list-item-title text-yellow-800">Vườn Bác Tâm</span>
+                                </div>
+                                <span class="status-warning">Theo dõi</span>
+                            </div>
+                            <div class="list-item-meta">
+                                8.2ha • 98 cây • Trảng Bom, DN<br>
+                                <strong>Thiếu phân NPK - Cần đặt hàng</strong>
+                            </div>
+                            <div class="list-item-actions">
+                                <button class="action-btn btn-warning" onclick="scheduleFertilizer('farm-2')">
+                                    📦 Đặt phân
+                                </button>
+                                <button class="action-btn btn-primary" onclick="callFarmer('farm-2')">
+                                    📞 Gọi
+                                </button>
+                                <button class="action-btn btn-secondary" onclick="chatFarmer('farm-2')">
+                                    💬 Chat
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Normal Farm -->
+                        <div class="list-item">
+                            <div class="list-item-header">
+                                <div class="flex items-center">
+                                    <div class="priority-dot priority-low"></div>
+                                    <span class="list-item-title text-green-800">Vườn Chú Dũng</span>
+                                </div>
+                                <span class="status-success">Tốt</span>
+                            </div>
+                            <div class="list-item-meta">
+                                15.8ha • 201 cây • Xuân Lộc, DN<br>
+                                <strong>Tiến độ bón phân: 78% hoàn thành</strong>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 78%"></div>
+                            </div>
+                            <div class="list-item-actions">
+                                <button class="action-btn btn-success" onclick="viewProgress('farm-3')">
+                                    📊 Xem tiến độ
+                                </button>
+                                <button class="action-btn btn-primary" onclick="callFarmer('farm-3')">
+                                    📞 Gọi
+                                </button>
+                                <button class="action-btn btn-secondary" onclick="scheduleVisit('farm-3')">
+                                    📅 Hẹn thăm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-secondary w-full" onclick="loadMoreFarms()">
+                            <i class="fas fa-chevron-down mr-2"></i>Xem thêm 20 vườn
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools & Knowledge Tab - Tích hợp công cụ và kiến thức -->
+            <div id="tools-tab" class="tab-content">
+                <!-- AI Tools Section -->
+                <div class="unified-card">
+                    <div class="card-header">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-robot text-blue-600 mr-2"></i>
+                            Công cụ AI & Phân tích
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="list-item bg-blue-50 border border-blue-200 rounded-lg" onclick="openPestIdentifier()">
+                                <div class="text-center">
+                                    <i class="fas fa-search text-blue-600 text-2xl mb-2"></i>
+                                    <div class="font-bold text-blue-800 text-sm">AI Nhận diện</div>
+                                    <div class="text-xs text-blue-700">Sâu bệnh</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-green-50 border border-green-200 rounded-lg" onclick="openDosageCalculator()">
+                                <div class="text-center">
+                                    <i class="fas fa-calculator text-green-600 text-2xl mb-2"></i>
+                                    <div class="font-bold text-green-800 text-sm">Tính liều lượng</div>
+                                    <div class="text-xs text-green-700">Thuốc & phân</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-purple-50 border border-purple-200 rounded-lg" onclick="openPlantHealthScanner()">
+                                <div class="text-center">
+                                    <i class="fas fa-heartbeat text-purple-600 text-2xl mb-2"></i>
+                                    <div class="font-bold text-purple-800 text-sm">Sức khỏe cây</div>
+                                    <div class="text-xs text-purple-700">Quét AI</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-yellow-50 border border-yellow-200 rounded-lg" onclick="openWeatherAnalyzer()">
+                                <div class="text-center">
+                                    <i class="fas fa-cloud-sun text-yellow-600 text-2xl mb-2"></i>
+                                    <div class="font-bold text-yellow-800 text-sm">Thời tiết</div>
+                                    <div class="text-xs text-yellow-700">Dự báo & tư vấn</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Tools & References -->
+                <div class="unified-card">
+                    <div class="card-header">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-tools text-orange-600 mr-2"></i>
+                            Công cụ nhanh & Tài liệu
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <div class="list-item text-center" onclick="openVoiceRecorder()">
+                                <i class="fas fa-microphone text-red-600 text-lg mb-1"></i>
+                                <div class="text-xs font-medium">Ghi âm</div>
+                            </div>
+                            
+                            <div class="list-item text-center" onclick="openQRScanner()">
+                                <i class="fas fa-qrcode text-indigo-600 text-lg mb-1"></i>
+                                <div class="text-xs font-medium">Quét QR</div>
+                            </div>
+                            
+                            <div class="list-item text-center" onclick="openMeasurementTool()">
+                                <i class="fas fa-ruler text-green-600 text-lg mb-1"></i>
+                                <div class="text-xs font-medium">Đo lường</div>
+                            </div>
+                            
+                            <div class="list-item text-center" onclick="openColorAnalyzer()">
+                                <i class="fas fa-palette text-purple-600 text-lg mb-1"></i>
+                                <div class="text-xs font-medium">Màu lá</div>
+                            </div>
+                            
+                            <div class="list-item text-center" onclick="openOfflineSync()">
+                                <i class="fas fa-sync text-blue-600 text-lg mb-1"></i>
+                                <div class="text-xs font-medium">Sync</div>
+                            </div>
+                            
+                            <div class="list-item text-center" onclick="openEmergencyHelp()">
+                                <i class="fas fa-exclamation-triangle text-red-600 text-lg mb-1"></i>
+                                <div class="text-xs font-medium">SOS</div>
+                            </div>
+                        </div>
+
+                        <!-- Knowledge Base - Tích hợp tài liệu -->
+                        <div class="space-y-2">
+                            <h4 class="font-semibold text-gray-800">📚 Tài liệu tham khảo</h4>
+                            
+                            <div class="list-item bg-red-50 border border-red-200 rounded" onclick="openKnowledgeItem('pest-guide')">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-bug text-red-600"></i>
+                                    <div class="flex-1">
+                                        <div class="font-medium text-red-800">Cẩm nang Sâu bệnh</div>
+                                        <div class="text-xs text-gray-600">150+ loại • 23 nông dân đã dùng • ⭐ 4.8</div>
+                                    </div>
+                                    <span class="status-critical">Hot</span>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-green-50 border border-green-200 rounded" onclick="openKnowledgeItem('fertilizer-guide')">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-seedling text-green-600"></i>
+                                    <div class="flex-1">
+                                        <div class="font-medium text-green-800">Hướng dẫn Phân bón</div>
+                                        <div class="text-xs text-gray-600">Theo giai đoạn • 45 nông dân • ⭐ 4.9</div>
+                                    </div>
+                                    <span class="status-success">New</span>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-blue-50 border border-blue-200 rounded" onclick="openKnowledgeItem('vietgap-standards')">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-certificate text-blue-600"></i>
+                                    <div class="flex-1">
+                                        <div class="font-medium text-blue-800">Tiêu chuẩn VietGAP</div>
+                                        <div class="text-xs text-gray-600">Chính thức • 12 nông dân • ⭐ 4.7</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-secondary w-full" onclick="viewAllKnowledge()">
+                            📖 Xem tất cả tài liệu
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Production Process Builder -->
+                <div class="unified-card">
+                    <div class="card-header">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-project-diagram text-indigo-600 mr-2"></i>
+                                Quy trình sản xuất
+                            </h3>
+                            <button class="action-btn btn-primary" onclick="createNewProcess()">
+                                <i class="fas fa-plus mr-1"></i>Tạo mới
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <!-- Process Templates -->
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="list-item bg-green-50 border border-green-200 rounded-lg" onclick="useTemplate('durian-standard')">
+                                <div class="text-center">
+                                    <i class="fas fa-seedling text-green-600 text-xl mb-2"></i>
+                                    <div class="font-bold text-green-800 text-sm">Sầu riêng VietGAP</div>
+                                    <div class="text-xs text-green-700">Quy trình chuẩn 18 tháng</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-orange-50 border border-orange-200 rounded-lg" onclick="useTemplate('durian-organic')">
+                                <div class="text-center">
+                                    <i class="fas fa-leaf text-orange-600 text-xl mb-2"></i>
+                                    <div class="font-bold text-orange-800 text-sm">Sầu riêng Hữu cơ</div>
+                                    <div class="text-xs text-orange-700">Theo tiêu chuẩn JAS</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-blue-50 border border-blue-200 rounded-lg" onclick="useTemplate('durian-intensive')">
+                                <div class="text-center">
+                                    <i class="fas fa-tachometer-alt text-blue-600 text-xl mb-2"></i>
+                                    <div class="font-bold text-blue-800 text-sm">Thâm canh cao</div>
+                                    <div class="text-xs text-blue-700">Năng suất tối đa</div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-purple-50 border border-purple-200 rounded-lg" onclick="createCustomProcess()">
+                                <div class="text-center">
+                                    <i class="fas fa-edit text-purple-600 text-xl mb-2"></i>
+                                    <div class="font-bold text-purple-800 text-sm">Tùy chỉnh</div>
+                                    <div class="text-xs text-purple-700">Tạo quy trình riêng</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Processes -->
+                        <div class="space-y-2">
+                            <h4 class="font-semibold text-gray-800">📋 Quy trình gần đây</h4>
+                            
+                            <div class="list-item bg-white border border-gray-200 rounded" onclick="editProcess('process-1')">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-file-alt text-indigo-600"></i>
+                                        <div>
+                                            <div class="font-medium text-gray-800">Sầu riêng Monthong - Vườn Anh Hiền</div>
+                                            <div class="text-xs text-gray-600">18 giai đoạn • Cập nhật: 2 ngày trước</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="status-success">Hoàn thành</span>
+                                        <button class="action-btn btn-secondary" onclick="shareProcess('process-1')" title="Chia sẻ">
+                                            <i class="fas fa-share-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item bg-white border border-gray-200 rounded" onclick="editProcess('process-2')">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-file-alt text-yellow-600"></i>
+                                        <div>
+                                            <div class="font-medium text-gray-800">Ri6 Hữu cơ - Vườn Bác Tâm</div>
+                                            <div class="text-xs text-gray-600">12 giai đoạn • Đang soạn thảo</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="status-warning">Nháp</span>
+                                        <button class="action-btn btn-secondary" onclick="duplicateProcess('process-2')" title="Nhân bản">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <div class="flex space-x-2">
+                            <button class="action-btn btn-secondary flex-1" onclick="viewProcessLibrary()">
+                                📚 Thư viện quy trình
+                            </button>
+                            <button class="action-btn btn-primary flex-1" onclick="openProcessBuilder()">
+                                🛠️ Công cụ soạn thảo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipment Status -->
+                <div class="unified-card">
+                    <div class="card-header">
+                        <h3 class="font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-cogs text-gray-600 mr-2"></i>
+                            Tình trạng thiết bị
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="space-y-2">
+                            <div class="list-item">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-spray-can text-gray-600"></i>
+                                        <div>
+                                            <div class="font-medium text-gray-800">Bình xịt thuốc</div>
+                                            <div class="text-xs text-gray-600">Bảo dưỡng: 5 ngày trước</div>
+                                        </div>
+                                    </div>
+                                    <span class="status-success">Tốt</span>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-thermometer-half text-gray-600"></i>
+                                        <div>
+                                            <div class="font-medium text-gray-800">Nhiệt kế & pH meter</div>
+                                            <div class="text-xs text-gray-600">Cần hiệu chỉnh</div>
+                                        </div>
+                                    </div>
+                                    <span class="status-warning">Cần kiểm tra</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Access Floating Button -->
+        <button class="fab" onclick="toggleQuickActions()">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <!-- Optimized Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showTab('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Tổng quan</span>
+            </div>
+            <div class="nav-item" onclick="showTab('farms')">
+                <i class="fas fa-chart-line"></i>
+                <span>Vườn & BC</span>
+                <div class="alert-badge">5</div>
+            </div>
+            <div class="nav-item" onclick="showTab('tools')">
+                <i class="fas fa-toolbox"></i>
+                <span>Công cụ</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Optimized JavaScript with unified functions
+        
+        // Tab navigation
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const selectedTab = document.getElementById(tabName + '-tab');
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+                selectedTab.classList.add('slide-in');
+            }
+            
+            event.currentTarget.classList.add('active');
+            
+            loadTabData(tabName);
+        }
+
+        // Filter content across all tabs
+        function filterContent(filter) {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Filter logic based on current tab and filter type
+            showNotification(`Lọc nội dung: ${filter}`, 'info');
+        }
+
+        // Unified data loading
+        function loadTabData(tabName) {
+            switch(tabName) {
+                case 'dashboard':
+                    updateDashboardMetrics();
+                    break;
+                case 'farms':
+                    loadFarmsAndReports();
+                    break;
+                case 'tools':
+                    loadToolsAndKnowledge();
+                    break;
+            }
+        }
+
+        // Dashboard functions
+        function updateDashboardMetrics() {
+            // Update metrics with real data
+            const metrics = {
+                farms: 23,
+                completed: Math.floor(Math.random() * 5) + 16,
+                inProgress: Math.floor(Math.random() * 3) + 3,
+                efficiency: Math.floor(Math.random() * 5) + 92
+            };
+            
+            // Update progress bars
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const progress = Math.floor(Math.random() * 40) + 60;
+                bar.style.width = progress + '%';
+            });
+        }
+
+        function loadFarmsAndReports() {
+            showNotification('Đang tải dữ liệu vườn và báo cáo...', 'info');
+        }
+
+        function loadToolsAndKnowledge() {
+            showNotification('Đang tải công cụ và tài liệu...', 'info');
+        }
+
+        // Emergency and urgent actions
+        function handleMassEmergency(type) {
+            showNotification(`Khởi động xử lý ${type} hàng loạt`, 'warning');
+        }
+
+        function handleFarmEmergency(farmId) {
+            showNotification(`Xử lý khẩn cấp tại ${farmId}`, 'warning');
+        }
+
+        function startEmergencyCall() {
+            showNotification('Kết nối khẩn cấp...', 'warning');
+        }
+
+        // Route and navigation
+        function optimizeRoute() {
+            showNotification('Tối ưu hóa lộ trình...', 'info');
+            setTimeout(() => {
+                showNotification('Đã tối ưu! Tiết kiệm được 45 phút', 'success');
+            }, 2000);
+        }
+
+        function startOptimizedRoute() {
+            showNotification('Bắt đầu dẫn đường theo lộ trình tối ưu...', 'info');
+        }
+
+        function startNavigation(farmId) {
+            showNotification(`Dẫn đường đến ${farmId}...`, 'info');
+        }
+
+        // Task management
+        function startTask(taskId) {
+            showNotification(`Bắt đầu công việc ${taskId}...`, 'info');
+            // Update progress bar
+            const progressBar = event.target.closest('.list-item').querySelector('.progress-fill');
+            if (progressBar) {
+                progressBar.style.width = '20%';
+            }
+        }
+
+        // Communication
+        function callFarmer(farmId) {
+            showNotification(`Gọi điện cho nông dân ${farmId}...`, 'info');
+        }
+
+        function chatFarmer(farmId) {
+            showNotification(`Mở chat với ${farmId}...`, 'info');
+        }
+
+        function sendProgressReport() {
+            showNotification('Đang gửi báo cáo tiến độ...', 'info');
+            setTimeout(() => {
+                showNotification('Báo cáo đã gửi thành công!', 'success');
+            }, 2000);
+        }
+
+        function thankManager() {
+            showNotification('Đã gửi lời cảm ơn', 'success');
+        }
+
+        function shareAdditionalInfo() {
+            showNotification('Chia sẻ thông tin bổ sung...', 'info');
+        }
+
+        // AI Tools
+        function openPestIdentifier() {
+            showNotification('Mở công cụ nhận diện sâu bệnh AI...', 'info');
+        }
+
+        function openDosageCalculator() {
+            showNotification('Mở máy tính liều lượng...', 'info');
+        }
+
+        function openPlantHealthScanner() {
+            showNotification('Mở công cụ đánh giá sức khỏe cây...', 'info');
+        }
+
+        function openWeatherAnalyzer() {
+            showNotification('Mở phân tích thời tiết...', 'info');
+        }
+
+        function openAICamera(farmId) {
+            showNotification('Mở AI Camera...', 'info');
+        }
+
+        // Quick tools
+        function openVoiceRecorder() {
+            showNotification('Bắt đầu ghi âm...', 'info');
+        }
+
+        function openQRScanner() {
+            showNotification('Mở quét QR code...', 'info');
+        }
+
+        function openMeasurementTool() {
+            showNotification('Mở công cụ đo lường...', 'info');
+        }
+
+        function openColorAnalyzer() {
+            showNotification('Mở phân tích màu lá...', 'info');
+        }
+
+        function openOfflineSync() {
+            showNotification('Đồng bộ dữ liệu offline...', 'info');
+        }
+
+        function openEmergencyHelp() {
+            showNotification('Kích hoạt hỗ trợ khẩn cấp...', 'warning');
+        }
+
+        // Knowledge base
+        function openKnowledgeItem(itemId) {
+            showNotification(`Mở tài liệu: ${itemId}`, 'info');
+        }
+
+        function viewAllKnowledge() {
+            showNotification('Mở kho tài liệu đầy đủ...', 'info');
+        }
+
+        // Production Process Builder Functions
+        function createNewProcess() {
+            showNotification('Mở trình soạn thảo quy trình mới...', 'info');
+            openProcessBuilder();
+        }
+
+        function useTemplate(templateId) {
+            const templates = {
+                'durian-standard': 'Sầu riêng VietGAP',
+                'durian-organic': 'Sầu riêng Hữu cơ', 
+                'durian-intensive': 'Sầu riêng Thâm canh cao',
+            };
+            
+            showNotification(`Sử dụng template: ${templates[templateId]}`, 'info');
+            setTimeout(() => {
+                openProcessBuilder(templateId);
+            }, 1000);
+        }
+
+        function createCustomProcess() {
+            showNotification('Tạo quy trình tùy chỉnh...', 'info');
+            openProcessBuilder('custom');
+        }
+
+        function editProcess(processId) {
+            showNotification(`Chỉnh sửa quy trình: ${processId}`, 'info');
+            openProcessBuilder(null, processId);
+        }
+
+        function shareProcess(processId) {
+            event.stopPropagation();
+            showNotification(`Chia sẻ quy trình: ${processId}`, 'info');
+            // Generate shareable link or export options
+            setTimeout(() => {
+                showNotification('Đã sao chép link chia sẻ!', 'success');
+            }, 1500);
+        }
+
+        function duplicateProcess(processId) {
+            event.stopPropagation();
+            showNotification(`Nhân bản quy trình: ${processId}`, 'info');
+            setTimeout(() => {
+                showNotification('Đã tạo bản sao thành công!', 'success');
+            }, 1500);
+        }
+
+        function viewProcessLibrary() {
+            showNotification('Mở thư viện quy trình...', 'info');
+            // Open process library with search and filter capabilities
+        }
+
+        function openProcessBuilder(templateId = null, processId = null) {
+            // Create process builder modal/screen
+            const builderModal = createProcessBuilderModal(templateId, processId);
+            document.body.appendChild(builderModal);
+            
+            if (templateId) {
+                showNotification(`Đang tải template ${templateId}...`, 'info');
+            } else if (processId) {
+                showNotification(`Đang tải quy trình ${processId}...`, 'info');
+            } else {
+                showNotification('Mở trình soạn thảo quy trình...', 'info');
+            }
+        }
+
+        function createProcessBuilderModal(templateId, processId) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.onclick = function(e) {
+                if (e.target === modal) closeProcessBuilder();
+            };
+            
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg w-full max-w-md max-h-full overflow-y-auto">
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-4 rounded-t-lg">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-lg font-bold flex items-center">
+                                <i class="fas fa-project-diagram mr-2"></i>
+                                Soạn thảo quy trình
+                            </h2>
+                            <button onclick="closeProcessBuilder()" class="text-white hover:text-gray-200">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4 space-y-4">
+                        <!-- Process Info -->
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tên quy trình</label>
+                                <input type="text" class="w-full p-2 border border-gray-300 rounded-lg" 
+                                       placeholder="VD: Sầu riêng Monthong - Vườn ABC" value="${processId ? 'Sầu riêng Monthong - Vườn Anh Hiền' : ''}">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Loại cây trồng</label>
+                                <select class="w-full p-2 border border-gray-300 rounded-lg">
+                                    <option>Sầu riêng</option>
+                                    <option>Xoài</option>
+                                    <option>Nhãn</option>
+                                    <option>Chôm chôm</option>
+                                    <option>Khác...</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tiêu chuẩn áp dụng</label>
+                                <select class="w-full p-2 border border-gray-300 rounded-lg">
+                                    <option>VietGAP</option>
+                                    <option>GlobalGAP</option>
+                                    <option>Hữu cơ JAS</option>
+                                    <option>Hữu cơ USDA</option>
+                                    <option>Tự do</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Process Phases -->
+                        <div class="border-t pt-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-bold text-gray-800">Các giai đoạn</h3>
+                                <button onclick="addPhase()" class="action-btn btn-primary">
+                                    <i class="fas fa-plus mr-1"></i>Thêm giai đoạn
+                                </button>
+                            </div>
+                            
+                            <div id="phasesList" class="space-y-2">
+                                ${generateSamplePhases(templateId)}
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="border-t pt-4 flex space-x-2">
+                            <button onclick="saveProcess()" class="action-btn btn-success flex-1">
+                                <i class="fas fa-save mr-1"></i>Lưu quy trình
+                            </button>
+                            <button onclick="previewProcess()" class="action-btn btn-primary flex-1">
+                                <i class="fas fa-eye mr-1"></i>Xem trước
+                            </button>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button onclick="exportProcess()" class="action-btn btn-secondary flex-1">
+                                <i class="fas fa-download mr-1"></i>Xuất PDF
+                            </button>
+                            <button onclick="shareProcessBuilder()" class="action-btn btn-secondary flex-1">
+                                <i class="fas fa-share-alt mr-1"></i>Chia sẻ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return modal;
+        }
+
+        function generateSamplePhases(templateId) {
+            const phases = {
+                'durian-standard': [
+                    { name: 'Chuẩn bị đất', duration: '2 tuần', description: 'Xới đất, bón phân hữu cơ' },
+                    { name: 'Trồng cây', duration: '1 tuần', description: 'Đào hố, trồng giống' },
+                    { name: 'Chăm sóc non', duration: '6 tháng', description: 'Tưới nước, bón phân định kỳ' },
+                    { name: 'Tạo tán', duration: '12 tháng', description: 'Cắt tỉa, định hình tán' }
+                ],
+                'durian-organic': [
+                    { name: 'Chuẩn bị đất hữu cơ', duration: '3 tuần', description: 'Xử lý đất theo chuẩn hữu cơ' },
+                    { name: 'Trồng giống hữu cơ', duration: '1 tuần', description: 'Sử dụng giống được chứng nhận' },
+                    { name: 'Chăm sóc hữu cơ', duration: '8 tháng', description: 'Chỉ sử dụng phân và thuốc hữu cơ' }
+                ]
+            };
+            
+            const defaultPhases = phases[templateId] || [
+                { name: 'Giai đoạn 1', duration: '1 tháng', description: 'Mô tả công việc...' }
+            ];
+            
+            return defaultPhases.map((phase, index) => `
+                <div class="phase-item border border-gray-200 rounded-lg p-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-medium text-gray-800">Giai đoạn ${index + 1}</span>
+                        <button onclick="removePhase(${index})" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <input type="text" placeholder="Tên giai đoạn" value="${phase.name}" 
+                           class="w-full p-2 border border-gray-300 rounded mb-2 text-sm">
+                    <input type="text" placeholder="Thời gian" value="${phase.duration}" 
+                           class="w-full p-2 border border-gray-300 rounded mb-2 text-sm">
+                    <textarea placeholder="Mô tả công việc..." 
+                              class="w-full p-2 border border-gray-300 rounded text-sm h-16">${phase.description}</textarea>
+                    
+                    <div class="mt-2 flex space-x-2">
+                        <button onclick="addTask(${index})" class="action-btn btn-secondary text-xs">
+                            <i class="fas fa-plus mr-1"></i>Thêm công việc
+                        </button>
+                        <button onclick="addChecklist(${index})" class="action-btn btn-secondary text-xs">
+                            <i class="fas fa-check mr-1"></i>Checklist
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function closeProcessBuilder() {
+            const modal = document.querySelector('.fixed.inset-0');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function addPhase() {
+            const phasesList = document.getElementById('phasesList');
+            const newPhaseIndex = phasesList.children.length;
+            
+            const newPhase = document.createElement('div');
+            newPhase.className = 'phase-item border border-gray-200 rounded-lg p-3 slide-in';
+            newPhase.innerHTML = `
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-medium text-gray-800">Giai đoạn ${newPhaseIndex + 1}</span>
+                    <button onclick="removePhase(${newPhaseIndex})" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+                <input type="text" placeholder="Tên giai đoạn" 
+                       class="w-full p-2 border border-gray-300 rounded mb-2 text-sm">
+                <input type="text" placeholder="Thời gian (VD: 2 tuần)" 
+                       class="w-full p-2 border border-gray-300 rounded mb-2 text-sm">
+                <textarea placeholder="Mô tả công việc chi tiết..." 
+                          class="w-full p-2 border border-gray-300 rounded text-sm h-16"></textarea>
+                
+                <div class="mt-2 flex space-x-2">
+                    <button onclick="addTask(${newPhaseIndex})" class="action-btn btn-secondary text-xs">
+                        <i class="fas fa-plus mr-1"></i>Thêm công việc
+                    </button>
+                    <button onclick="addChecklist(${newPhaseIndex})" class="action-btn btn-secondary text-xs">
+                        <i class="fas fa-check mr-1"></i>Checklist
+                    </button>
+                </div>
+            `;
+            
+            phasesList.appendChild(newPhase);
+            showNotification('Đã thêm giai đoạn mới', 'success');
+        }
+
+        function removePhase(index) {
+            const phasesList = document.getElementById('phasesList');
+            const phases = phasesList.children;
+            
+            if (phases.length > 1 && phases[index]) {
+                phases[index].remove();
+                showNotification('Đã xóa giai đoạn', 'info');
+                
+                // Renumber remaining phases
+                Array.from(phases).forEach((phase, newIndex) => {
+                    const title = phase.querySelector('.font-medium');
+                    if (title) {
+                        title.textContent = `Giai đoạn ${newIndex + 1}`;
+                    }
+                });
+            } else {
+                showNotification('Cần ít nhất 1 giai đoạn', 'warning');
+            }
+        }
+
+        function addTask(phaseIndex) {
+            showNotification(`Thêm công việc cho giai đoạn ${phaseIndex + 1}`, 'info');
+            // Implementation for adding specific tasks to a phase
+        }
+
+        function addChecklist(phaseIndex) {
+            showNotification(`Thêm checklist cho giai đoạn ${phaseIndex + 1}`, 'info');
+            // Implementation for adding checklist items to a phase
+        }
+
+        function saveProcess() {
+            showNotification('Đang lưu quy trình...', 'info');
+            setTimeout(() => {
+                showNotification('Quy trình đã được lưu thành công!', 'success');
+                closeProcessBuilder();
+            }, 2000);
+        }
+
+        function previewProcess() {
+            showNotification('Đang tạo bản xem trước...', 'info');
+            // Generate preview of the process
+        }
+
+        function exportProcess() {
+            showNotification('Đang xuất file PDF...', 'info');
+            setTimeout(() => {
+                showNotification('Đã xuất quy trình thành công!', 'success');
+            }, 2000);
+        }
+
+        function shareProcessBuilder() {
+            showNotification('Tạo link chia sẻ...', 'info');
+            setTimeout(() => {
+                showNotification('Đã sao chép link chia sẻ!', 'success');
+            }, 1500);
+        }
+
+        // Farm management
+        function scheduleFertilizer(farmId) {
+            showNotification(`Lập đơn đặt phân cho ${farmId}`, 'info');
+        }
+
+        function viewProgress(farmId) {
+            showNotification(`Xem tiến độ ${farmId}`, 'info');
+        }
+
+        function scheduleVisit(farmId) {
+            showNotification(`Lên lịch thăm ${farmId}`, 'info');
+        }
+
+        function loadMoreFarms() {
+            showNotification('Đang tải thêm 20 vườn...', 'info');
+        }
+
+        // AI and automation
+        function followAIAdvice() {
+            showNotification('Áp dụng gợi ý từ AI...', 'success');
+        }
+
+        function askAI() {
+            showNotification('Mở AI Assistant...', 'info');
+        }
+
+        // Utility functions
+        function createGroupChat(topic) {
+            showNotification(`Tạo nhóm chat về ${topic}`, 'info');
+        }
+
+        function orderFertilizer() {
+            showNotification('Đặt hàng phân bón khẩn cấp...', 'info');
+        }
+
+        function setReminder(taskId) {
+            showNotification('Đã đặt nhắc nhở', 'success');
+        }
+
+        function prepareVisit(taskId) {
+            showNotification('Chuẩn bị cho chuyến thăm...', 'info');
+        }
+
+        function viewDetails(taskId) {
+            showNotification('Xem chi tiết công việc...', 'info');
+        }
+
+        function toggleQuickActions() {
+            showNotification('Mở menu hành động nhanh...', 'info');
+        }
+
+        function openNotifications() {
+            showNotification('Hiển thị thông báo...', 'info');
+        }
+
+        // Enhanced notification system
+        function showNotification(message, type = 'info') {
+            const colors = {
+                'info': 'bg-blue-500',
+                'success': 'bg-green-500',
+                'warning': 'bg-yellow-500',
+                'error': 'bg-red-500'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 left-1/2 transform -translate-x-1/2 ${colors[type]} text-white px-4 py-2 rounded-lg text-sm z-50 shadow-lg slide-in`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Auto-refresh data
+        function refreshData() {
+            showNotification('Làm mới dữ liệu...', 'info');
+            updateDashboardMetrics();
+            setTimeout(() => {
+                showNotification('Dữ liệu đã cập nhật', 'success');
+            }, 1500);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('FarmKeeper Technician Optimized App initialized');
+            
+            // Auto-refresh every 30 seconds
+            setInterval(refreshData, 30000);
+            
+            // Initialize with dashboard
+            updateDashboardMetrics();
+            
+            // Add pull-to-refresh gesture
+            let touchStartY = 0;
+            document.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                const touchEndY = e.changedTouches[0].clientY;
+                const deltaY = touchStartY - touchEndY;
+                
+                if (deltaY < -100) {
+                    refreshData();
+                }
+            });
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case '1':
+                            showTab('dashboard');
+                            break;
+                        case '2':
+                            showTab('farms');
+                            break;
+                        case '3':
+                            showTab('tools');
+                            break;
+                        case 'r':
+                            e.preventDefault();
+                            refreshData();
+                            break;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

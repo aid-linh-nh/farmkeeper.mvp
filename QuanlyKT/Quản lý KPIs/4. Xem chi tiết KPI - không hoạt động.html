@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xem chi tiết KPI - FARMKEEPER</title>
+
+    <!-- Noto Sans Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+      }
+      .logo-color {
+        color: #69bd70;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen"
+  >
+    <!-- Modal/Popup Container -->
+    <div
+      id="kpi-detail-popup"
+      class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4"
+    >
+      <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full">
+        <!-- Modal Header -->
+        <div
+          class="flex justify-between items-center p-6 border-b border-gray-200"
+        >
+          <h2 class="text-2xl font-bold text-gray-900">Chi tiết KPI</h2>
+          <button
+            id="close-popup-btn"
+            class="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body - KPI Details -->
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8">
+            <!-- Column 1 -->
+            <div>
+              <div class="mb-4">
+                <label
+                  class="block text-sm font-semibold text-gray-500 uppercase mb-1"
+                  >Tên KPI</label
+                >
+                <p id="detail_kpi_name" class="text-lg text-gray-900">
+                  Thời gian Phản hồi Yêu cầu
+                </p>
+              </div>
+              <div class="mb-4">
+                <label
+                  class="block text-sm font-semibold text-gray-500 uppercase mb-1"
+                  >Mã KPI (System ID)</label
+                >
+                <p id="detail_kpi_id" class="text-lg text-gray-900 font-mono">
+                  kpi_response_time
+                </p>
+              </div>
+              <div class="mb-4">
+                <label
+                  class="block text-sm font-semibold text-gray-500 uppercase mb-1"
+                  >Nhóm Chiến Lược</label
+                >
+                <p id="detail_kpi_group" class="text-lg text-gray-900">
+                  III. Vận hành & Năng lực
+                </p>
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-semibold text-gray-500 uppercase mb-1"
+                  >Mô tả chi tiết</label
+                >
+                <p id="detail_kpi_description" class="text-lg text-gray-900">
+                  Đo lường thời gian trung bình để phản hồi các yêu cầu từ khách
+                  hàng. Hiện tại không được sử dụng.
+                </p>
+              </div>
+            </div>
+            <!-- Column 2 -->
+            <div>
+              <div class="mb-4">
+                <label
+                  class="block text-sm font-semibold text-gray-500 uppercase mb-1"
+                  >Đơn vị tính</label
+                >
+                <p id="detail_kpi_unit" class="text-lg text-gray-900">Giờ</p>
+              </div>
+              <div class="mb-4">
+                <label
+                  class="block text-sm font-semibold text-gray-500 uppercase mb-1"
+                  >Nguồn Dữ liệu</label
+                >
+                <p id="detail_kpi_source" class="text-lg text-gray-900">
+                  Module hỗ trợ khách hàng
+                </p>
+              </div>
+              <div class="mb-4">
+                <label
+                  class="block text-sm font-semibold text-gray-500 uppercase mb-1"
+                  >Chiều hướng đo lường</label
+                >
+                <p id="detail_kpi_direction" class="text-lg text-gray-900">
+                  Càng thấp càng tốt
+                </p>
+              </div>
+              <div>
+                <label
+                  class="block text-sm font-semibold text-gray-500 uppercase mb-1"
+                  >Trạng thái</label
+                >
+                <!-- Updated status to "Không hoạt động" with red color -->
+                <span
+                  id="detail_kpi_status"
+                  class="px-2 py-1 text-sm font-medium rounded-full bg-red-100 text-red-800"
+                  >Không hoạt động</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="p-6 border-t border-gray-200 flex justify-end">
+          <button
+            id="ok-btn"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-md"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize lucide icons
+      lucide.createIcons();
+
+      // Get elements
+      const popup = document.getElementById('kpi-detail-popup');
+      const closeBtn = document.getElementById('close-popup-btn');
+      const okBtn = document.getElementById('ok-btn');
+
+      // Function to close the popup
+      function closePopup() {
+        popup.style.display = 'none';
+      }
+
+      // Event listeners to close the popup
+      closeBtn.addEventListener('click', closePopup);
+      okBtn.addEventListener('click', closePopup);
+
+      // Optional: Close popup when clicking outside
+      popup.addEventListener('click', function (event) {
+        if (event.target === popup) {
+          closePopup();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh giá Độ phức tạp Vườn</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .input-base {
+            background-color: #1f2937; /* gray-800 */
+            border: 1px solid #4b5563; /* gray-600 */
+            transition: all 0.2s ease-in-out;
+        }
+        .input-base:focus {
+            --tw-ring-color: #3b82f6;
+            border-color: #3b82f6;
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans p-6 lg:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-white">Đánh giá Độ phức tạp Vườn</h1>
+            <p class="text-gray-400 mt-1">Lượng hóa độ khó của một vườn dựa trên các đặc tính và quy tắc đã thiết lập trước khi phân công.</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="bg-gray-800 p-8 rounded-xl border border-gray-700">
+            <!-- Farm Selection -->
+            <div class="mb-8">
+                <label for="farm-select" class="block text-sm font-medium text-gray-300 mb-2">Chọn Vườn cần Đánh giá</label>
+                <select id="farm-select" class="w-full md:w-1/2 bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2 input-base">
+                    <option>FARM_DL_026 - Vườn sầu riêng ông Tám (Chưa đánh giá)</option>
+                    <option>FARM_DL_027 - Vườn bơ chú Sáu (Chưa đánh giá)</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Left Column: Reference Information -->
+                <div>
+                    <h2 class="text-xl font-semibold text-white mb-4">1. Thông tin Tham chiếu (Từ Hồ sơ Vườn)</h2>
+                    <div class="space-y-4 bg-gray-900/50 p-6 rounded-lg border border-gray-700">
+                        <div>
+                            <p class="text-xs text-gray-500">Tên Vườn / Chủ Vườn</p>
+                            <p class="font-semibold text-white">Vườn sầu riêng ông Tám</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-xs text-gray-500">Diện tích (ha)</p>
+                                <p class="font-semibold text-white">6.2</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Tổng số cây</p>
+                                <p class="font-semibold text-white">500</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500">Phân bổ Giai đoạn</p>
+                            <p class="font-semibold text-white text-sm">Kinh doanh ổn định (425), Kiến thiết (50), Vườn già (25)</p>
+                        </div>
+                         <div>
+                            <p class="text-xs text-gray-500">Khoảng cách từ Trụ sở</p>
+                            <p class="font-semibold text-white">25 km</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Complexity Configuration -->
+                <div>
+                    <h2 class="text-xl font-semibold text-white mb-4">2. Đánh giá & Cấu hình</h2>
+                    <div class="space-y-6">
+                        <!-- Auto-calculated Factors -->
+                        <div class="bg-gray-900/50 p-4 rounded-lg">
+                            <p class="text-sm font-semibold text-gray-400 mb-3">Hệ số được tính tự động</p>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span>Hệ số Quy mô Diện tích:</span><span id="auto-factor-area" class="font-bold text-white">1.20</span></div>
+                                <div class="flex justify-between"><span>Hệ số Giai đoạn (hỗn hợp):</span><span id="auto-factor-stage" class="font-bold text-white">1.03</span></div>
+                                <div class="flex justify-between"><span>Hệ số Khoảng cách:</span><span id="auto-factor-distance" class="font-bold text-white">1.05</span></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Manager-evaluated Factors -->
+                        <div id="manager-factors-container" class="space-y-4">
+                            <p class="text-sm font-semibold text-gray-400">Hệ số do Quản lý đánh giá</p>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Hệ số Mức độ Đầu tư</label>
+                                <select class="factor-input w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2 input-base" data-factor-name="investment">
+                                    <option value="0.9">Đầu tư cao</option>
+                                    <option value="1.0" selected>Đầu tư khá</option>
+                                    <option value="1.1">Đầu tư cầm chừng</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Hệ số Mức độ Yêu cầu Hỗ trợ</label>
+                                <select class="factor-input w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2 input-base" data-factor-name="support_demand">
+                                    <option value="0.95">Thấp (Tự chủ cao)</option>
+                                    <option value="1.0" selected>Trung bình</option>
+                                    <option value="1.1">Cao (Yêu cầu thường xuyên)</option>
+                                </select>
+                            </div>
+                             <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Hệ số Loại Hợp đồng</label>
+                                <select class="factor-input w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2 input-base" data-factor-name="contract_type">
+                                    <option value="1.1">Hợp đồng Liên kết - Bao tiêu</option>
+                                    <option value="1.0" selected>Hợp đồng Hỗ trợ Kỹ thuật</option>
+                                </select>
+                            </div>
+                             <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">Hệ số Tiềm năng Doanh số</label>
+                                <select class="factor-input w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2 input-base" data-factor-name="sales_potential">
+                                    <option value="1.15">Tiềm năng rất cao</option>
+                                    <option value="1.05" selected>Tiềm năng cao</option>
+                                    <option value="1.0">Tiềm năng trung bình</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Final Calculation -->
+                    <div class="mt-8 pt-6 border-t border-gray-700">
+                        <div class="bg-gray-900/50 p-4 rounded-lg border border-gray-700 flex items-center justify-between">
+                            <p class="font-semibold text-white">Hệ số Phức tạp của Vườn</p>
+                            <p id="complexity-factor" class="text-3xl font-bold text-yellow-400">1.35</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 pt-6 border-t border-gray-700 flex justify-end">
+                <button type="submit" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-lg flex items-center shadow-lg shadow-green-600/20 transition-transform transform hover:scale-105">
+                    <i data-lucide="check-check" class="w-5 h-5 mr-2"></i>
+                    Lưu Đánh giá & Sẵn sàng Phân công
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- MOCK DATA & RULES ---
+        const farmData = {
+            area: 6.2,
+            distance: 25, // Updated distance
+            stageDistribution: {
+                stable: 425,
+                new: 50,
+                old: 25,
+                total: 500
+            }
+        };
+
+        const RULES = {
+            area: [
+                { condition: (val) => val >= 10, factor: 1.3 },
+                { condition: (val) => val >= 5, factor: 1.2 },
+                { condition: (val) => val >= 2, factor: 1.1 },
+                { condition: (val) => val < 2, factor: 1.0 }
+            ],
+            distance: [
+                { condition: (val) => val > 50, factor: 1.1 },
+                { condition: (val) => val >= 20, factor: 1.05 },
+                { condition: (val) => val < 20, factor: 1.0 }
+            ],
+            stage: {
+                new: 1.2,
+                stable: 1.0,
+                old: 1.1
+            }
+        };
+
+        // --- DOM ELEMENTS ---
+        const complexityFactorDisplay = document.getElementById('complexity-factor');
+        const autoFactorArea = document.getElementById('auto-factor-area');
+        const autoFactorStage = document.getElementById('auto-factor-stage');
+        const autoFactorDistance = document.getElementById('auto-factor-distance');
+        const managerFactorsContainer = document.getElementById('manager-factors-container');
+
+        // --- FUNCTIONS ---
+        function getFactorByRule(value, ruleSet) {
+            const rule = ruleSet.find(r => r.condition(value));
+            return rule ? rule.factor : 1.0;
+        }
+
+        function calculateComplexity() {
+            // 1. Auto-calculated factors
+            const areaFactor = getFactorByRule(farmData.area, RULES.area);
+            const distanceFactor = getFactorByRule(farmData.distance, RULES.distance);
+            
+            const stageDistribution = farmData.stageDistribution;
+            const stageFactor = 
+                ((stageDistribution.stable / stageDistribution.total) * RULES.stage.stable) +
+                ((stageDistribution.new / stageDistribution.total) * RULES.stage.new) +
+                ((stageDistribution.old / stageDistribution.total) * RULES.stage.old);
+            
+            autoFactorArea.textContent = areaFactor.toFixed(2);
+            autoFactorStage.textContent = stageFactor.toFixed(3); // More precision for weighted average
+            autoFactorDistance.textContent = distanceFactor.toFixed(2);
+            
+            let totalFactor = areaFactor * stageFactor * distanceFactor;
+
+            // 2. Manager-evaluated factors
+            const managerInputs = managerFactorsContainer.querySelectorAll('.factor-input');
+            managerInputs.forEach(input => {
+                totalFactor *= parseFloat(input.value);
+            });
+            
+            // 3. Display result
+            complexityFactorDisplay.textContent = totalFactor.toFixed(2);
+            complexityFactorDisplay.className = `text-3xl font-bold ${totalFactor >= 1.5 ? 'text-red-400' : totalFactor >= 1.1 ? 'text-yellow-400' : 'text-green-400'}`;
+        }
+
+        // --- EVENT LISTENERS ---
+        document.querySelectorAll('.factor-input').forEach(input => {
+            input.addEventListener('change', calculateComplexity);
+        });
+
+        // Initial calculation on page load
+        calculateComplexity();
+    </script>
+</body>
+</html>

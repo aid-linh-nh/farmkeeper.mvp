@@ -1,0 +1,2685 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper - Vườn Anh Hiền • Dashboard Quản lý Sản xuất</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .farm-green { color: #2E7D32; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f8fafc; border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .card-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.06);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        
+        .card-modern.card-green { border-color: rgba(34, 197, 94, 0.6); }
+        .card-modern.card-green:hover { border-color: rgba(34, 197, 94, 0.8); }
+        
+        .card-modern.card-blue { border-color: rgba(59, 130, 246, 0.6); }
+        .card-modern.card-blue:hover { border-color: rgba(59, 130, 246, 0.8); }
+        
+        .card-modern.card-purple { border-color: rgba(147, 51, 234, 0.6); }
+        .card-modern.card-purple:hover { border-color: rgba(147, 51, 234, 0.8); }
+        
+        .card-modern.card-orange { border-color: rgba(249, 115, 22, 0.6); }
+        .card-modern.card-orange:hover { border-color: rgba(249, 115, 22, 0.8); }
+        
+        .card-modern.card-red { border-color: rgba(239, 68, 68, 0.6); }
+        .card-modern.card-red:hover { border-color: rgba(239, 68, 68, 0.8); }
+        
+        .card-modern.card-yellow { border-color: rgba(245, 158, 11, 0.6); }
+        .card-modern.card-yellow:hover { border-color: rgba(245, 158, 11, 0.8); }
+        
+        .card-modern.card-indigo { border-color: rgba(99, 102, 241, 0.6); }
+        .card-modern.card-indigo:hover { border-color: rgba(99, 102, 241, 0.8); }
+        
+        .alert-critical {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            animation: pulse-alert 2s ease-in-out infinite;
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .alert-budget {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border: 2px solid rgba(251, 191, 36, 0.3);
+        }
+        
+        .alert-iot {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        @keyframes pulse-alert {
+            0%, 100% { 
+                border-color: rgba(239, 68, 68, 0.3);
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            50% { 
+                border-color: rgba(239, 68, 68, 0.6);
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+        }
+        
+        .zone-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .zone-card:hover {
+            transform: scale(1.02);
+            z-index: 10;
+        }
+        
+        .zone-healthy { 
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 2px solid #22c55e;
+        }
+        
+        .zone-warning { 
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            animation: pulse-warning 3s ease-in-out infinite;
+        }
+        
+        .zone-critical { 
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid #ef4444;
+            animation: pulse-critical 2s ease-in-out infinite;
+        }
+        
+        .zone-new { 
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 2px solid #3b82f6;
+        }
+        
+        @keyframes pulse-warning {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        @keyframes pulse-critical {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .sensor-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .sensor-optimal { background: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
+        .sensor-warning { background: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); }
+        .sensor-critical { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+        .sensor-offline { background: #6b7280; box-shadow: 0 0 15px rgba(107, 114, 128, 0.6); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .quick-action-btn {
+            background: linear-gradient(135deg, var(--from-color), var(--to-color));
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .quick-action-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .quick-action-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        .quick-action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .quick-action-btn:hover::before {
+            left: 100%;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            border-right: 1px solid rgba(226, 232, 240, 0.6);
+            min-height: 100vh;
+            width: 300px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .main-content {
+            margin-left: 300px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+            60% { transform: translateY(-3px); }
+        }
+        
+        .task-priority-critical {
+            border-left: 4px solid #ef4444;
+            background: linear-gradient(135deg, rgba(254, 242, 242, 0.8) 0%, rgba(254, 202, 202, 0.6) 100%);
+        }
+        
+        .task-priority-high {
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, rgba(255, 251, 235, 0.8) 0%, rgba(254, 240, 138, 0.6) 100%);
+        }
+        
+        .task-priority-medium {
+            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, rgba(239, 246, 255, 0.8) 0%, rgba(191, 219, 254, 0.6) 100%);
+        }
+        
+        .task-priority-low {
+            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, rgba(240, 253, 244, 0.8) 0%, rgba(220, 252, 231, 0.6) 100%);
+        }
+        
+        .task-completed {
+            border-left: 4px solid #6b7280;
+            background: linear-gradient(135deg, rgba(249, 250, 251, 0.8) 0%, rgba(229, 231, 235, 0.6) 100%);
+            opacity: 0.7;
+        }
+        
+        .task-status-urgent { border: 2px solid #ef4444; }
+        .task-status-doing { border: 2px solid #f59e0b; }
+        .task-status-completed { border: 2px solid #10b981; }
+        .task-status-pending { border: 2px solid #6b7280; }
+        .task-status-need-help { border: 2px solid #8b5cf6; }
+        
+        .cta-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .certification-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .badge-active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .badge-pending {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+        
+        .badge-expired {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+        
+        .iot-sensor-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .iot-sensor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sensor-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Focused Sidebar -->
+    <div class="sidebar">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <div class="bg-green-100 p-3 rounded-xl">
+                    <i class="fas fa-seedling text-2xl text-green-600"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800">Vườn Anh Hiền</h1>
+                    <p class="text-sm text-gray-500">12.5 ha • Cú M'Gar, Đắk Lắk</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="py-4 custom-scroll" style="max-height: calc(100vh - 250px); overflow-y: auto;">
+            <div class="px-4 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">QUẢN LÝ VƯỜN</p>
+            </div>
+            
+            <a href="#" class="sidebar-item active flex items-center px-4 py-3 text-white bg-green-500 rounded-lg mx-3 mb-2">
+                <i class="fas fa-chart-pie w-5 text-center mr-3"></i>
+                <span class="font-medium">Dashboard Tổng quan</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-map-marked-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Bản đồ Chi tiết</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-wifi w-5 text-center mr-3"></i>
+                <span class="font-medium">Hệ thống IoT</span>
+                <span class="ml-auto bg-green-500 text-white text-xs px-2 py-1 rounded-full">24/24</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">SẢN XUẤT</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-tasks w-5 text-center mr-3"></i>
+                <span class="font-medium">Quy trình Canh tác</span>
+                <span class="ml-auto bg-blue-500 text-white text-xs px-2 py-1 rounded-full">8</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-calendar-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Lịch Công việc</span>
+                <span class="ml-auto bg-orange-500 text-white text-xs px-2 py-1 rounded-full">5</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1 relative">
+                <i class="fas fa-exclamation-triangle w-5 text-center mr-3"></i>
+                <span class="font-medium">Cảnh báo & Sự cố</span>
+                <div class="notification-badge">3</div>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-tint w-5 text-center mr-3"></i>
+                <span class="font-medium">Quản lý Tưới</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-seedling w-5 text-center mr-3"></i>
+                <span class="font-medium">Quản lý Phân bón</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-bug w-5 text-center mr-3"></i>
+                <span class="font-medium">Kiểm soát Sâu bệnh</span>
+                <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">!</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">TÀI CHÍNH & VẬT TƯ</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-boxes w-5 text-center mr-3"></i>
+                <span class="font-medium">Quản lý Vật tư</span>
+                <span class="ml-auto bg-orange-500 text-white text-xs px-2 py-1 rounded-full">8</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-calculator w-5 text-center mr-3"></i>
+                <span class="font-medium">Tài chính Vườn</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-shopping-cart w-5 text-center mr-3"></i>
+                <span class="font-medium">Mua sắm & Đặt hàng</span>
+                <span class="ml-auto bg-blue-500 text-white text-xs px-2 py-1 rounded-full">3</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-chart-pie w-5 text-center mr-3"></i>
+                <span class="font-medium">Báo cáo Tài chính</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">CHẤT LƯỢNG & CHỨNG NHẬN</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-certificate w-5 text-center mr-3"></i>
+                <span class="font-medium">Chứng nhận Canh tác</span>
+                <span class="ml-auto bg-green-500 text-white text-xs px-2 py-1 rounded-full">3</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-microscope w-5 text-center mr-3"></i>
+                <span class="font-medium">Kiểm tra Chất lượng</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">HỖ TRỢ KỸ THUẬT</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1 relative">
+                <i class="fas fa-user-tie w-5 text-center mr-3"></i>
+                <span class="font-medium">Kỹ thuật viên</span>
+                <div class="ml-auto flex items-center space-x-1">
+                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">Online</span>
+                </div>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1 relative">
+                <i class="fas fa-comments w-5 text-center mr-3"></i>
+                <span class="font-medium">Chat & Tư vấn</span>
+                <div class="notification-badge">2</div>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-calendar-check w-5 text-center mr-3"></i>
+                <span class="font-medium">Lịch thăm vườn</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">THÔNG TIN BỔ SUNG</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg mx-3 mb-1">
+                <i class="fas fa-chart-line w-5 text-center mr-3"></i>
+                <span class="font-medium">Thị trường & Cộng đồng</span>
+            </a>
+        </nav>
+        
+        <!-- Enhanced System Status -->
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 space-y-2">
+            <div class="bg-green-50 p-3 rounded-lg border border-green-200">
+                <div class="flex items-center space-x-2 mb-2">
+                    <div class="sensor-optimal"></div>
+                    <p class="text-xs text-green-600 font-medium">Hệ thống IoT: 24/24 sensor hoạt động</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="sensor-warning"></div>
+                    <p class="text-xs text-orange-600 font-medium">3 cảnh báo cần xử lý</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Enhanced Header with Quick Info -->
+        <header class="bg-white/90 backdrop-filter backdrop-blur-lg shadow-sm border-b border-gray-200 sticky top-0 z-40">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Dashboard Quản lý Vườn</h1>
+                        <p class="text-sm text-gray-600">Sầu riêng Ri6 • 156 cây • 8 năm tuổi • Trạng thái: <span class="text-green-600 font-semibold">Tốt</span></p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <!-- Current Weather -->
+                        <div class="bg-blue-50 px-4 py-2 rounded-lg border border-blue-200">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-thermometer-half text-blue-600"></i>
+                                <span class="text-sm font-medium text-blue-800">32°C</span>
+                                <i class="fas fa-tint text-blue-600"></i>
+                                <span class="text-sm font-medium text-blue-800">70%</span>
+                            </div>
+                        </div>
+                        <!-- Quick Market Info -->
+                        <div class="bg-yellow-50 px-4 py-2 rounded-lg border border-yellow-200">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-chart-line text-yellow-600"></i>
+                                <span class="text-sm font-medium text-yellow-800">62,000đ/kg</span>
+                                <span class="text-xs text-green-600">+8%</span>
+                            </div>
+                        </div>
+                        <!-- Technician Quick Contact -->
+                        <div class="bg-green-50 px-4 py-2 rounded-lg border border-green-200 flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-tie text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-green-800">KS. Phạm Văn Minh</p>
+                                <p class="text-xs text-green-600">Kỹ thuật viên • Online</p>
+                            </div>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-green-600 transition-all" onclick="quickContactTechnician()">
+                                <i class="fas fa-phone"></i>
+                            </button>
+                        </div>
+                        <!-- Emergency Button -->
+                        <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all relative" onclick="handleEmergencyAction()">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Khẩn cấp
+                            <div class="notification-badge">3</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="px-6 py-6">
+            <!-- 1. Production Monitoring -->
+            <div class="card-modern card-green mb-6">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-chart-line text-green-600 mr-3"></i>
+                                Theo dõi Sản xuất
+                            </h3>
+                            <p class="text-gray-600">Tổng quan sản xuất và dự báo thu hoạch</p>
+                        </div>
+                        <button class="bg-purple-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all" onclick="updateYieldAssessment()">
+                            <i class="fas fa-edit mr-2"></i>Cập nhật đánh giá
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Farm Overview Stats -->
+                        <div class="lg:col-span-8">
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                                <!-- Total Area -->
+                                <div class="bg-blue-50 rounded-xl p-4 border border-blue-200 text-center">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-map text-blue-600"></i>
+                                    </div>
+                                    <p class="text-2xl font-bold text-blue-700">12.5</p>
+                                    <p class="text-sm text-gray-600">Hecta</p>
+                                    <div class="text-xs text-blue-600 mt-1">Diện tích canh tác</div>
+                                </div>
+                                
+                                <!-- Total Trees -->
+                                <div class="bg-green-50 rounded-xl p-4 border border-green-200 text-center">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-tree text-green-600"></i>
+                                    </div>
+                                    <p class="text-2xl font-bold text-green-700">156</p>
+                                    <p class="text-sm text-gray-600">Cây sầu riêng</p>
+                                    <div class="text-xs text-green-600 mt-1">8 năm tuổi • Ri6</div>
+                                </div>
+                                
+                                <!-- Current Fruits -->
+                                <div class="bg-orange-50 rounded-xl p-4 border border-orange-200 text-center">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-apple-alt text-orange-600"></i>
+                                    </div>
+                                    <p class="text-2xl font-bold text-orange-700">4,680</p>
+                                    <p class="text-sm text-gray-600">Quả đang phát triển</p>
+                                    <div class="text-xs text-orange-600 mt-1">+125 từ tuần trước</div>
+                                </div>
+                                
+                                <!-- Productivity Rate -->
+                                <div class="bg-purple-50 rounded-xl p-4 border border-purple-200 text-center">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-percentage text-purple-600"></i>
+                                    </div>
+                                    <p class="text-2xl font-bold text-purple-700">92%</p>
+                                    <p class="text-sm text-gray-600">Tỷ lệ đậu quả</p>
+                                    <div class="text-xs text-purple-600 mt-1">Cao hơn trung bình</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Production Status -->
+                            <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200">
+                                <h4 class="font-semibold text-green-800 mb-3">Giai đoạn Sản xuất hiện tại</h4>
+                                <div class="grid grid-cols-2 gap-4 text-center">
+                                    <div>
+                                        <p class="text-lg font-bold text-green-700">Ra quả</p>
+                                        <p class="text-sm text-gray-600">Tháng 3-7/2025</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-lg font-bold text-blue-700">75%</p>
+                                        <p class="text-sm text-gray-600">Tiến độ giai đoạn</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Yield Forecast -->
+                        <div class="lg:col-span-4">
+                            <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200 h-full">
+                                <h4 class="font-semibold text-purple-800 mb-4 flex items-center">
+                                    <i class="fas fa-crystal-ball text-purple-600 mr-2"></i>
+                                    Dự báo Thu hoạch
+                                </h4>
+                                <div class="space-y-4">
+                                    <div class="text-center">
+                                        <p class="text-3xl font-bold text-green-700">160</p>
+                                        <p class="text-sm text-gray-600">Tấn sản lượng dự kiến</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-2xl font-bold text-purple-700">T8-T9</p>
+                                        <p class="text-sm text-gray-600">Thời gian thu hoạch</p>
+                                    </div>
+                                    <div class="text-center pt-3 border-t border-purple-200">
+                                        <p class="text-2xl font-bold text-blue-800">9.92 tỷ VNĐ</p>
+                                        <p class="text-sm text-gray-600">Doanh thu dự kiến</p>
+                                        <p class="text-xs text-green-600 mt-1">+15% so với năm trước</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Combined Section: Zone Management (2/3) + Alerts (1/3) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+                <!-- Bản đồ Quản lý Phân khu (2/3 width) -->
+                <div class="lg:col-span-8 card-modern card-blue">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">Bản đồ Quản lý Phân khu</h3>
+                                <p class="text-gray-600">12.5 hecta • 156 cây • Theo dõi trạng thái từng lô</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <!-- Map View Toggle -->
+                                <div class="bg-gray-100 rounded-lg p-1 flex">
+                                    <button id="gridViewBtn" class="bg-white text-gray-800 px-3 py-1 rounded text-sm font-medium shadow-sm transition-all" onclick="switchToGridView()">
+                                        <i class="fas fa-th mr-1"></i>Lưới
+                                    </button>
+                                    <button id="mapViewBtn" class="text-gray-600 px-3 py-1 rounded text-sm font-medium transition-all" onclick="switchToMapView()">
+                                        <i class="fas fa-map mr-1"></i>Bản đồ GPS
+                                    </button>
+                                </div>
+                                <button class="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600 transition-all" onclick="openZoneDetails()">
+                                    <i class="fas fa-search-plus mr-1"></i>Chi tiết
+                                </button>
+                                <button class="bg-green-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-600 transition-all" onclick="openTreeManagement()">
+                                    <i class="fas fa-edit mr-1"></i>Cập nhật
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Zone Map Container -->
+                        <div id="zoneMapContainer">
+                            <!-- Grid View (Default) -->
+                            <div id="gridView" class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border-2 border-dashed border-green-300 mb-4">
+                                <div class="grid grid-cols-4 gap-3 h-64">
+                                    <!-- Zone A1 - Healthy -->
+                                    <div class="zone-card zone-healthy rounded-lg p-3 relative" onclick="selectZone('A1')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-green-800 text-lg">A1</span>
+                                            <div class="sensor-optimal"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-xs font-semibold text-green-700">20 cây • Khỏe mạnh</p>
+                                            <p class="text-xs text-gray-600">1.6 ha • 98%</p>
+                                            <div class="flex items-center space-x-1">
+                                                <i class="fas fa-leaf text-green-600 text-xs"></i>
+                                                <span class="text-xs text-green-600">Tốt</span>
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-2 right-2 bg-green-200 text-green-800 px-2 py-1 rounded text-xs">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Zone A2 - Healthy -->
+                                    <div class="zone-card zone-healthy rounded-lg p-3 relative" onclick="selectZone('A2')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-green-800 text-lg">A2</span>
+                                            <div class="sensor-optimal"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-xs font-semibold text-green-700">19 cây • Khỏe mạnh</p>
+                                            <p class="text-xs text-gray-600">1.5 ha • 95%</p>
+                                            <div class="flex items-center space-x-1">
+                                                <i class="fas fa-apple-alt text-green-600 text-xs"></i>
+                                                <span class="text-xs text-green-600">950 quả</span>
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-2 right-2 bg-green-200 text-green-800 px-2 py-1 rounded text-xs">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Zone A3 - Warning -->
+                                    <div class="zone-card zone-warning rounded-lg p-3 relative" onclick="selectZone('A3')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-yellow-800 text-lg">A3</span>
+                                            <div class="sensor-warning"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-xs font-semibold text-yellow-700">18 cây • Sâu phủ quả</p>
+                                            <p class="text-xs text-gray-600">1.4 ha • 75%</p>
+                                            <div class="flex items-center space-x-1">
+                                                <i class="fas fa-bug text-yellow-600 text-xs"></i>
+                                                <span class="text-xs text-yellow-600">Cần xử lý</span>
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-2 right-2 bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs animate-pulse">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Zone A4 - Healthy -->
+                                    <div class="zone-card zone-healthy rounded-lg p-3 relative" onclick="selectZone('A4')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-green-800 text-lg">A4</span>
+                                            <div class="sensor-optimal"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-xs font-semibold text-green-700">21 cây • Khỏe mạnh</p>
+                                            <p class="text-xs text-gray-600">1.7 ha • 98%</p>
+                                            <div class="flex items-center space-x-1">
+                                                <i class="fas fa-star text-green-600 text-xs"></i>
+                                                <span class="text-xs text-green-600">Xuất sắc</span>
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-2 right-2 bg-green-200 text-green-800 px-2 py-1 rounded text-xs">
+                                            <i class="fas fa-star"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Zone B1 - Warning -->
+                                    <div class="zone-card zone-warning rounded-lg p-3 relative" onclick="selectZone('B1')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-yellow-800 text-lg">B1</span>
+                                            <div class="sensor-warning"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-xs font-semibold text-yellow-700">17 cây • Sâu phủ quả</p>
+                                            <p class="text-xs text-gray-600">1.3 ha • 70%</p>
+                                            <div class="flex items-center space-x-1">
+                                                <i class="fas fa-bug text-yellow-600 text-xs"></i>
+                                                <span class="text-xs text-yellow-600">Cần xử lý</span>
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-2 right-2 bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs animate-pulse">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Zone B2 - Healthy -->
+                                    <div class="zone-card zone-healthy rounded-lg p-3 relative" onclick="selectZone('B2')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-green-800 text-lg">B2</span>
+                                            <div class="sensor-optimal"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-xs font-semibold text-green-700">20 cây • Khỏe mạnh</p>
+                                            <p class="text-xs text-gray-600">1.6 ha • 94%</p>
+                                            <div class="flex items-center space-x-1">
+                                                <i class="fas fa-leaf text-green-600 text-xs"></i>
+                                                <span class="text-xs text-green-600">Tốt</span>
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-2 right-2 bg-green-200 text-green-800 px-2 py-1 rounded text-xs">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Zone B3 - Critical -->
+                                    <div class="zone-card zone-critical rounded-lg p-3 relative" onclick="selectZone('B3')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-red-800 text-lg">B3</span>
+                                            <div class="sensor-critical"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-xs font-semibold text-red-700">16 cây • 2 cây chết</p>
+                                            <p class="text-xs text-gray-600">1.2 ha • 45%</p>
+                                            <div class="flex items-center space-x-1">
+                                                <i class="fas fa-skull text-red-600 text-xs"></i>
+                                                <span class="text-xs text-red-600">Khẩn cấp</span>
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-2 right-2 bg-red-200 text-red-800 px-2 py-1 rounded text-xs animate-pulse">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Zone B4 - New -->
+                                    <div class="zone-card zone-new rounded-lg p-3 relative" onclick="selectZone('B4')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-bold text-blue-800 text-lg">B4</span>
+                                            <div class="sensor-optimal"></div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-xs font-semibold text-blue-700">19 cây • Trồng mới</p>
+                                            <p class="text-xs text-gray-600">1.5 ha • Năm 2</p>
+                                            <div class="flex items-center space-x-1">
+                                                <i class="fas fa-seedling text-blue-600 text-xs"></i>
+                                                <span class="text-xs text-blue-600">Phát triển</span>
+                                            </div>
+                                        </div>
+                                        <div class="absolute bottom-2 right-2 bg-blue-200 text-blue-800 px-2 py-1 rounded text-xs">
+                                            <i class="fas fa-seedling"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- GPS Map View (Hidden by default) -->
+                            <div id="mapView" class="hidden bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-4 border-2 border-dashed border-green-300 mb-4">
+                                <div class="relative h-64 bg-green-100 rounded-lg overflow-hidden">
+                                    <!-- Mock GPS Map Interface -->
+                                    <div class="absolute inset-0 bg-gradient-to-br from-green-200 to-green-300">
+                                        <!-- Farm Boundary -->
+                                        <div class="absolute inset-4 border-4 border-green-600 rounded-lg">
+                                            <!-- GPS Coordinates Display -->
+                                            <div class="absolute top-2 left-2 bg-white bg-opacity-90 rounded px-2 py-1 text-xs">
+                                                <i class="fas fa-map-marker-alt text-green-600 mr-1"></i>
+                                                <span class="font-mono">12°42'15"N, 108°03'45"E</span>
+                                            </div>
+                                            
+                                            <!-- Zone Markers on Map -->
+                                            <div class="absolute top-4 left-8 w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-green-600" onclick="selectZone('A1')" title="A1: 20 cây, Khỏe mạnh">
+                                                A1
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                            </div>
+                                            
+                                            <div class="absolute top-4 right-20 w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-green-600" onclick="selectZone('A2')" title="A2: 19 cây, Khỏe mạnh">
+                                                A2
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                            </div>
+                                            
+                                            <div class="absolute top-4 right-8 w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-yellow-600 animate-pulse" onclick="selectZone('A3')" title="A3: 18 cây, Sâu phủ quả">
+                                                A3
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                                            </div>
+                                            
+                                            <div class="absolute top-16 left-8 w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-green-600" onclick="selectZone('A4')" title="A4: 21 cây, Xuất sắc">
+                                                A4
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                            </div>
+                                            
+                                            <div class="absolute bottom-16 left-8 w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-yellow-600 animate-pulse" onclick="selectZone('B1')" title="B1: 17 cây, Sâu phủ quả">
+                                                B1
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                                            </div>
+                                            
+                                            <div class="absolute bottom-16 right-20 w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-green-600" onclick="selectZone('B2')" title="B2: 20 cây, Khỏe mạnh">
+                                                B2
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                                            </div>
+                                            
+                                            <div class="absolute bottom-4 right-20 w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-red-600 animate-pulse" onclick="selectZone('B3')" title="B3: 16 cây, 2 cây chết - Khẩn cấp">
+                                                B3
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-400 rounded-full animate-ping"></div>
+                                            </div>
+                                            
+                                            <div class="absolute bottom-4 right-8 w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-sm cursor-pointer hover:bg-blue-600" onclick="selectZone('B4')" title="B4: 19 cây, Cây non năm 2">
+                                                B4
+                                                <div class="absolute -top-1 -right-1 w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+                                            </div>
+                                            
+                                            <!-- Farm Features -->
+                                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs" title="Hồ chứa nước">
+                                                <i class="fas fa-tint"></i>
+                                            </div>
+                                            
+                                            <div class="absolute top-6 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-gray-600 rounded flex items-center justify-center text-white text-xs" title="Nhà kho">
+                                                <i class="fas fa-warehouse"></i>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Map Legend -->
+                                        <div class="absolute bottom-2 right-2 bg-white bg-opacity-95 rounded-lg p-2 text-xs">
+                                            <div class="font-semibold text-gray-700 mb-1">Chú thích:</div>
+                                            <div class="flex items-center space-x-1 mb-1">
+                                                <div class="w-3 h-3 bg-green-500 rounded"></div>
+                                                <span>Khỏe mạnh</span>
+                                            </div>
+                                            <div class="flex items-center space-x-1 mb-1">
+                                                <div class="w-3 h-3 bg-yellow-500 rounded"></div>
+                                                <span>Cảnh báo</span>
+                                            </div>
+                                            <div class="flex items-center space-x-1 mb-1">
+                                                <div class="w-3 h-3 bg-red-500 rounded"></div>
+                                                <span>Khẩn cấp</span>
+                                            </div>
+                                            <div class="flex items-center space-x-1">
+                                                <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                                                <span>Cây non</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Scale -->
+                                        <div class="absolute bottom-2 left-2 bg-white bg-opacity-95 rounded px-2 py-1 text-xs">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-8 h-1 bg-gray-700"></div>
+                                                <span>50m</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Zone Statistics -->
+                        <div class="grid grid-cols-5 gap-3">
+                            <div class="text-center bg-green-50 rounded-lg p-3 border border-green-200">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-check text-green-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-green-700">4</p>
+                                <p class="text-xs text-gray-600">Lô khỏe mạnh</p>
+                            </div>
+                            <div class="text-center bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                                <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-exclamation-triangle text-yellow-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-yellow-700">2</p>
+                                <p class="text-xs text-gray-600">Cần theo dõi</p>
+                            </div>
+                            <div class="text-center bg-red-50 rounded-lg p-3 border border-red-200">
+                                <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-skull text-red-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-red-700">1</p>
+                                <p class="text-xs text-gray-600">Khẩn cấp</p>
+                            </div>
+                            <div class="text-center bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-seedling text-blue-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-blue-700">1</p>
+                                <p class="text-xs text-gray-600">Cây non</p>
+                            </div>
+                            <div class="text-center bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-calculator text-gray-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-gray-700">154</p>
+                                <p class="text-xs text-gray-600">Tổng cây còn lại</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CẢNH BÁO KHẨN CẤP (1/3 width) -->
+                <div class="lg:col-span-4 card-modern card-red">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-red-800 flex items-center">
+                                    <i class="fas fa-exclamation-triangle text-red-600 mr-2 animate-pulse"></i>
+                                    CẢNH BÁO KHẨN CẤP
+                                </h3>
+                                <p class="text-gray-600">Sự cố cần xử lý ngay</p>
+                            </div>
+                            <div class="flex space-x-1">
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs animate-pulse">3 khẩn cấp</span>
+                                <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">2 cảnh báo</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Scrollable Alerts Container -->
+                        <div class="space-y-3 max-h-80 overflow-y-auto custom-scroll">
+                            <!-- Critical - Pest Control -->
+                            <div class="alert-critical rounded-lg">
+                                <div class="p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-bug text-red-600 animate-pulse"></i>
+                                        <div>
+                                            <h4 class="font-bold text-red-800 text-sm">Sâu phủ quả</h4>
+                                            <p class="text-xs text-red-600">Lan rộng A3, B1</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-red-700 mb-2">35 cây bị ảnh hưởng • Cần phun thuốc trong 6h</p>
+                                    <button class="w-full bg-red-500 text-white py-2 rounded-lg text-xs hover:bg-red-600 transition-all">
+                                        🚨 Xử lý ngay
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Warning - Weather -->
+                            <div class="alert-warning rounded-lg">
+                                <div class="p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-cloud-rain text-yellow-600"></i>
+                                        <div>
+                                            <h4 class="font-bold text-yellow-800 text-sm">Mưa lớn</h4>
+                                            <p class="text-xs text-yellow-600">48h tới</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-yellow-700 mb-2">40-60mm • Ngừng tưới • Kiểm tra thoát nước</p>
+                                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg text-xs hover:bg-yellow-600 transition-all">
+                                        ⚠️ Chuẩn bị
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Budget Warning -->
+                            <div class="alert-budget rounded-lg">
+                                <div class="p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-money-bill-wave text-yellow-600"></i>
+                                        <div>
+                                            <h4 class="font-bold text-yellow-800 text-sm">Vượt ngân sách</h4>
+                                            <p class="text-xs text-yellow-600">Vật tư +8.2tr</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-yellow-700 mb-2">Do giá NPK tăng 15% và mua bổ sung</p>
+                                    <button class="w-full bg-yellow-500 text-white py-2 rounded-lg text-xs hover:bg-yellow-600 transition-all">
+                                        💰 Điều chỉnh
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- IoT Alert -->
+                            <div class="alert-iot rounded-lg">
+                                <div class="p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-wifi text-blue-600"></i>
+                                        <div>
+                                            <h4 class="font-bold text-blue-800 text-sm">IoT Monitoring</h4>
+                                            <p class="text-xs text-blue-600">24/24 online</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between text-xs text-blue-700 mb-2">
+                                        <span>32°C • 70% • pH 6.2</span>
+                                        <div class="sensor-optimal"></div>
+                                    </div>
+                                    <button class="w-full bg-blue-500 text-white py-2 rounded-lg text-xs hover:bg-blue-600 transition-all" onclick="openIoTDashboard()">
+                                        📊 Chi tiết
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Additional Alert Item (for demonstration) -->
+                            <div class="alert-warning rounded-lg">
+                                <div class="p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-thermometer-three-quarters text-orange-600"></i>
+                                        <div>
+                                            <h4 class="font-bold text-orange-800 text-sm">Nhiệt độ cao</h4>
+                                            <p class="text-xs text-orange-600">Khu B3 • 38°C</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-orange-700 mb-2">Cần tăng tưới và che bóng mát</p>
+                                    <button class="w-full bg-orange-500 text-white py-2 rounded-lg text-xs hover:bg-orange-600 transition-all">
+                                        🌡️ Xử lý nhiệt
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Equipment Alert -->
+                            <div class="alert-critical rounded-lg">
+                                <div class="p-3">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <i class="fas fa-cog text-red-600 animate-pulse"></i>
+                                        <div>
+                                            <h4 class="font-bold text-red-800 text-sm">Máy bơm hỏng</h4>
+                                            <p class="text-xs text-red-600">Hệ thống tưới A2</p>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-red-700 mb-2">Cần sửa chữa trong 24h để tránh khô cây</p>
+                                    <button class="w-full bg-red-500 text-white py-2 rounded-lg text-xs hover:bg-red-600 transition-all">
+                                        🔧 Gọi thợ ngay
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Combined Section: Today's Tasks (2/3) + Technician Support (1/3) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+                <!-- Quy trình & Công việc hôm nay (2/3 width) -->
+                <div class="lg:col-span-8 card-modern card-orange">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-tasks text-blue-600 mr-3"></i>
+                                    Quy trình & Công việc hôm nay
+                                </h3>
+                                <p class="text-gray-600">Danh sách nhiệm vụ cần thực hiện trong ngày</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-sm text-gray-600">5 việc cần làm</span>
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">2 khẩn cấp</span>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="bg-green-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-600 transition-all" onclick="addNewTask()">
+                                        <i class="fas fa-plus mr-1"></i>Thêm
+                                    </button>
+                                    <button class="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600 transition-all" onclick="viewAllTasks()">
+                                        <i class="fas fa-list mr-1"></i>Tất cả
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl border border-gray-200">
+                            <!-- Scrollable Tasks Container -->
+                            <div class="p-4 space-y-3 max-h-96 overflow-y-auto custom-scroll">
+                                <!-- Critical Emergency Task -->
+                                <div class="task-priority-critical task-status-urgent p-3 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-spray-can text-red-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-red-800 text-sm">Phun thuốc trừ sâu phủ quả</p>
+                                                <p class="text-xs text-red-600">Khu A3, B1 • Từ KTV • Khẩn cấp trong 24h</p>
+                                            </div>
+                                        </div>
+                                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">KHẨN CẤP</span>
+                                    </div>
+                                    <div class="bg-red-50 p-2 rounded-lg mb-2">
+                                        <p class="text-xs text-red-700 font-medium">Hướng dẫn từ KTV:</p>
+                                        <p class="text-xs text-red-600">"Sử dụng Imidacloprid 200SC, liều 1.5ml/L nước, phun buổi chiều."</p>
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <button class="cta-btn bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600" onclick="startTask('pest-control')">
+                                            🚀 Bắt đầu
+                                        </button>
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="viewTaskDetails('pest-control')">
+                                            📋 Chi tiết
+                                        </button>
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="reportProgress('pest-control')">
+                                            📊 Báo cáo
+                                        </button>
+                                        <button class="cta-btn bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600" onclick="needHelp('pest-control')">
+                                            🆘 Hỗ trợ
+                                        </button>
+                                        <button class="cta-btn bg-gray-500 text-white px-2 py-1 rounded text-xs hover:bg-gray-600" onclick="completeTask('pest-control')">
+                                            ✅ Hoàn thành
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- In Progress Task -->
+                                <div class="task-priority-high task-status-doing p-3 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-seedling text-yellow-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-yellow-800 text-sm">Bón phân NPK định kỳ</p>
+                                                <p class="text-xs text-yellow-600">Toàn vườn • 2kg/cây + bổ sung K2O 3kg/cây</p>
+                                            </div>
+                                        </div>
+                                        <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">ĐANG LÀM</span>
+                                    </div>
+                                    <div class="flex items-center justify-between text-xs mb-2">
+                                        <span class="text-gray-600">Tiến độ: 45/156 cây</span>
+                                        <span class="text-yellow-600 font-semibold">29%</span>
+                                    </div>
+                                    <div class="w-full bg-yellow-100 rounded-full h-2 mb-2">
+                                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 29%"></div>
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <button class="cta-btn bg-yellow-500 text-white px-2 py-1 rounded text-xs hover:bg-yellow-600" onclick="continueTask('fertilizer')">
+                                            ⏯️ Tiếp tục
+                                        </button>
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="viewTaskDetails('fertilizer')">
+                                            📋 Chi tiết
+                                        </button>
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="reportProgress('fertilizer')">
+                                            📊 Báo cáo
+                                        </button>
+                                        <button class="cta-btn bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600" onclick="needHelp('fertilizer')">
+                                            🆘 Hỗ trợ
+                                        </button>
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="completeTask('fertilizer')">
+                                            ✅ Hoàn thành
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Completed Task -->
+                                <div class="task-completed task-status-completed p-3 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-check-circle text-green-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-green-800 text-sm">Chuẩn bị mùa mưa</p>
+                                                <p class="text-xs text-green-600">Tất cả khu vực • Kiểm tra thoát nước, cắt cỏ</p>
+                                            </div>
+                                        </div>
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">HOÀN THÀNH</span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-1">
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="viewTaskDetails('rain-prep')">
+                                            📋 Chi tiết
+                                        </button>
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="viewTaskReport('rain-prep')">
+                                            📊 Báo cáo
+                                        </button>
+                                        <button class="cta-btn bg-gray-500 text-white px-2 py-1 rounded text-xs hover:bg-gray-600" onclick="archiveTask('rain-prep')">
+                                            📁 Lưu trữ
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Tasks (for demonstration of scrolling) -->
+                                <div class="task-priority-medium task-status-pending p-3 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-eye text-blue-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-blue-800 text-sm">Kiểm tra quả non định kỳ</p>
+                                                <p class="text-xs text-blue-600">Hàng tuần • Đánh giá chất lượng, loại bỏ quả dị tật</p>
+                                            </div>
+                                        </div>
+                                        <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">SẮP TỚI</span>
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="startTask('fruit-check')">
+                                            🚀 Bắt đầu
+                                        </button>
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="viewTaskDetails('fruit-check')">
+                                            📋 Chi tiết
+                                        </button>
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="reportProgress('fruit-check')">
+                                            📊 Báo cáo
+                                        </button>
+                                        <button class="cta-btn bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600" onclick="needHelp('fruit-check')">
+                                            🆘 Hỗ trợ
+                                        </button>
+                                        <button class="cta-btn bg-gray-500 text-white px-2 py-1 rounded text-xs hover:bg-gray-600" onclick="rescheduleTask('fruit-check')">
+                                            ⏰ Lên lịch lại
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="task-priority-low task-status-pending p-3 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-wrench text-green-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-green-800 text-sm">Bảo trì hệ thống tưới</p>
+                                                <p class="text-xs text-green-600">Hàng tháng • Kiểm tra đường ống, vòi phun, bộ lọc</p>
+                                            </div>
+                                        </div>
+                                        <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">ĐỊNH KỲ</span>
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="startTask('maintenance')">
+                                            🚀 Bắt đầu
+                                        </button>
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="viewTaskDetails('maintenance')">
+                                            📋 Chi tiết
+                                        </button>
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="reportProgress('maintenance')">
+                                            📊 Báo cáo
+                                        </button>
+                                        <button class="cta-btn bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600" onclick="needHelp('maintenance')">
+                                            🆘 Hỗ trợ
+                                        </button>
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="scheduleTask('maintenance')">
+                                            📅 Lên lịch
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- More demonstration tasks -->
+                                <div class="task-priority-high task-status-pending p-3 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-tint text-orange-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-orange-800 text-sm">Tưới nước bổ sung</p>
+                                                <p class="text-xs text-orange-600">Khu B3 • Cây yếu cần nước nhiều hơn</p>
+                                            </div>
+                                        </div>
+                                        <span class="bg-orange-500 text-white px-2 py-1 rounded-full text-xs">CAO</span>
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <button class="cta-btn bg-orange-500 text-white px-2 py-1 rounded text-xs hover:bg-orange-600" onclick="startTask('watering')">
+                                            🚀 Bắt đầu
+                                        </button>
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="viewTaskDetails('watering')">
+                                            📋 Chi tiết
+                                        </button>
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="reportProgress('watering')">
+                                            📊 Báo cáo
+                                        </button>
+                                        <button class="cta-btn bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600" onclick="needHelp('watering')">
+                                            🆘 Hỗ trợ
+                                        </button>
+                                        <button class="cta-btn bg-gray-500 text-white px-2 py-1 rounded text-xs hover:bg-gray-600" onclick="completeTask('watering')">
+                                            ✅ Hoàn thành
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="task-priority-medium task-status-pending p-3 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-cut text-purple-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold text-purple-800 text-sm">Cắt tỉa cành</p>
+                                                <p class="text-xs text-purple-600">Khu A1, A4 • Loại bỏ cành khô, cành chéo</p>
+                                            </div>
+                                        </div>
+                                        <span class="bg-purple-500 text-white px-2 py-1 rounded-full text-xs">TUẦN SAU</span>
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-1">
+                                        <button class="cta-btn bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600" onclick="startTask('pruning')">
+                                            🚀 Bắt đầu
+                                        </button>
+                                        <button class="cta-btn bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600" onclick="viewTaskDetails('pruning')">
+                                            📋 Chi tiết
+                                        </button>
+                                        <button class="cta-btn bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600" onclick="reportProgress('pruning')">
+                                            📊 Báo cáo
+                                        </button>
+                                        <button class="cta-btn bg-purple-500 text-white px-2 py-1 rounded text-xs hover:bg-purple-600" onclick="needHelp('pruning')">
+                                            🆘 Hỗ trợ
+                                        </button>
+                                        <button class="cta-btn bg-gray-500 text-white px-2 py-1 rounded text-xs hover:bg-gray-600" onclick="scheduleTask('pruning')">
+                                            📅 Lên lịch
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kỹ thuật viên hỗ trợ (1/3 width) -->
+                <div class="lg:col-span-4 card-modern card-green">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-user-tie text-green-600 mr-2"></i>
+                                    Kỹ thuật viên hỗ trợ
+                                </h3>
+                                <p class="text-gray-600">Hỗ trợ kỹ thuật chuyên môn</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Technician Profile -->
+                        <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center relative">
+                                    <i class="fas fa-user-tie text-green-600 text-xl"></i>
+                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-white text-xs"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-2">
+                                        <h4 class="text-lg font-bold text-gray-800">KS. Phạm Văn Minh</h4>
+                                        <div class="flex items-center space-x-1">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                            <span class="text-sm text-green-600 font-medium">Online</span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <p class="text-sm text-gray-600 mb-1">Chuyên môn:</p>
+                                        <p class="font-semibold text-gray-800 text-sm">Kỹ sư Nông nghiệp • 8 năm kinh nghiệm</p>
+                                        <p class="text-sm text-gray-600">Chuyên sâu: Sầu riêng, Cây ăn quả nhiệt đới</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <p class="text-sm text-gray-600 mb-1">Liên hệ:</p>
+                                        <p class="font-semibold text-gray-800 text-sm">📞 0903.456.789</p>
+                                        <p class="font-semibold text-gray-800 text-sm">📧 minh.pham@agritech.vn</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Contact Actions -->
+                            <div class="mt-4 space-y-3">
+                                <div class="bg-white rounded-lg p-3 border border-gray-200">
+                                    <h5 class="font-semibold text-gray-800 mb-2 text-sm">Liên hệ nhanh</h5>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <button class="bg-green-500 text-white py-2 rounded text-xs hover:bg-green-600 transition-all" onclick="callTechnician()">
+                                            <i class="fas fa-phone mr-1"></i>Gọi
+                                        </button>
+                                        <button class="bg-blue-500 text-white py-2 rounded text-xs hover:bg-blue-600 transition-all" onclick="openTechnicianChat()">
+                                            <i class="fas fa-comments mr-1"></i>Chat
+                                        </button>
+                                        <button class="bg-purple-500 text-white py-2 rounded text-xs hover:bg-purple-600 transition-all" onclick="videoCallTechnician()">
+                                            <i class="fas fa-video mr-1"></i>Video
+                                        </button>
+                                        <button class="bg-yellow-500 text-white py-2 rounded text-xs hover:bg-yellow-600 transition-all" onclick="sendPhotoToTechnician()">
+                                            <i class="fas fa-camera mr-1"></i>Ảnh
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Next Visit Schedule -->
+                                <div class="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                                    <h5 class="font-semibold text-purple-800 mb-2 text-sm">Thăm vườn sắp tới</h5>
+                                    <div class="text-sm text-purple-700 mb-1">
+                                        <i class="fas fa-calendar-day mr-1"></i>
+                                        Thứ 6, 13/12/2024 • 8:00-11:00 AM
+                                    </div>
+                                    <p class="text-xs text-gray-600 mb-2">Kiểm tra tổng thể, đánh giá hiệu quả xử lý</p>
+                                    <button class="w-full bg-purple-500 text-white py-2 rounded text-xs hover:bg-purple-600 transition-all" onclick="requestVisit()">
+                                        <i class="fas fa-edit mr-1"></i>Điều chỉnh lịch
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Materials & Financial Management Grid (Balanced) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+                <!-- Materials Management -->
+                <div class="lg:col-span-6 card-modern card-orange">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-boxes text-orange-600 mr-2"></i>
+                                    Quản lý Vật tư
+                                </h3>
+                                <p class="text-gray-600">Theo dõi tồn kho và kế hoạch mua sắm</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-orange-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all" onclick="addNewMaterial()">
+                                    <i class="fas fa-plus mr-1"></i>Thêm
+                                </button>
+                                <button class="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600 transition-all" onclick="createPurchaseOrder()">
+                                    <i class="fas fa-shopping-cart mr-1"></i>Đặt hàng
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Material Tabs -->
+                        <div class="mb-4">
+                            <div class="border-b border-gray-200">
+                                <nav class="-mb-px flex space-x-8">
+                                    <button id="currentStockTab" class="border-orange-500 text-orange-600 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" onclick="switchMaterialTab('currentStock')">
+                                        <i class="fas fa-warehouse mr-1"></i>Tồn kho hiện tại
+                                    </button>
+                                    <button id="usedMaterialsTab" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" onclick="switchMaterialTab('usedMaterials')">
+                                        <i class="fas fa-history mr-1"></i>Đã sử dụng
+                                    </button>
+                                    <button id="plannedMaterialsTab" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm" onclick="switchMaterialTab('plannedMaterials')">
+                                        <i class="fas fa-calendar-alt mr-1"></i>Dự kiến sử dụng
+                                    </button>
+                                </nav>
+                            </div>
+                        </div>
+
+                        <!-- Current Stock (Default View) -->
+                        <div id="currentStockView">
+                            <!-- Materials Overview -->
+                            <div class="grid grid-cols-4 gap-3 mb-4">
+                                <div class="bg-green-50 rounded-lg p-3 border border-green-200 text-center">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                        <i class="fas fa-seedling text-green-600 text-sm"></i>
+                                    </div>
+                                    <p class="text-lg font-bold text-green-700">24</p>
+                                    <p class="text-xs text-gray-600">Loại phân bón</p>
+                                    <div class="text-xs text-green-600 mt-1">8 sắp hết</div>
+                                </div>
+                                <div class="bg-red-50 rounded-lg p-3 border border-red-200 text-center">
+                                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                        <i class="fas fa-spray-can text-red-600 text-sm"></i>
+                                    </div>
+                                    <p class="text-lg font-bold text-red-700">15</p>
+                                    <p class="text-xs text-gray-600">Thuốc BVTV</p>
+                                    <div class="text-xs text-red-600 mt-1">3 hết hàng</div>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-3 border border-blue-200 text-center">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                        <i class="fas fa-tools text-blue-600 text-sm"></i>
+                                    </div>
+                                    <p class="text-lg font-bold text-blue-700">12</p>
+                                    <p class="text-xs text-gray-600">Nông cụ</p>
+                                    <div class="text-xs text-blue-600 mt-1">Đầy đủ</div>
+                                </div>
+                                <div class="bg-purple-50 rounded-lg p-3 border border-purple-200 text-center">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                        <i class="fas fa-vial text-purple-600 text-sm"></i>
+                                    </div>
+                                    <p class="text-lg font-bold text-purple-700">8</p>
+                                    <p class="text-xs text-gray-600">Chế phẩm sinh học</p>
+                                    <div class="text-xs text-purple-600 mt-1">5 còn dư</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Current Stock Status -->
+                            <div class="bg-white rounded-lg border border-gray-200">
+                                <div class="p-3 border-b border-gray-200">
+                                    <h4 class="font-semibold text-gray-800 text-sm flex items-center">
+                                        <i class="fas fa-warehouse text-gray-600 mr-2"></i>
+                                        Tồn kho & Cảnh báo
+                                    </h4>
+                                </div>
+                                <div class="p-3 space-y-2">
+                                    <div class="bg-red-50 p-2 rounded-lg border border-red-200">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="fas fa-exclamation-triangle text-red-600 text-sm"></i>
+                                                <div>
+                                                    <p class="font-semibold text-red-800 text-sm">NPK 16-16-8</p>
+                                                    <p class="text-xs text-red-600">Hết hàng • Cần mua ngay</p>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="font-bold text-red-700 text-sm">0 kg</p>
+                                                <button class="bg-red-500 text-white px-2 py-1 rounded text-xs mt-1 hover:bg-red-600">
+                                                    Đặt hàng
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-2">
+                                                <i class="fas fa-exclamation-circle text-yellow-600 text-sm"></i>
+                                                <div>
+                                                    <p class="font-semibold text-yellow-800 text-sm">Imidacloprid 200SC</p>
+                                                    <p class="text-xs text-yellow-600">Sắp hết • 5 ngày</p>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="font-bold text-yellow-700 text-sm">2.5 lít</p>
+                                                <button class="bg-yellow-500 text-white px-2 py-1 rounded text-xs mt-1 hover:bg-yellow-600">
+                                                    Lên kế hoạch
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Used Materials View (Hidden by default) -->
+                        <div id="usedMaterialsView" class="hidden">
+                            <div class="bg-white rounded-lg border border-gray-200">
+                                <div class="p-3 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="font-semibold text-gray-800 text-sm flex items-center">
+                                            <i class="fas fa-history text-gray-600 mr-2"></i>
+                                            Vật tư đã sử dụng (30 ngày qua)
+                                        </h4>
+                                        <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs hover:bg-blue-600" onclick="exportUsageReport()">
+                                            <i class="fas fa-download mr-1"></i>Xuất báo cáo
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- Scrollable Content Container -->
+                                <div class="p-3 max-h-80 overflow-y-auto custom-scroll">
+                                    <!-- Usage Summary -->
+                                    <div class="grid grid-cols-2 gap-4 mb-4">
+                                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                            <h5 class="font-semibold text-blue-800 mb-2 text-sm">Phân bón sử dụng</h5>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">NPK 16-16-8</span>
+                                                    <span class="font-bold text-blue-700">320 kg</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Potassium Sulfate</span>
+                                                    <span class="font-bold text-blue-700">180 kg</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Phân hữu cơ</span>
+                                                    <span class="font-bold text-blue-700">450 kg</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Phân lân</span>
+                                                    <span class="font-bold text-blue-700">95 kg</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="bg-orange-50 rounded-lg p-3 border border-orange-200">
+                                            <h5 class="font-semibold text-orange-800 mb-2 text-sm">Thuốc BVTV sử dụng</h5>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Imidacloprid 200SC</span>
+                                                    <span class="font-bold text-orange-700">4.2 lít</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Abamectin 18EC</span>
+                                                    <span class="font-bold text-orange-700">1.8 lít</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Trichoderma</span>
+                                                    <span class="font-bold text-orange-700">6 kg</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Copper Oxychloride</span>
+                                                    <span class="font-bold text-orange-700">2.5 kg</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Recent Usage Log -->
+                                    <div class="space-y-2">
+                                        <h5 class="font-semibold text-gray-800 text-sm">Nhật ký sử dụng gần đây</h5>
+                                        
+                                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <div class="flex items-center space-x-2">
+                                                    <i class="fas fa-spray-can text-red-600 text-sm"></i>
+                                                    <span class="font-semibold text-gray-800 text-sm">Imidacloprid 200SC</span>
+                                                    <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Phun thuốc</span>
+                                                </div>
+                                                <span class="text-xs text-gray-500">12/12/2024</span>
+                                            </div>
+                                            <div class="text-sm text-gray-600">
+                                                <span class="font-medium">Khu vực:</span> A3, B1 • 
+                                                <span class="font-medium">Số lượng:</span> 1.2 lít • 
+                                                <span class="font-medium">Liều:</span> 1.5ml/L nước
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">Mục đích: Trừ sâu phủ quả theo hướng dẫn KTV</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Planned Materials View (Hidden by default) -->
+                        <div id="plannedMaterialsView" class="hidden">
+                            <div class="bg-white rounded-lg border border-gray-200">
+                                <div class="p-3 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="font-semibold text-gray-800 text-sm flex items-center">
+                                            <i class="fas fa-calendar-alt text-gray-600 mr-2"></i>
+                                            Vật tư dự kiến sử dụng (30 ngày tới)
+                                        </h4>
+                                        <button class="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600" onclick="updatePlannedMaterials()">
+                                            <i class="fas fa-edit mr-1"></i>Cập nhật kế hoạch
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- Scrollable Content Container -->
+                                <div class="p-3 max-h-80 overflow-y-auto custom-scroll">
+                                    <!-- Planned Summary -->
+                                    <div class="grid grid-cols-2 gap-4 mb-4">
+                                        <div class="bg-green-50 rounded-lg p-3 border border-green-200">
+                                            <h5 class="font-semibold text-green-800 mb-2 text-sm">Phân bón cần chuẩn bị</h5>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">NPK 16-16-8</span>
+                                                    <span class="font-bold text-green-700">400 kg</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Potassium Sulfate</span>
+                                                    <span class="font-bold text-green-700">120 kg</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Phân lân</span>
+                                                    <span class="font-bold text-green-700">80 kg</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Phân hữu cơ</span>
+                                                    <span class="font-bold text-green-700">200 kg</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                            <h5 class="font-semibold text-blue-800 mb-2 text-sm">Thuốc BVTV cần chuẩn bị</h5>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Imidacloprid 200SC</span>
+                                                    <span class="font-bold text-blue-700">5 lít</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Abamectin 18EC</span>
+                                                    <span class="font-bold text-blue-700">2 lít</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Copper Oxychloride</span>
+                                                    <span class="font-bold text-blue-700">3 kg</span>
+                                                </div>
+                                                <div class="flex justify-between text-sm">
+                                                    <span class="text-gray-600">Mancozeb 80WP</span>
+                                                    <span class="font-bold text-blue-700">1.5 kg</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Management -->
+                <div class="lg:col-span-3 card-modern card-green">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                                <i class="fas fa-calculator text-green-600 mr-2"></i>
+                                Tài chính Vườn
+                            </h3>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-green-600 transition-all" onclick="openFinancialDetail()">
+                                Chi tiết
+                            </button>
+                        </div>
+                        
+                        <!-- Monthly Summary -->
+                        <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4 border border-green-200 mb-4">
+                            <h4 class="font-semibold text-green-800 mb-3">Tháng 12/2024</h4>
+                            <div class="grid grid-cols-1 gap-3 text-center">
+                                <div>
+                                    <p class="text-xl font-bold text-red-700">-89.2 tr</p>
+                                    <p class="text-xs text-gray-600">Tổng chi phí</p>
+                                </div>
+                                <div>
+                                    <p class="text-xl font-bold text-blue-700">95.0 tr</p>
+                                    <p class="text-xs text-gray-600">Dự toán tháng</p>
+                                </div>
+                            </div>
+                            <div class="text-center mt-2 pt-2 border-t border-green-200">
+                                <p class="text-sm text-green-600 font-medium">Tiết kiệm: 5.8 tr (6.1%)</p>
+                                <div class="w-full bg-green-100 rounded-full h-2 mt-1">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 94%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cost Breakdown -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-2 bg-orange-50 rounded-lg border border-orange-200">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-boxes text-orange-600"></i>
+                                    <span class="text-sm font-medium text-orange-800">Vật tư</span>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-orange-700 text-sm">45.6 tr</p>
+                                    <p class="text-xs text-gray-500">51%</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-2 bg-blue-50 rounded-lg border border-blue-200">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-users text-blue-600"></i>
+                                    <span class="text-sm font-medium text-blue-800">Nhân công</span>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-blue-700 text-sm">28.5 tr</p>
+                                    <p class="text-xs text-gray-500">32%</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between p-2 bg-purple-50 rounded-lg border border-purple-200">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-tools text-purple-600"></i>
+                                    <span class="text-sm font-medium text-purple-800">Thiết bị</span>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-purple-700 text-sm">10.8 tr</p>
+                                    <p class="text-xs text-gray-500">12%</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-green-500 text-white py-2 rounded-lg text-sm mt-3 hover:bg-green-600 transition-all">
+                            <i class="fas fa-chart-pie mr-2"></i>Báo cáo tài chính
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Purchase Orders -->
+                <div class="lg:col-span-3 card-modern card-blue">
+                    <div class="p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                            <i class="fas fa-shopping-cart text-blue-600 mr-2"></i>
+                            Đơn đặt hàng
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-semibold text-yellow-800 text-sm">Đơn hàng #2024-156</span>
+                                    <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">Chờ duyệt</span>
+                                </div>
+                                <p class="text-sm text-gray-600">NPK 16-16-8 • 500 kg</p>
+                                <p class="text-sm font-bold text-yellow-800">9.25 tr</p>
+                                <p class="text-xs text-gray-500">Nhà cung cấp: Phân bón Đông Á</p>
+                            </div>
+                            
+                            <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-semibold text-blue-800 text-sm">Đơn hàng #2024-155</span>
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Đang giao</span>
+                                </div>
+                                <p class="text-sm text-gray-600">Imidacloprid + Trichoderma</p>
+                                <p class="text-sm font-bold text-blue-800">2.8 tr</p>
+                                <p class="text-xs text-gray-500">Dự kiến: 15/12/2024</p>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full bg-blue-500 text-white py-2 rounded-lg text-sm mt-3 hover:bg-blue-600 transition-all">
+                            <i class="fas fa-plus mr-2"></i>Tạo đơn đặt hàng
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Enhanced Quick Action Center (Optimized) -->
+            <div class="card-modern card-indigo mb-6">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-bolt text-yellow-600 mr-3"></i>
+                        Trung tâm Hành động Nhanh
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                        <!-- Quy trình & Nhật ký -->
+                        <button class="quick-action-btn text-white p-4 rounded-xl text-center group" style="--from-color: #10b981; --to-color: #059669;" onclick="logTask()">
+                            <i class="fas fa-book text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <p class="text-sm font-medium">Quy trình & Nhật ký</p>
+                            <span class="text-xs opacity-75">Ghi chép</span>
+                        </button>
+                        
+                        <!-- Vật tư -->
+                        <button class="quick-action-btn text-white p-4 rounded-xl text-center group" style="--from-color: #f97316; --to-color: #ea580c;" onclick="quickMaterialCheck()">
+                            <i class="fas fa-boxes text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <p class="text-sm font-medium">Vật tư</p>
+                            <span class="text-xs opacity-75">Kiểm tra</span>
+                        </button>
+                        
+                        <!-- Sâu bệnh -->
+                        <button class="quick-action-btn text-white p-4 rounded-xl text-center group" style="--from-color: #ef4444; --to-color: #dc2626;" onclick="handlePestControl()">
+                            <i class="fas fa-bug text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <p class="text-sm font-medium">Sâu bệnh</p>
+                            <span class="text-xs opacity-75">Báo cáo</span>
+                        </button>
+                        
+                        <!-- Tài chính -->
+                        <button class="quick-action-btn text-white p-4 rounded-xl text-center group" style="--from-color: #16a34a; --to-color: #15803d;" onclick="quickFinanceView()">
+                            <i class="fas fa-calculator text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <p class="text-sm font-medium">Tài chính</p>
+                            <span class="text-xs opacity-75">Tổng quan</span>
+                        </button>
+                        
+                        <!-- Hướng dẫn -->
+                        <button class="quick-action-btn text-white p-4 rounded-xl text-center group" style="--from-color: #8b5cf6; --to-color: #7c3aed;" onclick="openGuidelines()">
+                            <i class="fas fa-graduation-cap text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <p class="text-sm font-medium">Hướng dẫn</p>
+                            <span class="text-xs opacity-75">Kỹ thuật</span>
+                        </button>
+                        
+                        <!-- Diễn đàn trao đổi -->
+                        <button class="quick-action-btn text-white p-4 rounded-xl text-center group" style="--from-color: #6366f1; --to-color: #4f46e5;" onclick="openCommunityForum()">
+                            <i class="fas fa-comments text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <p class="text-sm font-medium">Diễn đàn</p>
+                            <span class="text-xs opacity-75">Trao đổi</span>
+                        </button>
+                        
+                        <!-- Thị trường -->
+                        <button class="quick-action-btn text-white p-4 rounded-xl text-center group" style="--from-color: #f59e0b; --to-color: #d97706;" onclick="checkMarketPrice()">
+                            <i class="fas fa-chart-line text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <p class="text-sm font-medium">Thị trường</p>
+                            <span class="text-xs opacity-75">Giá cả</span>
+                        </button>
+                        
+                        <!-- Thời tiết -->
+                        <button class="quick-action-btn text-white p-4 rounded-xl text-center group" style="--from-color: #0ea5e9; --to-color: #0284c7;" onclick="checkWeather()">
+                            <i class="fas fa-cloud-sun text-2xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <p class="text-sm font-medium">Thời tiết</p>
+                            <span class="text-xs opacity-75">7 ngày</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Market & Community Info -->
+            <div class="card-modern card-purple">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-globe text-blue-600 mr-3"></i>
+                        Thông tin Thị trường & Cộng đồng
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Market Info -->
+                        <div class="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+                            <h4 class="font-semibold text-yellow-800 mb-3 flex items-center">
+                                <i class="fas fa-chart-line text-yellow-600 mr-2"></i>
+                                Giá thị trường
+                            </h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Hiện tại</span>
+                                    <span class="font-bold text-green-600">62,000đ/kg (+8%)</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Dự báo 7 ngày</span>
+                                    <span class="font-bold text-blue-600">58-65k</span>
+                                </div>
+                                <button class="w-full bg-yellow-500 text-white py-2 rounded-lg text-sm hover:bg-yellow-600 transition-all mt-3">
+                                    <i class="fas fa-handshake mr-2"></i>Xem cơ hội bán
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Community -->
+                        <div class="bg-indigo-50 rounded-xl p-4 border border-indigo-200">
+                            <h4 class="font-semibold text-indigo-800 mb-3 flex items-center">
+                                <i class="fas fa-users text-indigo-600 mr-2"></i>
+                                Cộng đồng nông dân
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <p class="text-indigo-700">• "Cách xử lý sâu phủ quả hiệu quả" - Anh Hiền</p>
+                                <p class="text-indigo-700">• "Dự báo giá tháng 5-6" - Chuyên gia Minh</p>
+                                <button class="w-full bg-indigo-500 text-white py-2 rounded-lg text-sm hover:bg-indigo-600 transition-all mt-3">
+                                    <i class="fas fa-comments mr-2"></i>Tham gia thảo luận
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- News & Training -->
+                        <div class="bg-purple-50 rounded-xl p-4 border border-purple-200">
+                            <h4 class="font-semibold text-purple-800 mb-3 flex items-center">
+                                <i class="fas fa-graduation-cap text-purple-600 mr-2"></i>
+                                Tin tức & Đào tạo
+                            </h4>
+                            <div class="space-y-2 text-sm">
+                                <p class="text-purple-700">• HOT: Xuất khẩu sầu riêng tăng vọt 40%</p>
+                                <p class="text-purple-700">• Khóa học: Kỹ thuật chăm sóc hiện đại</p>
+                                <button class="w-full bg-purple-500 text-white py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-3">
+                                    <i class="fas fa-book mr-2"></i>Xem khóa học
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. IoT Data Management & Certification Standards -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+                <!-- IoT Data Management (8/12 width) -->
+                <div class="lg:col-span-8 card-modern card-blue">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-wifi text-blue-600 mr-3"></i>
+                                    Quản lý Dữ liệu IoT
+                                </h3>
+                                <p class="text-gray-600">Theo dõi và phân tích dữ liệu từ 24 cảm biến</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-600 transition-all" onclick="exportIoTData()">
+                                    <i class="fas fa-download mr-1"></i>Xuất dữ liệu
+                                </button>
+                                <button class="bg-green-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-green-600 transition-all" onclick="configureIoTAlerts()">
+                                    <i class="fas fa-cog mr-1"></i>Cài đặt
+                                </button>
+                                <button class="bg-purple-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all" onclick="viewIoTAnalytics()">
+                                    <i class="fas fa-chart-line mr-1"></i>Phân tích
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- IoT Sensor Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <!-- Temperature Sensors -->
+                            <div class="iot-sensor-card p-4 bg-orange-50 border border-orange-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-thermometer-half text-orange-600"></i>
+                                        <span class="font-semibold text-orange-800 text-sm">Nhiệt độ</span>
+                                    </div>
+                                    <div class="sensor-optimal"></div>
+                                </div>
+                                <div class="sensor-value text-orange-700">32.5°C</div>
+                                <div class="text-xs text-gray-600 mt-1">
+                                    <span class="font-medium">TB:</span> 31.8°C • 
+                                    <span class="font-medium">Min:</span> 28°C • 
+                                    <span class="font-medium">Max:</span> 36°C
+                                </div>
+                                <div class="mt-2">
+                                    <div class="w-full bg-gray-200 rounded-full h-1">
+                                        <div class="bg-orange-500 h-1 rounded-full" style="width: 65%"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 mt-1">6 sensors hoạt động</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Humidity Sensors -->
+                            <div class="iot-sensor-card p-4 bg-blue-50 border border-blue-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-tint text-blue-600"></i>
+                                        <span class="font-semibold text-blue-800 text-sm">Độ ẩm</span>
+                                    </div>
+                                    <div class="sensor-optimal"></div>
+                                </div>
+                                <div class="sensor-value text-blue-700">72%</div>
+                                <div class="text-xs text-gray-600 mt-1">
+                                    <span class="font-medium">TB:</span> 68% • 
+                                    <span class="font-medium">Min:</span> 45% • 
+                                    <span class="font-medium">Max:</span> 85%
+                                </div>
+                                <div class="mt-2">
+                                    <div class="w-full bg-gray-200 rounded-full h-1">
+                                        <div class="bg-blue-500 h-1 rounded-full" style="width: 72%"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 mt-1">6 sensors hoạt động</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Soil pH Sensors -->
+                            <div class="iot-sensor-card p-4 bg-green-50 border border-green-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-vial text-green-600"></i>
+                                        <span class="font-semibold text-green-800 text-sm">pH đất</span>
+                                    </div>
+                                    <div class="sensor-warning"></div>
+                                </div>
+                                <div class="sensor-value text-green-700">6.2</div>
+                                <div class="text-xs text-gray-600 mt-1">
+                                    <span class="font-medium">TB:</span> 6.1 • 
+                                    <span class="font-medium">Min:</span> 5.8 • 
+                                    <span class="font-medium">Max:</span> 6.5
+                                </div>
+                                <div class="mt-2">
+                                    <div class="w-full bg-gray-200 rounded-full h-1">
+                                        <div class="bg-green-500 h-1 rounded-full" style="width: 62%"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 mt-1">6 sensors hoạt động</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Soil Moisture Sensors -->
+                            <div class="iot-sensor-card p-4 bg-purple-50 border border-purple-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-seedling text-purple-600"></i>
+                                        <span class="font-semibold text-purple-800 text-sm">Ẩm độ đất</span>
+                                    </div>
+                                    <div class="sensor-optimal"></div>
+                                </div>
+                                <div class="sensor-value text-purple-700">78%</div>
+                                <div class="text-xs text-gray-600 mt-1">
+                                    <span class="font-medium">TB:</span> 75% • 
+                                    <span class="font-medium">Min:</span> 60% • 
+                                    <span class="font-medium">Max:</span> 90%
+                                </div>
+                                <div class="mt-2">
+                                    <div class="w-full bg-gray-200 rounded-full h-1">
+                                        <div class="bg-purple-500 h-1 rounded-full" style="width: 78%"></div>
+                                    </div>
+                                    <div class="text-xs text-gray-500 mt-1">6 sensors hoạt động</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Real-time Data Stream -->
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="font-semibold text-gray-800 flex items-center">
+                                    <i class="fas fa-stream text-gray-600 mr-2"></i>
+                                    Dữ liệu thời gian thực
+                                </h4>
+                                <div class="flex items-center space-x-2">
+                                    <div class="sensor-optimal"></div>
+                                    <span class="text-sm text-green-600 font-medium">Kết nối ổn định</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Scrollable Real-time Data -->
+                            <div class="max-h-40 overflow-y-auto custom-scroll space-y-2">
+                                <div class="flex items-center justify-between bg-white p-2 rounded border">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                        <span class="text-sm font-medium">Sensor A1-T01</span>
+                                        <span class="text-xs text-gray-500">Nhiệt độ</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-bold text-orange-700">31.8°C</span>
+                                        <div class="text-xs text-gray-500">15:42:35</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between bg-white p-2 rounded border">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                                        <span class="text-sm font-medium">Sensor A3-P01</span>
+                                        <span class="text-xs text-gray-500">pH đất</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-bold text-yellow-700">5.9</span>
+                                        <div class="text-xs text-gray-500">15:42:28</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between bg-white p-2 rounded border">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                                        <span class="text-sm font-medium">Sensor B2-H01</span>
+                                        <span class="text-xs text-gray-500">Độ ẩm</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-bold text-blue-700">74%</span>
+                                        <div class="text-xs text-gray-500">15:42:22</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between bg-white p-2 rounded border">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></span>
+                                        <span class="text-sm font-medium">Sensor B4-M01</span>
+                                        <span class="text-xs text-gray-500">Ẩm độ đất</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-bold text-purple-700">82%</span>
+                                        <div class="text-xs text-gray-500">15:42:15</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between bg-white p-2 rounded border">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                        <span class="text-sm font-medium">Sensor B3-T01</span>
+                                        <span class="text-xs text-gray-500">Nhiệt độ</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-bold text-red-700">38.2°C</span>
+                                        <div class="text-xs text-gray-500">15:42:08</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between bg-white p-2 rounded border">
+                                    <div class="flex items-center space-x-3">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                        <span class="text-sm font-medium">Sensor A4-M01</span>
+                                        <span class="text-xs text-gray-500">Ẩm độ đất</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="font-bold text-green-700">76%</span>
+                                        <div class="text-xs text-gray-500">15:42:01</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- IoT System Stats -->
+                        <div class="grid grid-cols-4 gap-3 mt-4">
+                            <div class="text-center bg-green-50 rounded-lg p-3 border border-green-200">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-check text-green-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-green-700">24/24</p>
+                                <p class="text-xs text-gray-600">Sensors online</p>
+                            </div>
+                            <div class="text-center bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-database text-blue-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-blue-700">2.8M</p>
+                                <p class="text-xs text-gray-600">Điểm dữ liệu</p>
+                            </div>
+                            <div class="text-center bg-orange-50 rounded-lg p-3 border border-orange-200">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-clock text-orange-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-orange-700">30s</p>
+                                <p class="text-xs text-gray-600">Chu kỳ đọc</p>
+                            </div>
+                            <div class="text-center bg-purple-50 rounded-lg p-3 border border-purple-200">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                    <i class="fas fa-chart-line text-purple-600 text-sm"></i>
+                                </div>
+                                <p class="text-lg font-bold text-purple-700">99.8%</p>
+                                <p class="text-xs text-gray-600">Uptime</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Certification Standards (4/12 width) -->
+                <div class="lg:col-span-4 card-modern card-yellow">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-certificate text-yellow-600 mr-2"></i>
+                                    Chứng nhận Tiêu chuẩn
+                                </h3>
+                                <p class="text-gray-600">Quản lý chứng nhận canh tác</p>
+                            </div>
+                            <button class="bg-yellow-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-yellow-600 transition-all" onclick="manageCertifications()">
+                                <i class="fas fa-edit mr-1"></i>Quản lý
+                            </button>
+                        </div>
+                        
+                        <!-- Certification Status Cards -->
+                        <div class="space-y-4">
+                            <!-- VietGAP -->
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-certificate text-green-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-green-800">VietGAP</h4>
+                                            <div class="certification-badge badge-active">
+                                                <i class="fas fa-check mr-1"></i>Có hiệu lực
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Mã chứng nhận:</span>
+                                        <span class="font-semibold text-green-800">VG-2024-001-DL</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Ngày cấp:</span>
+                                        <span class="font-semibold text-gray-800">15/03/2024</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Hết hạn:</span>
+                                        <span class="font-semibold text-green-800">15/03/2027</span>
+                                    </div>
+                                    <div class="w-full bg-green-100 rounded-full h-2 mt-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                                    </div>
+                                    <div class="text-xs text-green-600 text-center">Còn 2 năm 3 tháng</div>
+                                </div>
+                            </div>
+                            
+                            <!-- GlobalGAP -->
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-globe text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-blue-800">GlobalGAP</h4>
+                                            <div class="certification-badge badge-pending">
+                                                <i class="fas fa-clock mr-1"></i>Đang xử lý
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Đơn xin cấp:</span>
+                                        <span class="font-semibold text-blue-800">GG-2024-156-VN</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Ngày nộp:</span>
+                                        <span class="font-semibold text-gray-800">28/11/2024</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Dự kiến:</span>
+                                        <span class="font-semibold text-blue-800">15/01/2025</span>
+                                    </div>
+                                    <div class="w-full bg-blue-100 rounded-full h-2 mt-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 65%"></div>
+                                    </div>
+                                    <div class="text-xs text-blue-600 text-center">Tiến độ: 65% - Kiểm tra thực địa</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Organic -->
+                            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-leaf text-purple-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-purple-800">Chứng nhận Hữu cơ</h4>
+                                            <div class="certification-badge badge-expired">
+                                                <i class="fas fa-times mr-1"></i>Hết hạn
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Mã chứng nhận:</span>
+                                        <span class="font-semibold text-red-800">OR-2021-045-DL</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Hết hạn:</span>
+                                        <span class="font-semibold text-red-800">20/10/2024</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Trạng thái:</span>
+                                        <span class="font-semibold text-red-800">Cần gia hạn</span>
+                                    </div>
+                                    <button class="w-full bg-purple-500 text-white py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2">
+                                        <i class="fas fa-redo mr-2"></i>Gia hạn chứng nhận
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Certification Actions -->
+                        <div class="mt-4 space-y-2">
+                            <button class="w-full bg-green-500 text-white py-2 rounded-lg text-sm hover:bg-green-600 transition-all" onclick="viewCertificationRequirements()">
+                                <i class="fas fa-list mr-2"></i>Xem yêu cầu chứng nhận
+                            </button>
+                            <button class="w-full bg-blue-500 text-white py-2 rounded-lg text-sm hover:bg-blue-600 transition-all" onclick="scheduleAudit()">
+                                <i class="fas fa-calendar-check mr-2"></i>Đặt lịch kiểm tra
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Enhanced JavaScript for production-focused features
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAlertSystem();
+            initializeZoneManagement();
+            initializeQuickActions();
+            startRealtimeUpdates();
+        });
+        
+        function initializeAlertSystem() {
+            // Simulate alert priority system
+            setInterval(checkCriticalAlerts, 30000);
+        }
+        
+        function checkCriticalAlerts() {
+            // Check for critical conditions
+            const alerts = [
+                { type: 'pest', zone: 'A3', severity: 'critical' },
+                { type: 'weather', severity: 'warning' },
+                { type: 'budget', severity: 'warning' },
+                { type: 'iot', severity: 'info' }
+            ];
+            
+            updateAlertBadges(alerts);
+        }
+        
+        function updateAlertBadges(alerts) {
+            const criticalCount = alerts.filter(a => a.severity === 'critical').length;
+            const badges = document.querySelectorAll('.notification-badge');
+            badges.forEach(badge => {
+                if (criticalCount > 0) {
+                    badge.textContent = criticalCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+        
+        function selectZone(zoneName) {
+            // Highlight selected zone and show details
+            document.querySelectorAll('.zone-card').forEach(card => {
+                card.classList.remove('ring-4', 'ring-blue-500');
+            });
+            
+            event.currentTarget.classList.add('ring-4', 'ring-blue-500');
+            showZoneDetails(zoneName);
+        }
+        
+        function showZoneDetails(zoneName) {
+            const modal = createModal(`Chi tiết Lô ${zoneName}`, `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-600">Số cây</p>
+                            <p class="text-lg font-bold text-gray-800">20 cây</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-600">Diện tích</p>
+                            <p class="text-lg font-bold text-gray-800">1.6 ha</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-600">Năng suất</p>
+                            <p class="text-lg font-bold text-green-700">96%</p>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <p class="text-sm text-gray-600">Trạng thái</p>
+                            <p class="text-lg font-bold text-green-700">Khỏe mạnh</p>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h5 class="font-semibold text-green-800 mb-2">Thông số IoT</h5>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Nhiệt độ:</span>
+                                <span class="font-semibold">32°C</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Độ ẩm:</span>
+                                <span class="font-semibold">70%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>pH đất:</span>
+                                <span class="font-semibold">6.2</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Ẩm độ đất:</span>
+                                <span class="font-semibold">85%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <button class="w-full bg-blue-500 text-white py-2 rounded-lg text-sm hover:bg-blue-600 transition-all">
+                            <i class="fas fa-tasks mr-2"></i>Xem công việc lô này
+                        </button>
+                        <button class="w-full bg-green-500 text-white py-2 rounded-lg text-sm hover:bg-green-600 transition-all">
+                            <i class="fas fa-chart-bar mr-2"></i>Báo cáo chi tiết
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+        
+        // NEW IoT Functions
+        function openIoTDashboard() {
+            showNotification('Mở dashboard IoT chi tiết...', 'info');
+        }
+        
+        function exportIoTData() {
+            showNotification('Đang xuất dữ liệu IoT...', 'info');
+            setTimeout(() => {
+                showNotification('Dữ liệu IoT đã được xuất thành công!', 'success');
+            }, 2000);
+        }
+        
+        function configureIoTAlerts() {
+            const modal = createModal('Cấu hình Cảnh báo IoT', `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h4 class="font-semibold text-blue-800 mb-2">Thiết lập ngưỡng cảnh báo</h4>
+                        <p class="text-sm text-blue-700">Cài đặt các ngưỡng cảnh báo cho từng loại cảm biến</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nhiệt độ tối đa (°C)</label>
+                            <input type="number" class="w-full p-2 border rounded-lg" value="35" min="20" max="50">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Độ ẩm tối thiểu (%)</label>
+                            <input type="number" class="w-full p-2 border rounded-lg" value="60" min="30" max="100">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">pH đất tối thiểu</label>
+                            <input type="number" class="w-full p-2 border rounded-lg" value="5.5" min="4" max="8" step="0.1">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Ẩm độ đất tối thiểu (%)</label>
+                            <input type="number" class="w-full p-2 border rounded-lg" value="70" min="30" max="100">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">Phương thức thông báo</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded" checked>
+                                <span class="text-sm">Email</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded" checked>
+                                <span class="text-sm">SMS</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded" checked>
+                                <span class="text-sm">Push notification</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" class="rounded">
+                                <span class="text-sm">Voice call</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-all">
+                        <i class="fas fa-save mr-2"></i>Lưu cấu hình
+                    </button>
+                </div>
+            `);
+        }
+        
+        function viewIoTAnalytics() {
+            showNotification('Mở module phân tích dữ liệu IoT...', 'info');
+        }
+        
+        // NEW Certification Functions
+        function manageCertifications() {
+            const modal = createModal('Quản lý Chứng nhận', `
+                <div class="space-y-4">
+                    <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                        <h4 class="font-semibold text-yellow-800 mb-2">Quản lý chứng nhận canh tác</h4>
+                        <p class="text-sm text-yellow-700">Theo dõi và quản lý tất cả chứng nhận của vườn</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white p-4 rounded-lg border border-gray-200">
+                            <h5 class="font-semibold text-gray-800 mb-3">Danh sách chứng nhận</h5>
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-certificate text-green-600"></i>
+                                        <div>
+                                            <p class="font-medium text-green-800">VietGAP</p>
+                                            <p class="text-sm text-gray-600">Hết hạn: 15/03/2027</p>
+                                        </div>
+                                    </div>
+                                    <div class="certification-badge badge-active">
+                                        <i class="fas fa-check mr-1"></i>Có hiệu lực
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-globe text-blue-600"></i>
+                                        <div>
+                                            <p class="font-medium text-blue-800">GlobalGAP</p>
+                                            <p class="text-sm text-gray-600">Dự kiến: 15/01/2025</p>
+                                        </div>
+                                    </div>
+                                    <div class="certification-badge badge-pending">
+                                        <i class="fas fa-clock mr-1"></i>Đang xử lý
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-200">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-leaf text-red-600"></i>
+                                        <div>
+                                            <p class="font-medium text-red-800">Chứng nhận Hữu cơ</p>
+                                            <p class="text-sm text-gray-600">Hết hạn: 20/10/2024</p>
+                                        </div>
+                                    </div>
+                                    <div class="certification-badge badge-expired">
+                                        <i class="fas fa-times mr-1"></i>Hết hạn
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <button class="bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition-all">
+                            <i class="fas fa-plus mr-2"></i>Thêm chứng nhận
+                        </button>
+                        <button class="bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-all">
+                            <i class="fas fa-sync mr-2"></i>Gia hạn chứng nhận
+                        </button>
+                    </div>
+                </div>
+            `);
+        }
+        
+        function viewCertificationRequirements() {
+            showNotification('Mở danh sách yêu cầu cho các chứng nhận...', 'info');
+        }
+        
+        function scheduleAudit() {
+            const modal = createModal('Đặt lịch Kiểm tra', `
+                <div class="space-y-4">
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h4 class="font-semibold text-green-800 mb-2">Đặt lịch kiểm tra chứng nhận</h4>
+                        <p class="text-sm text-green-700">Lên lịch cho các đợt kiểm tra định kỳ và kiểm tra mới</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Loại chứng nhận</label>
+                            <select class="w-full p-2 border rounded-lg">
+                                <option>VietGAP</option>
+                                <option>GlobalGAP</option>
+                                <option>Chứng nhận Hữu cơ</option>
+                                <option>ISO 14001</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Loại kiểm tra</label>
+                            <select class="w-full p-2 border rounded-lg">
+                                <option>Kiểm tra ban đầu</option>
+                                <option>Kiểm tra định kỳ</option>
+                                <option>Kiểm tra gia hạn</option>
+                                <option>Kiểm tra bất thường</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Ngày mong muốn</label>
+                            <input type="date" class="w-full p-2 border rounded-lg" value="2024-12-20">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Thời gian</label>
+                            <input type="time" class="w-full p-2 border rounded-lg" value="08:00">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ghi chú</label>
+                        <textarea class="w-full p-3 border rounded-lg" rows="3" placeholder="Yêu cầu đặc biệt, khu vực cần kiểm tra..."></textarea>
+                    </div>
+                    
+                    <button class="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition-all">
+                        <i class="fas fa-calendar-check mr-2"></i>Đặt lịch kiểm tra
+                    </button>
+                </div>
+            `);
+        }
+        
+        // Additional function placeholders
+        function addNewMaterial() { showNotification('Mở giao diện thêm vật tư mới...', 'info'); }
+        function createPurchaseOrder() { showNotification('Tạo đơn đặt hàng vật tư...', 'info'); }
+        function openFinancialDetail() { showNotification('Mở báo cáo tài chính chi tiết...', 'info'); }
+        function openTreeManagement() { showNotification('Mở giao diện cập nhật thông tin từng cây...', 'info'); }
+        function openZoneDetails() { showNotification('Hiển thị thông tin chi tiết theo lô...', 'info'); }
+        function updateYieldAssessment() { showNotification('Cập nhật đánh giá sản lượng...', 'info'); }
+        function initializeZoneManagement() { console.log('Zone management initialized'); }
+        
+        // Task Management Functions
+        function startTask(taskId) {
+            showNotification(`Bắt đầu công việc: ${taskId}`, 'success');
+        }
+        
+        function continueTask(taskId) {
+            showNotification(`Tiếp tục công việc: ${taskId}`, 'info');
+        }
+        
+        function viewTaskDetails(taskId) {
+            const modal = createModal('Chi tiết Công việc', `
+                <div class="space-y-4">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h4 class="font-semibold text-blue-800 mb-2">📋 Hướng dẫn chi tiết</h4>
+                        <p class="text-sm text-blue-700">Thông tin đầy đủ về cách thực hiện công việc này</p>
+                    </div>
+                    
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Mô tả công việc:</h5>
+                        <p class="text-sm text-gray-600">Phun thuốc trừ sâu phủ quả tại khu A3 và B1 theo hướng dẫn của kỹ thuật viên.</p>
+                    </div>
+                    
+                    <div>
+                        <h5 class="font-semibold text-gray-800 mb-2">Hướng dẫn thực hiện:</h5>
+                        <ul class="text-sm text-gray-600 space-y-1">
+                            <li>• Sử dụng thuốc: Imidacloprid 200SC</li>
+                            <li>• Liều lượng: 1.5ml/L nước</li>
+                            <li>• Thời gian phun: Buổi chiều (16:00-18:00)</li>
+                            <li>• Tránh phun trong lúc có nắng gắt</li>
+                            <li>• Đeo đầy đủ bảo hộ lao động</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h5 class="font-semibold text-gray-

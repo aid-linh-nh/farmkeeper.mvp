@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Hồ Sơ Vườn/Farm</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white">Quản Lý Hồ Sơ Vườn/Farm</h1>
+                <p class="text-gray-400 mt-1">Xây dựng và duy trì cơ sở dữ liệu các vườn/farm trong hệ thống.</p>
+            </div>
+            <button id="add-farm-btn" class="mt-4 md:mt-0 w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center">
+                <i data-lucide="plus" class="w-5 h-5 mr-2"></i> Thêm Vườn Mới
+            </button>
+        </div>
+
+        <!-- Add/Edit Farm Form (Initially hidden) -->
+        <div id="farm-form-container" class="hidden mb-8 bg-gray-800 p-8 rounded-xl border border-gray-700">
+            <h2 id="form-title" class="text-2xl font-bold text-white mb-6">Thêm Hồ Sơ Vườn Mới</h2>
+            <form id="farm-form">
+                <!-- Section 1: Thông tin cơ bản -->
+                <section class="mb-8">
+                    <h3 class="text-lg font-semibold text-white border-b border-gray-700 pb-3 mb-6">Thông tin Cơ bản & Kỹ thuật</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="farm_id" class="block text-sm font-medium text-gray-300 mb-2">Mã Vườn (Tự động)</label>
+                            <input type="text" id="farm_id" value="FARM_DL_026" class="w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2" readonly>
+                        </div>
+                        <div>
+                            <label for="farm_name" class="block text-sm font-medium text-gray-300 mb-2">Tên Vườn / Chủ Vườn</label>
+                            <input type="text" id="farm_name" placeholder="VD: Vườn sầu riêng ông Tám" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2" required>
+                        </div>
+                        <div>
+                            <label for="engineer_id" class="block text-sm font-medium text-gray-300 mb-2">Kỹ sư phụ trách</label>
+                            <select id="engineer_id" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                                <option>Nguyễn Văn An</option>
+                                <option>Trần Thị Bích</option>
+                                <option>Lê Minh Cường</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="farm_area" class="block text-sm font-medium text-gray-300 mb-2">Tổng diện tích (ha)</label>
+                            <input type="number" step="0.1" id="farm_area" placeholder="VD: 5.5" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label for="tree_type" class="block text-sm font-medium text-gray-300 mb-2">Loại cây trồng chính</label>
+                            <input type="text" id="tree_type" value="Sầu riêng" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                         <div>
+                            <label for="tree_age" class="block text-sm font-medium text-gray-300 mb-2">Tuổi cây trung bình (năm)</label>
+                            <input type="number" id="tree_age" placeholder="VD: 7" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Các hệ số điều chỉnh -->
+                <section>
+                    <h3 class="text-lg font-semibold text-white border-b border-gray-700 pb-3 mb-6">Các Hệ số Điều chỉnh & Độ phức tạp</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div>
+                            <label for="factor_stage" class="block text-sm font-medium text-gray-300 mb-2">Hệ số Tuổi cây & Giai đoạn</label>
+                            <select id="factor_stage" class="factor-input w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                                <option value="0.8">Kiến thiết cơ bản</option>
+                                <option value="0.9">Kinh doanh năm đầu</option>
+                                <option value="1.0" selected>Kinh doanh ổn định</option>
+                                <option value="1.1">Vườn già/cải tạo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="factor_investment" class="block text-sm font-medium text-gray-300 mb-2">Hệ số Mức độ Đầu tư</label>
+                            <select id="factor_investment" class="factor-input w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                                <option value="1.1">Đầu tư cao</option>
+                                <option value="1.0" selected>Đầu tư khá</option>
+                                <option value="0.9">Đầu tư cầm chừng</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="factor_area" class="block text-sm font-medium text-gray-300 mb-2">Hệ số Quy mô Diện tích</label>
+                            <select id="factor_area" class="factor-input w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                                <option value="0.9">Nhỏ (< 2ha)</option>
+                                <option value="1.0" selected>Vừa (2 - 5ha)</option>
+                                <option value="1.2">Lớn (> 5ha)</option>
+                            </select>
+                        </div>
+                         <div>
+                            <label for="factor_region" class="block text-sm font-medium text-gray-300 mb-2">Hệ số Vùng/Khí hậu</label>
+                            <select id="factor_region" class="factor-input w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                                <option value="1.0" selected>Vùng thuận lợi</option>
+                                <option value="1.1">Vùng khó khăn</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-gray-900 p-4 rounded-lg border border-gray-700 flex items-center justify-between">
+                        <p class="font-semibold text-white">Hệ số Phức tạp của Vườn (Tự động tính)</p>
+                        <p id="complexity-factor" class="text-2xl font-bold text-green-400">1.00</p>
+                    </div>
+                </section>
+
+                <!-- Action Buttons -->
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancel-btn" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-md">Hủy</button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md">Lưu Hồ Sơ Vườn</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Farm List Table -->
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-400">
+                    <thead class="text-xs text-gray-300 uppercase bg-gray-700/50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Mã Vườn</th>
+                            <th scope="col" class="px-6 py-3">Tên Vườn / Chủ Vườn</th>
+                            <th scope="col" class="px-6 py-3">Kỹ sư phụ trách</th>
+                            <th scope="col" class="px-6 py-3 text-center">Diện tích (ha)</th>
+                            <th scope="col" class="px-6 py-3 text-center">Hệ số Phức tạp</th>
+                            <th scope="col" class="px-6 py-3 text-center">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Sample Row 1 -->
+                        <tr class="bg-gray-800 border-b border-gray-700 hover:bg-gray-700/50">
+                            <td class="px-6 py-4 font-mono text-xs">FARM_DL_001</td>
+                            <td class="px-6 py-4 font-medium text-white">Vườn sầu riêng ông Năm</td>
+                            <td class="px-6 py-4">Nguyễn Văn An</td>
+                            <td class="px-6 py-4 text-center">6.2</td>
+                            <td class="px-6 py-4 text-center font-bold text-yellow-400">1.32</td>
+                            <td class="px-6 py-4 text-center">
+                                <button class="p-2 text-gray-400 hover:text-white"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                        <!-- Sample Row 2 -->
+                        <tr class="bg-gray-800 border-b border-gray-700 hover:bg-gray-700/50">
+                            <td class="px-6 py-4 font-mono text-xs">FARM_DL_008</td>
+                            <td class="px-6 py-4 font-medium text-white">Vườn chị Ba</td>
+                            <td class="px-6 py-4">Trần Thị Bích</td>
+                            <td class="px-6 py-4 text-center">3.5</td>
+                            <td class="px-6 py-4 text-center font-bold text-green-400">1.00</td>
+                            <td class="px-6 py-4 text-center">
+                                <button class="p-2 text-gray-400 hover:text-white"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                        <!-- Sample Row 3 -->
+                        <tr class="bg-gray-800 border-b border-gray-700 hover:bg-gray-700/50">
+                            <td class="px-6 py-4 font-mono text-xs">FARM_DL_012</td>
+                            <td class="px-6 py-4 font-medium text-white">Vườn anh Bảy</td>
+                            <td class="px-6 py-4">Nguyễn Văn An</td>
+                            <td class="px-6 py-4 text-center">1.8</td>
+                            <td class="px-6 py-4 text-center font-bold text-green-400">0.81</td>
+                            <td class="px-6 py-4 text-center">
+                                <button class="p-2 text-gray-400 hover:text-white"><i data-lucide="edit-2" class="w-4 h-4"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const addFarmBtn = document.getElementById('add-farm-btn');
+        const farmFormContainer = document.getElementById('farm-form-container');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const farmForm = document.getElementById('farm-form');
+        const formTitle = document.getElementById('form-title');
+
+        // Form toggle logic
+        function showForm() {
+            farmFormContainer.classList.remove('hidden');
+        }
+        function hideForm() {
+            farmFormContainer.classList.add('hidden');
+            farmForm.reset();
+            formTitle.textContent = "Thêm Hồ Sơ Vườn Mới";
+            calculateComplexity(); // Reset calculation on close
+        }
+        addFarmBtn.addEventListener('click', showForm);
+        cancelBtn.addEventListener('click', hideForm);
+        farmForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Đã lưu Hồ sơ Vườn thành công!');
+            hideForm();
+        });
+
+        // Complexity factor calculation logic
+        const factorInputs = document.querySelectorAll('.factor-input');
+        const complexityFactorDisplay = document.getElementById('complexity-factor');
+
+        function calculateComplexity() {
+            let totalFactor = 1;
+            factorInputs.forEach(input => {
+                totalFactor *= parseFloat(input.value);
+            });
+            complexityFactorDisplay.textContent = totalFactor.toFixed(2);
+        }
+
+        factorInputs.forEach(input => {
+            input.addEventListener('change', calculateComplexity);
+        });
+
+        // Initial calculation
+        calculateComplexity();
+    </script>
+</body>
+</html>

@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Tài chính Tổng thể - HTX Sầu riêng Đắk Lắk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f8fafc; border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .card-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 16px;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+        }
+        
+        .card-green { border-left: 4px solid #22c55e; background: linear-gradient(135deg, rgba(240, 253, 244, 0.8) 0%, rgba(220, 252, 231, 0.6) 100%); }
+        .card-red { border-left: 4px solid #ef4444; background: linear-gradient(135deg, rgba(254, 242, 242, 0.8) 0%, rgba(254, 202, 202, 0.6) 100%); }
+        .card-blue { border-left: 4px solid #3b82f6; background: linear-gradient(135deg, rgba(239, 246, 255, 0.8) 0%, rgba(219, 234, 254, 0.6) 100%); }
+        .card-purple { border-left: 4px solid #a855f7; background: linear-gradient(135deg, rgba(250, 245, 255, 0.8) 0%, rgba(243, 232, 255, 0.6) 100%); }
+        .card-orange { border-left: 4px solid #f97316; background: linear-gradient(135deg, rgba(255, 247, 237, 0.8) 0%, rgba(254, 215, 170, 0.6) 100%); }
+        .card-teal { border-left: 4px solid #14b8a6; background: linear-gradient(135deg, rgba(240, 253, 250, 0.8) 0%, rgba(204, 251, 241, 0.6) 100%); }
+        .card-indigo { border-left: 4px solid #6366f1; background: linear-gradient(135deg, rgba(238, 242, 255, 0.8) 0%, rgba(224, 231, 255, 0.6) 100%); }
+        
+        .chart-bar {
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #22c55e, #16a34a);
+            border-radius: 4px 4px 0 0;
+        }
+        .chart-bar:hover { transform: scaleY(1.05); filter: brightness(1.1); }
+        .chart-bar-red { background: linear-gradient(45deg, #ef4444, #dc2626); }
+        .chart-bar-blue { background: linear-gradient(45deg, #3b82f6, #2563eb); }
+        .chart-bar-orange { background: linear-gradient(45deg, #f97316, #ea580c); }
+        .chart-bar-purple { background: linear-gradient(45deg, #a855f7, #9333ea); }
+        
+        .status-positive { color: #16a34a; background: rgba(34, 197, 94, 0.1); }
+        .status-negative { color: #dc2626; background: rgba(239, 68, 68, 0.1); }
+        .status-neutral { color: #6b7280; background: rgba(107, 114, 128, 0.1); }
+        .status-warning { color: #d97706; background: rgba(245, 158, 11, 0.1); }
+        .status-excellent { color: #059669; background: rgba(16, 185, 129, 0.1); }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            border-right: 1px solid rgba(226, 232, 240, 0.6);
+            min-height: 100vh;
+            width: 300px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin: 2px 8px;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(34, 197, 94, 0.08);
+            transform: translateX(2px);
+        }
+        
+        .sidebar-item.active {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: 300px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring__circle {
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.5s ease-in-out;
+        }
+        
+        .table-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .table-modern th {
+            background: rgba(249, 250, 251, 0.8);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.75rem;
+        }
+        
+        .table-modern tr:hover {
+            background: rgba(34, 197, 94, 0.05);
+        }
+        
+        .alert-modern {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(226, 232, 240, 0.3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .alert-warning {
+            border-left: 3px solid #f59e0b;
+            background: linear-gradient(135deg, rgba(255, 251, 235, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+        }
+        
+        .alert-success {
+            border-left: 3px solid #10b981;
+            background: linear-gradient(135deg, rgba(236, 253, 245, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+        }
+        
+        .alert-info {
+            border-left: 3px solid #3b82f6;
+            background: linear-gradient(135deg, rgba(239, 246, 255, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+        }
+        
+        .alert-critical {
+            border-left: 3px solid #dc2626;
+            background: linear-gradient(135deg, rgba(254, 242, 242, 0.9) 0%, rgba(255, 255, 255, 0.9) 100%);
+        }
+        
+        .farm-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .farm-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .performance-excellent { border-left-color: #059669; }
+        .performance-good { border-left-color: #22c55e; }
+        .performance-average { border-left-color: #f59e0b; }
+        .performance-poor { border-left-color: #ef4444; }
+        
+        .metric-change-positive { color: #059669; }
+        .metric-change-negative { color: #dc2626; }
+        .metric-change-neutral { color: #6b7280; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <div class="bg-green-100 p-3 rounded-xl">
+                    <i class="fas fa-chart-network text-2xl text-green-600"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">HTX Sầu riêng</h1>
+                    <p class="text-sm text-gray-500">Đắk Lắk • 12 Vườn</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="py-4 custom-scroll" style="max-height: calc(100vh - 140px); overflow-y: auto;">
+            <div class="px-4 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">TỔNG QUAN</p>
+            </div>
+            
+            <a href="#" class="sidebar-item active flex items-center px-4 py-3">
+                <i class="fas fa-tachometer-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Dashboard Tổng thể</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-map-marked-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Bản đồ Vườn</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-chart-pie w-5 text-center mr-3"></i>
+                <span class="font-medium">Phân tích Danh mục</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">TÀI CHÍNH</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-calculator w-5 text-center mr-3"></i>
+                <span class="font-medium">Tổng hợp Chi phí</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-chart-line w-5 text-center mr-3"></i>
+                <span class="font-medium">Doanh thu Tổng hợp</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-exchange-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Dòng tiền HTX</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-piggy-bank w-5 text-center mr-3"></i>
+                <span class="font-medium">Ngân sách & Kế hoạch</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">QUẢN LÝ</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-users w-5 text-center mr-3"></i>
+                <span class="font-medium">Thành viên HTX</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-tasks w-5 text-center mr-3"></i>
+                <span class="font-medium">Quản lý Rủi ro</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-balance-scale w-5 text-center mr-3"></i>
+                <span class="font-medium">So sánh Hiệu quả</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-file-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Báo cáo Điều hành</span>
+            </a>
+        </nav>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+            <div class="bg-green-50 p-3 rounded-lg border border-green-200">
+                <p class="text-xs text-green-600 font-medium">🎯 Mục tiêu 2025</p>
+                <p class="text-xs text-gray-600 mt-1">Mở rộng thêm 5 vườn mới</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-filter backdrop-blur-lg shadow-sm border-b border-gray-200">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Dashboard Tài chính Tổng thể</h1>
+                        <p class="text-sm text-gray-600">HTX Sầu riêng Đắk Lắk • 12 Vườn • 156.8 hecta • Trung bình 8.2 năm tuổi</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <!-- Period Filter -->
+                        <div class="flex items-center bg-white rounded-lg border border-gray-200 overflow-hidden">
+                            <button class="px-4 py-2 text-sm font-medium bg-green-500 text-white">Tháng này</button>
+                            <button class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Quý này</button>
+                            <button class="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Năm nay</button>
+                        </div>
+                        
+                        <div class="bg-green-50 p-3 rounded-xl border border-green-100 cursor-pointer hover:bg-green-100">
+                            <i class="fas fa-plus text-green-500"></i>
+                        </div>
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100 cursor-pointer hover:bg-blue-100">
+                            <i class="fas fa-download text-blue-500"></i>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded-xl border border-purple-100 cursor-pointer hover:bg-purple-100">
+                            <i class="fas fa-cog text-purple-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="px-6 py-8">
+            <!-- Enterprise Financial KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6 mb-8">
+                <!-- Total Revenue -->
+                <div class="card-modern card-green">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-coins text-green-600 text-xl"></i>
+                            </div>
+                            <span class="status-positive px-2 py-1 rounded-full text-xs font-semibold">+28%</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Tổng Doanh thu</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">11.2 tỷ</p>
+                        <p class="text-xs text-green-600">71.4 tr/ha</p>
+                    </div>
+                </div>
+
+                <!-- Total Costs -->
+                <div class="card-modern card-red">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-calculator text-red-600 text-xl"></i>
+                            </div>
+                            <span class="status-negative px-2 py-1 rounded-full text-xs font-semibold">+12%</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Tổng Chi phí</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">4.8 tỷ</p>
+                        <p class="text-xs text-red-600">30.6 tr/ha</p>
+                    </div>
+                </div>
+
+                <!-- Total Profit -->
+                <div class="card-modern card-blue">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                            </div>
+                            <span class="status-positive px-2 py-1 rounded-full text-xs font-semibold">+42%</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Tổng Lợi nhuận</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">6.4 tỷ</p>
+                        <p class="text-xs text-blue-600">40.8 tr/ha</p>
+                    </div>
+                </div>
+
+                <!-- Average Margin -->
+                <div class="card-modern card-purple">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-percentage text-purple-600 text-xl"></i>
+                            </div>
+                            <span class="status-positive px-2 py-1 rounded-full text-xs font-semibold">+8%</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Biên LN TB</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">57%</p>
+                        <p class="text-xs text-purple-600">Cao nhất: 72%</p>
+                    </div>
+                </div>
+
+                <!-- Total Cash -->
+                <div class="card-modern card-teal">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-wallet text-teal-600 text-xl"></i>
+                            </div>
+                            <span class="status-positive px-2 py-1 rounded-full text-xs font-semibold">Mạnh</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Tổng Số dư</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">18.6 tỷ</p>
+                        <p class="text-xs text-teal-600">4.6 tháng chi phí</p>
+                    </div>
+                </div>
+
+                <!-- ROI -->
+                <div class="card-modern card-orange">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-trophy text-orange-600 text-xl"></i>
+                            </div>
+                            <span class="status-excellent px-2 py-1 rounded-full text-xs font-semibold">Xuất sắc</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">ROI Trung bình</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">164%</p>
+                        <p class="text-xs text-orange-600">Tốt nhất: 203%</p>
+                    </div>
+                </div>
+
+                <!-- Active Farms -->
+                <div class="card-modern card-indigo">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-seedling text-indigo-600 text-xl"></i>
+                            </div>
+                            <span class="status-positive px-2 py-1 rounded-full text-xs font-semibold">+2</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Vườn Hoạt động</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">12</p>
+                        <p class="text-xs text-indigo-600">156.8 ha tổng</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+                
+                <!-- Enterprise Performance Trend -->
+                <div class="lg:col-span-8 card-modern">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">Xu hướng Hiệu quả HTX</h3>
+                                <p class="text-gray-600">So sánh tổng hợp 12 tháng</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition-all">
+                                    <i class="fas fa-chart-bar mr-2"></i>Tổng hợp
+                                </button>
+                                <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition-all">
+                                    <i class="fas fa-chart-line mr-2"></i>Từng vườn
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Chart Area -->
+                        <div class="bg-gray-50 rounded-xl h-80 flex items-center justify-center relative overflow-hidden">
+                            <div class="absolute inset-0 p-6">
+                                <div class="h-full flex items-end justify-between space-x-2">
+                                    <!-- T1 -->
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 35%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">5.8</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 25%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">3.8</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T1</span>
+                                    </div>
+                                    
+                                    <!-- T2 -->
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 45%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">7.2</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 28%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">4.1</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T2</span>
+                                    </div>
+                                    
+                                    <!-- Continue similar pattern for remaining months -->
+                                    <!-- T3-T11 with varying heights and values -->
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 40%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">6.5</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 26%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">3.9</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T3</span>
+                                    </div>
+                                    
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 30%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">4.9</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 22%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">3.2</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T4</span>
+                                    </div>
+                                    
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 65%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">10.8</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 35%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">5.2</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T5</span>
+                                    </div>
+                                    
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 85%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">14.2</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 42%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">6.1</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T6</span>
+                                    </div>
+                                    
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 100%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">16.8</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 48%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">6.8</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T7</span>
+                                    </div>
+                                    
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 90%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">15.2</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 44%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">6.4</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T8</span>
+                                    </div>
+                                    
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 75%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">12.4</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 40%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">5.8</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T9</span>
+                                    </div>
+                                    
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 55%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold">9.1</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 32%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">4.6</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T10</span>
+                                    </div>
+                                    
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2" style="height: 70%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-green-600 font-bold text-green-700">11.2</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative" style="height: 32%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-red-600 font-bold">4.8</div>
+                                        </div>
+                                        <span class="text-xs text-green-600 font-bold mt-2">T11</span>
+                                    </div>
+                                    
+                                    <!-- T12 (Projected) -->
+                                    <div class="flex flex-col items-center flex-1">
+                                        <div class="chart-bar w-full relative mb-2 opacity-50 border-2 border-dashed border-green-500" style="height: 60%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 font-bold">9.8</div>
+                                        </div>
+                                        <div class="chart-bar-red w-full relative opacity-50 border-2 border-dashed border-red-500" style="height: 30%;">
+                                            <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 font-bold">4.2</div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 mt-2 font-medium">T12*</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Legend -->
+                            <div class="absolute top-4 right-4 bg-white rounded-lg p-3 shadow-md">
+                                <div class="flex items-center space-x-4 text-xs">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-green-500 rounded"></div>
+                                        <span>Doanh thu (tỷ)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-red-500 rounded"></div>
+                                        <span>Chi phí (tỷ)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Summary Stats -->
+                        <div class="grid grid-cols-3 gap-4 mt-6">
+                            <div class="text-center bg-green-50 rounded-xl p-4 border border-green-200">
+                                <p class="font-bold text-2xl text-green-700">128.4 tỷ</p>
+                                <p class="text-sm text-gray-600">Doanh thu năm (ước tính)</p>
+                                <p class="text-xs text-green-600">819 tr/ha</p>
+                            </div>
+                            <div class="text-center bg-red-50 rounded-xl p-4 border border-red-200">
+                                <p class="font-bold text-2xl text-red-700">52.8 tỷ</p>
+                                <p class="text-sm text-gray-600">Chi phí năm (ước tính)</p>
+                                <p class="text-xs text-red-600">337 tr/ha</p>
+                            </div>
+                            <div class="text-center bg-blue-50 rounded-xl p-4 border border-blue-200">
+                                <p class="font-bold text-2xl text-blue-700">75.6 tỷ</p>
+                                <p class="text-sm text-gray-600">Lợi nhuận năm (ước tính)</p>
+                                <p class="text-xs text-blue-600">482 tr/ha</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enterprise Alerts & Insights -->
+                <div class="lg:col-span-4 space-y-6">
+                    <!-- Critical Alerts -->
+                    <div class="card-modern">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                Cảnh báo Quan trọng
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <div class="alert-modern alert-critical p-3">
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-times-circle text-red-500 mt-1"></i>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-sm text-red-700">Vườn Anh Tuấn: Dòng tiền âm</p>
+                                            <p class="text-xs text-red-600">Cần hỗ trợ 180 tr trong tháng này</p>
+                                            <button class="text-xs text-red-700 underline mt-1">Xem chi tiết</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert-modern alert-warning p-3">
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-sm text-yellow-700">3 vườn chi phí tăng >20%</p>
+                                            <p class="text-xs text-yellow-600">Chủ yếu do giá phân bón và nhân công</p>
+                                            <button class="text-xs text-yellow-700 underline mt-1">Phân tích nguyên nhân</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert-modern alert-success p-3">
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-check-circle text-green-500 mt-1"></i>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-sm text-green-700">5 vườn vượt mục tiêu tháng</p>
+                                            <p class="text-xs text-green-600">Trung bình vượt 18% kế hoạch</p>
+                                            <button class="text-xs text-green-700 underline mt-1">Chia sẻ kinh nghiệm</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Performance Summary -->
+                    <div class="card-modern">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Tóm tắt Hiệu quả</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Vượt mục tiêu</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 67%"></div>
+                                        </div>
+                                        <span class="text-sm font-semibold text-green-600">8/12</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Đạt mục tiêu</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-500 h-2 rounded-full" style="width: 25%"></div>
+                                        </div>
+                                        <span class="text-sm font-semibold text-blue-600">3/12</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Cần cải thiện</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-red-500 h-2 rounded-full" style="width: 8%"></div>
+                                        </div>
+                                        <span class="text-sm font-semibold text-red-600">1/12</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                                <p class="text-sm font-semibold text-blue-800">Tỷ lệ thành công tổng thể</p>
+                                <p class="text-2xl font-bold text-blue-900">91.7%</p>
+                                <p class="text-xs text-blue-600">So với mục tiêu đề ra</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farm Performance Comparison -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+                <!-- Top Performing Farms -->
+                <div class="lg:col-span-8 card-modern">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">Bảng xếp hạng Vườn</h3>
+                                <p class="text-gray-600">Hiệu quả theo tháng 11/2025</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition-all">
+                                    <i class="fas fa-medal mr-2"></i>Hiệu quả
+                                </button>
+                                <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition-all">
+                                    <i class="fas fa-sort-amount-down mr-2"></i>Doanh thu
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="w-full table-modern">
+                                <thead>
+                                    <tr class="border-b border-gray-200">
+                                        <th class="text-left py-3 px-4">#</th>
+                                        <th class="text-left py-3 px-4">Tên vườn</th>
+                                        <th class="text-center py-3 px-4">Diện tích</th>
+                                        <th class="text-center py-3 px-4">Doanh thu/ha</th>
+                                        <th class="text-center py-3 px-4">Biên LN</th>
+                                        <th class="text-center py-3 px-4">ROI</th>
+                                        <th class="text-center py-3 px-4">Xếp hạng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-gray-100 hover:bg-green-50">
+                                        <td class="py-3 px-4">
+                                            <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-crown text-yellow-600"></i>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div>
+                                                <p class="font-semibold text-gray-800">Vườn Anh Hiền</p>
+                                                <p class="text-xs text-gray-500">Cú M'Gar, Đắk Lắk</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-medium">12.5 ha</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-green-600">89.2 tr</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="status-excellent px-2 py-1 rounded-full text-xs font-semibold">72%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-orange-600">203%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <div class="performance-excellent border-l-4 pl-2">
+                                                <span class="text-xs font-semibold text-green-700">Xuất sắc</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="border-b border-gray-100 hover:bg-green-50">
+                                        <td class="py-3 px-4">
+                                            <div class="w-8 h-8 bg-silver-100 rounded-full flex items-center justify-center">
+                                                <span class="text-gray-600 font-bold">2</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div>
+                                                <p class="font-semibold text-gray-800">Vườn Chị Lan</p>
+                                                <p class="text-xs text-gray-500">Krông Búk, Đắk Lắk</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-medium">15.2 ha</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-green-600">82.5 tr</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="status-excellent px-2 py-1 rounded-full text-xs font-semibold">68%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-orange-600">185%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <div class="performance-excellent border-l-4 pl-2">
+                                                <span class="text-xs font-semibold text-green-700">Xuất sắc</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="border-b border-gray-100 hover:bg-green-50">
+                                        <td class="py-3 px-4">
+                                            <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                                                <span class="text-orange-600 font-bold">3</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div>
+                                                <p class="font-semibold text-gray-800">Vườn Anh Đức</p>
+                                                <p class="text-xs text-gray-500">Ea H'Leo, Đắk Lắk</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-medium">18.7 ha</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-green-600">76.8 tr</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="status-positive px-2 py-1 rounded-full text-xs font-semibold">65%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-orange-600">172%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <div class="performance-good border-l-4 pl-2">
+                                                <span class="text-xs font-semibold text-green-600">Tốt</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <!-- Continue with more farms... -->
+                                    <tr class="border-b border-gray-100 hover:bg-yellow-50">
+                                        <td class="py-3 px-4">
+                                            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                                <span class="text-gray-600 font-bold">11</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div>
+                                                <p class="font-semibold text-gray-800">Vườn Anh Minh</p>
+                                                <p class="text-xs text-gray-500">Krông Năng, Đắk Lắk</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-medium">8.3 ha</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-yellow-600">45.2 tr</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="status-warning px-2 py-1 rounded-full text-xs font-semibold">38%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-yellow-600">98%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <div class="performance-average border-l-4 pl-2">
+                                                <span class="text-xs font-semibold text-yellow-600">Trung bình</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    
+                                    <tr class="border-b border-gray-100 hover:bg-red-50">
+                                        <td class="py-3 px-4">
+                                            <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
+                                                <span class="text-red-600 font-bold">12</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4">
+                                            <div>
+                                                <p class="font-semibold text-gray-800">Vườn Anh Tuấn</p>
+                                                <p class="text-xs text-gray-500">Krông Bông, Đắk Lắk</p>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-medium">7.8 ha</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-red-600">28.4 tr</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="status-negative px-2 py-1 rounded-full text-xs font-semibold">-12%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <span class="text-sm font-bold text-red-600">-23%</span>
+                                        </td>
+                                        <td class="py-3 px-4 text-center">
+                                            <div class="performance-poor border-l-4 pl-2">
+                                                <span class="text-xs font-semibold text-red-600">Cần hỗ trợ</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enterprise Resource Allocation -->
+                <div class="lg:col-span-4 space-y-6">
+                    <!-- Quick Actions -->
+                    <div class="card-modern">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Hành động Nhanh</h3>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="bg-green-500 text-white p-3 rounded-lg text-sm hover:bg-green-600 transition-all text-center">
+                                    <i class="fas fa-plus-circle mb-2 text-lg block"></i>
+                                    Thêm Vườn
+                                </button>
+                                
+                                <button class="bg-blue-500 text-white p-3 rounded-lg text-sm hover:bg-blue-600 transition-all text-center">
+                                    <i class="fas fa-handshake mb-2 text-lg block"></i>
+                                    Hỗ trợ Vườn
+                                </button>
+                                
+                                <button class="bg-purple-500 text-white p-3 rounded-lg text-sm hover:bg-purple-600 transition-all text-center">
+                                    <i class="fas fa-chart-line mb-2 text-lg block"></i>
+                                    Báo cáo HTX
+                                </button>
+                                
+                                <button class="bg-orange-500 text-white p-3 rounded-lg text-sm hover:bg-orange-600 transition-all text-center">
+                                    <i class="fas fa-users-cog mb-2 text-lg block"></i>
+                                    Quản lý TV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resource Distribution -->
+                    <div class="card-modern">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Phân bổ Tài nguyên</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm text-gray-600">Hỗ trợ kỹ thuật</span>
+                                        <span class="text-sm font-semibold">8/12 vườn</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 67%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm text-gray-600">Vốn lưu động</span>
+                                        <span class="text-sm font-semibold">3/12 vườn</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-orange-500 h-2 rounded-full" style="width: 25%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm text-gray-600">Đầu tư thiết bị</span>
+                                        <span class="text-sm font-semibold">5/12 vườn</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 42%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 p-4 bg-purple-50 rounded-xl border border-purple-200">
+                                <p class="text-sm font-semibold text-purple-800">Quỹ phát triển chung</p>
+                                <p class="text-2xl font-bold text-purple-900">4.2 tỷ</p>
+                                <p class="text-xs text-purple-600">Sẵn sàng hỗ trợ thành viên</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Enhanced interactivity for enterprise dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chart bar hover effects
+            const chartBars = document.querySelectorAll('.chart-bar, .chart-bar-red, .chart-bar-blue, .chart-bar-orange, .chart-bar-purple');
+            chartBars.forEach(bar => {
+                bar.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scaleY(1.05)';
+                });
+                bar.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scaleY(1)';
+                });
+            });
+            
+            // Farm card hover effects
+            const farmCards = document.querySelectorAll('.farm-card');
+            farmCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Table row click simulation
+            const tableRows = document.querySelectorAll('table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    console.log('Navigate to farm details:', this.querySelector('p').textContent);
+                });
+                row.style.cursor = 'pointer';
+            });
+        });
+    </script>
+</body>
+</html>

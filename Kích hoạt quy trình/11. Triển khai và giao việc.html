@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Triển khai Quy trình</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Noto Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* Áp dụng font Noto Sans cho toàn bộ trang */
+      body {
+        font-family: 'Noto Sans', sans-serif;
+      }
+      /* Custom màu sắc của FARMKEEPER */
+      .farmkeeper-green {
+        color: #69bd70;
+      }
+      .bg-farmkeeper-green {
+        background-color: #69bd70;
+      }
+      .hover\:bg-farmkeeper-green-dark:hover {
+        background-color: #5aab64;
+      }
+      .border-farmkeeper-green {
+        border-color: #69bd70;
+      }
+      .ring-farmkeeper-green:focus {
+        --tw-ring-color: #69bd70;
+      }
+      /* Style cho các trường chỉ đọc */
+      .static-field {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        color: #374151;
+        min-height: 38px;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="flex h-screen">
+      <!-- Sidebar Menu -->
+      <aside class="w-64 bg-white shadow-md flex flex-col">
+        <div class="p-6">
+          <h1 class="text-3xl font-bold farmkeeper-green">FARMKEEPER</h1>
+          <p class="text-sm text-gray-500">Quản lý quy trình trồng sầu riêng</p>
+        </div>
+        <nav class="mt-4 flex-1">
+          <ul>
+            <!-- Mục menu cha -->
+            <li class="px-6 py-2">
+              <span class="font-semibold text-gray-800"
+                >Quy trình canh tác</span
+              >
+              <!-- Danh sách mục menu con -->
+              <ul class="mt-2 pl-4 border-l-2 border-gray-200">
+                <li class="my-1">
+                  <a
+                    href="#"
+                    class="block px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-gray-100"
+                  >
+                    Danh sách quy trình
+                  </a>
+                </li>
+                <li class="my-1">
+                  <a
+                    href="#"
+                    class="block px-4 py-2 text-sm font-medium text-green-800 bg-green-100 rounded-md"
+                  >
+                    Kích hoạt quy trình
+                  </a>
+                </li>
+                <li class="my-1">
+                  <a
+                    href="#"
+                    class="block px-4 py-2 text-sm text-gray-600 rounded-md hover:bg-gray-100"
+                  >
+                    Tùy chỉnh quy trình
+                  </a>
+                </li>
+              </ul>
+            </li>
+            <!-- Các mục menu khác có thể thêm vào đây -->
+            <li class="px-6 py-2 mt-4">
+              <a href="#" class="font-semibold text-gray-800"
+                >Báo cáo & Thống kê</a
+              >
+            </li>
+            <li class="px-6 py-2">
+              <a href="#" class="font-semibold text-gray-800"
+                >Quản lý nhân viên</a
+              >
+            </li>
+          </ul>
+        </nav>
+        <div class="p-6">
+          <a
+            href="#"
+            class="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg"
+          >
+            Đăng xuất
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+        <div class="max-w-4xl mx-auto">
+          <header class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">
+              Triển khai quy trình
+            </h2>
+            <p class="text-gray-600 mt-1">
+              Xem lại thông tin và phân công công việc để bắt đầu áp dụng quy
+              trình.
+            </p>
+          </header>
+
+          <!-- Tóm tắt quy trình -->
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-800 border-b pb-3 mb-4">
+              Tóm tắt quy trình đã tùy chỉnh
+            </h3>
+
+            <div class="space-y-5">
+              <!-- Tên quy trình -->
+              <div>
+                <label class="text-sm font-medium text-gray-500"
+                  >Tên quy trình</label
+                >
+                <p class="text-lg font-semibold text-gray-900 mt-1">
+                  Quy trình chăm sóc sầu riêng Ri6 giai đoạn ra hoa
+                </p>
+              </div>
+
+              <!-- Các giai đoạn và công việc -->
+              <div>
+                <label class="text-sm font-medium text-gray-500"
+                  >Các giai đoạn và công việc</label
+                >
+                <div class="mt-2 space-y-4">
+                  <!-- Card Giai đoạn -->
+                  <div
+                    class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm"
+                  >
+                    <!-- Header Giai đoạn -->
+                    <div class="flex items-center gap-3 mb-4">
+                      <div
+                        class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0"
+                      >
+                        <svg
+                          class="w-6 h-6 text-green-600"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M12.963 2.286a.75.75 0 00-1.071 1.052A9.75 9.75 0 0118.75 12c0 5.385-4.365 9.75-9.75 9.75S-1.5 17.385-1.5 12a9.75 9.75 0 015.026-8.662.75.75 0 00-1.052-1.071A11.25 11.25 0 1012.963 2.286z"
+                            clip-rule="evenodd"
+                          />
+                          <path
+                            fill-rule="evenodd"
+                            d="M12 7.5a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 0112 7.5z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <h4 class="font-bold text-xl text-gray-800">
+                        Giai đoạn: Chuẩn bị và xử lý đất
+                      </h4>
+                    </div>
+
+                    <!-- Chi tiết Giai đoạn -->
+                    <div
+                      class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 mb-4 text-sm border-t pt-4"
+                    >
+                      <div class="flex items-center gap-2 text-gray-600">
+                        <svg
+                          class="w-5 h-5 text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                        <div>
+                          <span class="text-gray-500">Thời gian</span>
+                          <p class="font-semibold text-gray-800">15-30 ngày</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 text-gray-600">
+                        <svg
+                          class="w-5 h-5 text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0H21m-7.5-9h-6"
+                          />
+                        </svg>
+                        <div>
+                          <span class="text-gray-500">Tối ưu</span>
+                          <p class="font-semibold text-gray-800">Tháng 1-2</p>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 text-gray-600">
+                        <svg
+                          class="w-5 h-5 text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                          />
+                        </svg>
+                        <div>
+                          <span class="text-gray-500">Loại CV</span>
+                          <p class="font-semibold text-gray-800">
+                            Thiết lập 1 lần
+                          </p>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 text-gray-600">
+                        <svg
+                          class="w-5 h-5 text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5"
+                          />
+                        </svg>
+                        <div>
+                          <span class="text-gray-500">Ưu tiên</span>
+                          <p class="font-semibold text-red-600">Cao</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Mô tả Giai đoạn -->
+                    <div
+                      class="flex items-start gap-2 text-sm text-gray-700 mb-6"
+                    >
+                      <svg
+                        class="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                        />
+                      </svg>
+                      <p>
+                        <span class="font-medium">Mô tả giai đoạn:</span> Giai
+                        đoạn chuẩn bị nền tảng quan trọng nhất cho sự phát triển
+                        của cây sầu riêng, bao gồm việc xử lý đất để đảm bảo môi
+                        trường tối ưu cho rễ cây.
+                      </p>
+                    </div>
+
+                    <!-- Công việc trong giai đoạn -->
+                    <h5 class="font-semibold text-gray-800 mb-3">
+                      Công việc trong giai đoạn
+                    </h5>
+                    <div
+                      class="bg-gray-50 p-4 rounded-lg border border-gray-200"
+                    >
+                      <div class="flex justify-between items-start mb-3">
+                        <p class="font-semibold text-gray-900">
+                          1. Làm đất và bón phân cơ bản
+                        </p>
+                        <span
+                          class="text-xs font-bold bg-red-100 text-red-700 px-3 py-1 rounded-full"
+                          >Rất quan trọng</span
+                        >
+                      </div>
+                      <div class="space-y-1 text-sm text-gray-700">
+                        <p>
+                          <span
+                            class="font-medium text-gray-500 w-32 inline-block"
+                            >Thời gian:</span
+                          >
+                          3-5 ngày
+                        </p>
+                        <p>
+                          <span
+                            class="font-medium text-gray-500 w-32 inline-block"
+                            >Thời điểm:</span
+                          >
+                          Trước khi trồng 2 tuần
+                        </p>
+                        <p>
+                          <span
+                            class="font-medium text-gray-500 w-32 inline-block"
+                            >Loại công việc:</span
+                          >
+                          Thiết lập 1 lần
+                        </p>
+                        <p>
+                          <span
+                            class="font-medium text-gray-500 w-32 inline-block"
+                            >Mô tả:</span
+                          >
+                          Mô tả chi tiết cách thực hiện công việc này...
+                        </p>
+                      </div>
+                      <div
+                        class="mt-4 pt-4 border-t border-gray-200 flex justify-end space-x-6"
+                      >
+                        <a
+                          href="#"
+                          class="flex items-center gap-1.5 text-sm font-medium text-blue-600 hover:underline"
+                        >
+                          <svg
+                            class="w-4 h-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          Chi tiết Công việc & Chi phí
+                        </a>
+                        <a
+                          href="#"
+                          class="flex items-center gap-1.5 text-sm font-medium text-farmkeeper-green hover:underline"
+                        >
+                          <svg
+                            class="w-4 h-4"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          Tiêu chuẩn đánh giá
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Thêm các card giai đoạn khác tại đây nếu cần -->
+                </div>
+              </div>
+
+              <!-- Tham số tài chính -->
+              <div>
+                <label class="text-sm font-medium text-gray-500 mb-2 block"
+                  >Tham số tài chính (Ước tính)</label
+                >
+                <div
+                  class="p-4 rounded-lg border border-gray-200 bg-white space-y-3"
+                >
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600">Tổng chi phí vật tư</span>
+                    <span class="font-semibold text-gray-800"
+                      >2,500,000 VNĐ</span
+                    >
+                  </div>
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600">Tổng chi phí nhân công</span>
+                    <span class="font-semibold text-gray-800"
+                      >1,200,000 VNĐ</span
+                    >
+                  </div>
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600">Tổng chi phí công cụ</span>
+                    <span class="font-semibold text-gray-800">300,000 VNĐ</span>
+                  </div>
+                  <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-600">Tổng chi phí dịch vụ</span>
+                    <span class="font-semibold text-gray-800">150,000 VNĐ</span>
+                  </div>
+                  <div
+                    class="!mt-4 pt-4 border-t flex justify-between items-center bg-green-50 p-3 rounded-lg border-green-200"
+                  >
+                    <span class="text-base font-bold text-gray-900"
+                      >Tổng chi phí dự kiến</span
+                    >
+                    <span class="font-extrabold text-xl text-green-600"
+                      >4,150,000 VNĐ</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phân công thực hiện (UPDATED) -->
+          <div
+            class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mt-6"
+          >
+            <h3 class="text-xl font-semibold text-gray-800">
+              Phân công thực hiện
+            </h3>
+            <div class="mt-4 overflow-x-auto">
+              <table class="w-full text-sm text-left text-gray-600">
+                <thead
+                  class="text-xs text-gray-700 uppercase bg-gray-100 rounded-lg"
+                >
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Tên nhân công</th>
+                    <th scope="col" class="px-6 py-3">
+                      Giai đoạn & Công việc đảm nhận
+                    </th>
+                    <th scope="col" class="px-6 py-3">Loại hình trả công</th>
+                    <th scope="col" class="px-6 py-3">Định mức trả công</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="bg-white border-b">
+                    <td
+                      class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    >
+                      Trần Bình Minh
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="font-medium text-gray-800">
+                        Chuẩn bị và xử lý đất
+                      </div>
+                      <div class="text-gray-500 text-xs">
+                        Làm đất và bón phân cơ bản
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">Nhật công</td>
+                    <td class="px-6 py-4">2 ngày công</td>
+                  </tr>
+                  <tr class="bg-white border-b">
+                    <td
+                      class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    >
+                      Lê Thị Hoa
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="font-medium text-gray-800">
+                        Chuẩn bị và xử lý đất
+                      </div>
+                      <div class="text-gray-500 text-xs">
+                        Làm đất và bón phân cơ bản
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">Nhật công</td>
+                    <td class="px-6 py-4">2 ngày công</td>
+                  </tr>
+                  <tr class="bg-white">
+                    <td
+                      class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                    >
+                      Nguyễn Văn An
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="font-medium text-gray-800">
+                        Kích thích ra hoa
+                      </div>
+                      <div class="text-gray-500 text-xs">
+                        Phun Paclobutrazol 15%
+                      </div>
+                    </td>
+                    <td class="px-6 py-4">Khoán</td>
+                    <td class="px-6 py-4">1 ha</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Nút hành động -->
+          <div class="mt-8 flex justify-end space-x-4">
+            <button
+              type="button"
+              class="px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              class="px-6 py-3 bg-farmkeeper-green text-white font-semibold rounded-lg hover:bg-farmkeeper-green-dark transition-colors shadow-md"
+            >
+              Triển khai & Giao việc
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

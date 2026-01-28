@@ -1,0 +1,10 @@
+1. Màn hình 1
+- Xuất hiện khi người dùng chọn mục "Quản lý kỹ thuật" --> "Cấu hình đánh giá"
+
+2. Màn hình 2
+- Xuất hiện khi người dùng chọn nút "Tạo cấu hình mới" từ màn hình 1
+Note: Màn hình chỉnh sửa cấu hình sẽ giống màn hình tạo, chỉ khác là nó đã có sẵn value và được quyền edit
+
+3. Màn hình 3
+- Xuất hiện khi người dùng chọn nút "Xem chi tiết" từ màn hình 1
+

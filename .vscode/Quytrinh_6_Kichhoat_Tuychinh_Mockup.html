@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quy trình Dona - Đã kích hoạt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            line-height: 1.5;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.5rem;
+        }
+        
+        .activated-header {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .activated-header::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .status-info h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+        
+        .status-info p {
+            opacity: 0.9;
+            font-size: 0.85rem;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-light {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-light:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-deploy {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            font-weight: 700;
+            padding: 0.8rem 1.5rem;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-deploy::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-deploy:hover::before {
+            left: 100%;
+        }
+
+        .btn-deploy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn-deploy:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .customization-bar {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #ea580c;
+        }
+        
+        .customization-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .customization-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .customization-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-orange {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            color: white;
+        }
+        
+        .btn-blue {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+
+        .deployment-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #dc2626;
+            position: relative;
+        }
+
+        .deployment-section::before {
+            content: '🚀';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: white;
+            padding: 0 10px;
+            font-size: 1.5rem;
+        }
+
+        .deployment-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .deployment-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .deployment-subtitle {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .readiness-check {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .readiness-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .readiness-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .readiness-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .readiness-item.complete {
+            color: #16a34a;
+        }
+
+        .readiness-item.incomplete {
+            color: #dc2626;
+        }
+
+        .deployment-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-deploy-main {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-width: 250px;
+        }
+
+        .btn-deploy-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-deploy-main:hover::before {
+            left: 100%;
+        }
+
+        .btn-deploy-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn-schedule {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            color: white;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 10px;
+        }
+
+        .deployment-note {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #92400e;
+        }
+
+        .deployment-note strong {
+            color: #78350f;
+        }
+        
+        .timeline {
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 25px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #dc2626, #16a34a, #ea580c, #9333ea, #0891b2, #7c2d12);
+            border-radius: 2px;
+        }
+        
+        .stage {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .stage-header {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin-left: 50px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .stage-header:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .stage-header::before {
+            content: attr(data-stage);
+            position: absolute;
+            left: -37px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .stage.stage-1 .stage-header::before { background: #dc2626; }
+        .stage.stage-2 .stage-header::before { background: #16a34a; }
+        .stage.stage-3 .stage-header::before { background: #ea580c; }
+        .stage.stage-4 .stage-header::before { background: #9333ea; }
+        .stage.stage-5 .stage-header::before { background: #0891b2; }
+        .stage.stage-6 .stage-header::before { background: #7c2d12; }
+        
+        .stage-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+        
+        .stage-info {
+            flex: 1;
+        }
+        
+        .stage-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stage-status {
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: #ddd6fe;
+            color: #7c3aed;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        
+        .stage-actions {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.7rem;
+        }
+        
+        .stage-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .stage-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .stage-description {
+            color: #4b5563;
+            margin-bottom: 0.8rem;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+        
+        .works-container {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .work-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .work-item:hover {
+            border-color: #dc2626;
+            box-shadow: 0 2px 10px rgba(220, 38, 38, 0.1);
+        }
+        
+        .work-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+        
+        .work-info {
+            flex: 1;
+            margin-right: 1rem;
+        }
+        
+        .work-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.3rem;
+        }
+        
+        .work-status-badge {
+            padding: 0.2rem 0.4rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #fee2e2;
+            color: #b91c1c;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        
+        .work-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            min-width: 100px;
+        }
+        
+        .work-meta {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        
+        .work-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .work-description {
+            color: #4b5563;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .add-work-btn {
+            border: 2px dashed #d1d5db;
+            background: #f9fafb;
+            color: #6b7280;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-top: 0.8rem;
+        }
+        
+        .add-work-btn:hover {
+            border-color: #16a34a;
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0.25rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+        
+        .criteria-list {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .criteria-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        
+        .criteria-item input[type="checkbox"] {
+            margin-top: 0.2rem;
+        }
+        
+        .criteria-content {
+            flex: 1;
+        }
+        
+        .criteria-title {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 0.2rem;
+        }
+        
+        .criteria-desc {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .save-changes-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid #e5e7eb;
+            z-index: 100;
+            transform: translateY(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .save-changes-bar.show {
+            transform: translateY(0);
+        }
+        
+        .save-changes-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .changes-info {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+        
+        .save-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.25rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .customization-header {
+                flex-direction: column;
+                gap: 0.8rem;
+                align-items: flex-start;
+            }
+            
+            .customization-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .stage-header {
+                margin-left: 35px;
+                padding: 0.8rem;
+            }
+            
+            .stage-title-row {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .work-header {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .work-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+                min-width: auto;
+            }
+            
+            .stage-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .work-meta {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .modal {
+                width: 95%;
+                padding: 1rem;
+            }
+            
+            .save-changes-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .deployment-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-deploy-main {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .readiness-items {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Activated Header -->
+        <div class="activated-header">
+            <div class="header-content">
+                <div class="status-info">
+                    <h1>✅ Quy trình Dona đã được kích hoạt</h1>
+                    <p>Vườn Dona của tôi • Đắk Lắk • 2.5 ha • 275 cây • Bắt đầu từ giai đoạn 1</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-light" onclick="openDashboard()">
+                        📊 Dashboard
+                    </button>
+                    <button class="btn btn-light" onclick="openSettings()">
+                        ⚙️ Cài đặt
+                    </button>
+                    <button class="btn btn-deploy" id="headerDeployBtn" onclick="scrollToDeployment()">
+                        🚀 TRIỂN KHAI & GIAO VIỆC
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customization Bar -->
+        <div class="customization-bar">
+            <div class="customization-header">
+                <div class="customization-title">
+                    🛠️ Tùy chỉnh quy trình theo điều kiện thực tế
+                </div>
+                <div class="customization-actions">
+                    <button class="btn btn-sm btn-orange" onclick="addStage()">
+                        ➕ Thêm giai đoạn
+                    </button>
+                    <button class="btn btn-sm btn-blue" onclick="importTemplate()">
+                        📥 Nhập template
+                    </button>
+                    <button class="btn btn-sm btn-green" onclick="previewTimeline()">
+                        👁️ Xem timeline
+                    </button>
+                </div>
+            </div>
+            <p style="color: #6b7280; font-size: 0.85rem; margin: 0;">
+                Điều chỉnh công việc, thêm giai đoạn mới, hoặc tùy chỉnh tiêu chuẩn để phù hợp với trang thiết bị, nhân công và ngân sách của bạn.
+            </p>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+            <!-- Stage 1 -->
+            <div class="stage stage-1">
+                <div class="stage-header" data-stage="1">
+                    <div class="stage-title-row">
+                        <div class="stage-info">
+                            <div class="stage-name">🌱 Giai đoạn: Thiết lập trồng mới</div>
+                            <div class="stage-status">Đang hoạt động</div>
+                        </div>
+                        <div class="stage-actions">
+                            <button class="btn btn-sm btn-orange" onclick="editStage(1)">
+                                ✏️ Sửa giai đoạn
+                            </button>
+                            <button class="btn btn-sm btn-blue" onclick="duplicateStage(1)">
+                                📋 Sao chép
+                            </button>
+                        </div>
+                    </div>
+                    <div class="stage-meta">
+                        <div class="stage-meta-item">
+                            <span>⏰</span>
+                            <span>3-4 tháng</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>💰</span>
+                            <span>80-120 triệu/ha</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>👥</span>
+                            <span>15-20 công/ha</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🔧</span>
+                            <span>Máy cày, cuốc</span>
+                        </div>
+                    </div>
+                    <div class="stage-description">
+                        Chuẩn bị đất bazan, chọn giống Dona chất lượng cao và trồng theo kỹ thuật phù hợp với điều kiện Tây Nguyên.
+                    </div>
+                </div>
+                
+                <div class="works-container">
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div class="work-info">
+                                <div class="work-title">Khảo sát địa hình và phân tích đất bazan</div>
+                                <div class="work-status-badge">Bắt buộc</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>3-4 ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>600k-800k</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Rất quan trọng</span>
+                                    </div>
+                                </div>
+                                <div class="work-description">
+                                    Khảo sát độ dốc, hướng sườn và phân tích đất bazan về pH, hàm lượng Al3+, phospho và khả năng thoát nước.
+                                </div>
+                            </div>
+                            <div class="work-actions">
+                                <button class="btn btn-sm btn-orange" onclick="editWork(1, 1)">
+                                    ✏️ Sửa chi tiết
+                                </button>
+                                <button class="btn btn-sm btn-blue" onclick="editCriteria(1, 1)">
+                                    📋 Tiêu chuẩn
+                                </button>
+                                <button class="btn btn-sm" onclick="duplicateWork(1, 1)">
+                                    📄 Sao chép
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div class="work-info">
+                                <div class="work-title">Xử lý đất chua và bón vôi</div>
+                                <div class="work-status-badge">Bắt buộc</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>3-4 ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>800k-1.2tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Rất quan trọng</span>
+                                    </div>
+                                </div>
+                                <div class="work-description">
+                                    Xử lý tính chua của đất bazan bằng vôi bột CaCO3, giảm hàm lượng Al3+ độc hại và nâng pH lên 5.5-6.0.
+                                </div>
+                            </div>
+                            <div class="work-actions">
+                                <button class="btn btn-sm btn-orange" onclick="editWork(1, 2)">
+                                    ✏️ Sửa chi tiết
+                                </button>
+                                <button class="btn btn-sm btn-blue" onclick="editCriteria(1, 2)">
+                                    📋 Tiêu chuẩn
+                                </button>
+                                <button class="btn btn-sm" onclick="duplicateWork(1, 2)">
+                                    📄 Sao chép
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div class="work-info">
+                                <div class="work-title">Làm đất và tạo luống chống xói mòn</div>
+                                <div class="work-status-badge">Bắt buộc</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>4-5 ngày</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>1.2-1.8tr</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Quan trọng</span>
+                                    </div>
+                                </div>
+                                <div class="work-description">
+                                    Làm đất theo đường đồng mức, tạo luống cao và mương thoát nước để chống xói mòn trên địa hình dốc.
+                                </div>
+                            </div>
+                            <div class="work-actions">
+                                <button class="btn btn-sm btn-orange" onclick="editWork(1, 3)">
+                                    ✏️ Sửa chi tiết
+                                </button>
+                                <button class="btn btn-sm btn-blue" onclick="editCriteria(1, 3)">
+                                    📋 Tiêu chuẩn
+                                </button>
+                                <button class="btn btn-sm" onclick="deleteWork(1, 3)">
+                                    🗑️ Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="add-work-btn" onclick="addWork(1)">
+                        ➕ Thêm công việc vào giai đoạn này
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stage 2 -->
+            <div class="stage stage-2">
+                <div class="stage-header" data-stage="2">
+                    <div class="stage-title-row">
+                        <div class="stage-info">
+                            <div class="stage-name">🌿 Giai đoạn: Chăm sóc cây con</div>
+                            <div class="stage-status">Chưa bắt đầu</div>
+                        </div>
+                        <div class="stage-actions">
+                            <button class="btn btn-sm btn-orange" onclick="editStage(2)">
+                                ✏️ Sửa giai đoạn
+                            </button>
+                            <button class="btn btn-sm btn-blue" onclick="duplicateStage(2)">
+                                📋 Sao chép
+                            </button>
+                        </div>
+                    </div>
+                    <div class="stage-meta">
+                        <div class="stage-meta-item">
+                            <span>⏰</span>
+                            <span>Năm 1-2</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>💰</span>
+                            <span>3-5 triệu/tháng</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>👥</span>
+                            <span>8-12 công/tháng</span>
+                        </div>
+                        <div class="stage-meta-item">
+                            <span>🔧</span>
+                            <span>Kéo cắt, tưới</span>
+                        </div>
+                    </div>
+                    <div class="stage-description">
+                        Tập trung phát triển hệ thống rễ và tán lá, tạo hình cây thấp chịu gió, phòng trừ sâu bệnh cây non.
+                    </div>
+                </div>
+                
+                <div class="works-container">
+                    <div class="work-item">
+                        <div class="work-header">
+                            <div class="work-info">
+                                <div class="work-title">Chăm sóc cây non sau trồng</div>
+                                <div class="work-status-badge">Chăm sóc đặc biệt</div>
+                                <div class="work-meta">
+                                    <div class="work-meta-item">
+                                        <span>⏱️</span>
+                                        <span>30 ngày đầu</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>💰</span>
+                                        <span>500k-800k</span>
+                                    </div>
+                                    <div class="work-meta-item">
+                                        <span>🎯</span>
+                                        <span>Rất quan trọng</span>
+                                    </div>
+                                </div>
+                                <div class="work-description">
+                                    Theo dõi sát sao, tưới nước đều đặn, che nắng và xử lý kịp thời các vấn đề như héo cây, sâu bệnh.
+                                </div>
+                            </div>
+                            <div class="work-actions">
+                                <button class="btn btn-sm btn-orange" onclick="editWork(2, 1)">
+                                    ✏️ Sửa chi tiết
+                                </button>
+                                <button class="btn btn-sm btn-blue" onclick="editCriteria(2, 1)">
+                                    📋 Tiêu chuẩn
+                                </button>
+                                <button class="btn btn-sm" onclick="duplicateWork(2, 1)">
+                                    📄 Sao chép
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="add-work-btn" onclick="addWork(2)">
+                        ➕ Thêm công việc vào giai đoạn này
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsed stages indicator -->
+            <div style="text-align: center; padding: 1rem; color: #6b7280; font-size: 0.9rem;">
+                <button class="btn btn-light" onclick="expandAllStages()" style="background: white; color: #6b7280; border: 1px solid #d1d5db;">
+                    📋 Hiển thị tất cả giai đoạn (4 giai đoạn còn lại)
+                </button>
+            </div>
+        </div>
+
+        <!-- Deployment Section -->
+        <div class="deployment-section" id="deploymentSection">
+            <div class="deployment-header">
+                <h2 class="deployment-title">🚀 Sẵn sàng triển khai quy trình?</h2>
+                <p class="deployment-subtitle">Kiểm tra độ sẵn sàng và bắt đầu thực hiện quy trình canh tác Dona</p>
+            </div>
+
+            <div class="readiness-check">
+                <div class="readiness-title">
+                    📋 Kiểm tra độ sẵn sàng triển khai
+                </div>
+                <div class="readiness-items">
+                    <div class="readiness-item complete">
+                        <span>✅</span>
+                        <span>Đã tùy chỉnh quy trình phù hợp</span>
+                    </div>
+                    <div class="readiness-item complete">
+                        <span>✅</span>
+                        <span>Đã thiết lập tiêu chuẩn đánh giá</span>
+                    </div>
+                    <div class="readiness-item complete">
+                        <span>✅</span>
+                        <span>Có đủ trang thiết bị cần thiết</span>
+                    </div>
+                    <div class="readiness-item incomplete">
+                        <span>⏳</span>
+                        <span>Đã chuẩn bị ngân sách cho giai đoạn 1</span>
+                    </div>
+                    <div class="readiness-item complete">
+                        <span>✅</span>
+                        <span>Đã sắp xếp nhân công</span>
+                    </div>
+                    <div class="readiness-item incomplete">
+                        <span>⏳</span>
+                        <span>Đã liên hệ chuyên gia hỗ trợ</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="deployment-actions">
+                <button class="btn btn-deploy-main" onclick="startDeployment()" id="deploymentBtn">
+                    🚀 TRIỂN KHAI & GIAO VIỆC
+                </button>
+            </div>
+
+            <div class="deployment-note">
+                <strong>💡 Lưu ý:</strong> Sau khi bắt đầu triển khai, bạn sẽ được chuyển đến giao diện theo dõi tiến độ thực hiện. 
+                Hệ thống sẽ nhắc nhở các công việc cần làm theo đúng thời gian và gửi cảnh báo khi có vấn đề phát sinh.
+            </div>
+        </div>
+
+        <!-- Save Changes Bar -->
+        <div class="save-changes-bar" id="saveChangesBar">
+            <div class="save-changes-content">
+                <div class="changes-info">
+                    <strong>💾 Bạn có thay đổi chưa lưu:</strong> <span id="changesCount">0 thay đổi</span>
+                </div>
+                <div class="save-actions">
+                    <button class="btn btn-cancel" onclick="discardChanges()">
+                        Hủy thay đổi
+                    </button>
+                    <button class="btn btn-save" onclick="saveAllChanges()">
+                        💾 Lưu tất cả
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for editing work details -->
+    <div class="modal-overlay" id="workModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ Chỉnh sửa chi tiết công việc</h3>
+                <button class="close-btn" onclick="closeModal('workModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="workTitle">Tên công việc:</label>
+                    <input type="text" id="workTitle" placeholder="Nhập tên công việc">
+                </div>
+
+                <div class="form-group">
+                    <label for="workDuration">Thời gian thực hiện:</label>
+                    <input type="text" id="workDuration" placeholder="VD: 3-4 ngày">
+                </div>
+
+                <div class="form-group">
+                    <label for="workCost">Chi phí ước tính:</label>
+                    <input type="text" id="workCost" placeholder="VD: 600k-800k">
+                </div>
+
+                <div class="form-group">
+                    <label for="workPriority">Độ ưu tiên:</label>
+                    <select id="workPriority">
+                        <option value="low">Khuyến nghị</option>
+                        <option value="medium">Quan trọng</option>
+                        <option value="high">Rất quan trọng</option>
+                        <option value="required">Bắt buộc</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="workDescription">Mô tả chi tiết:</label>
+                    <textarea id="workDescription" placeholder="Mô tả chi tiết cách thực hiện công việc..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="workTools">Trang thiết bị cần thiết:</label>
+                    <textarea id="workTools" placeholder="Danh sách máy móc, dụng cụ, vật tư..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="workConditions">Điều kiện thực hiện:</label>
+                    <textarea id="workConditions" placeholder="Thời tiết, điều kiện môi trường..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('workModal')">Hủy</button>
+                <button class="btn btn-save" onclick="saveWorkChanges()">💾 Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for editing criteria -->
+    <div class="modal-overlay" id="criteriaModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">📋 Tiêu chuẩn đánh giá</h3>
+                <button class="close-btn" onclick="closeModal('criteriaModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="color: #6b7280; margin-bottom: 1rem;">Chọn các tiêu chuẩn áp dụng cho công việc này:</p>
+                <div class="criteria-list">
+                    <div class="criteria-item">
+                        <input type="checkbox" id="criteria1" checked>
+                        <div class="criteria-content">
+                            <div class="criteria-title">Hoàn thành đúng thời gian</div>
+                            <div class="criteria-desc">Công việc được thực hiện trong thời gian quy định</div>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-item">
+                        <input type="checkbox" id="criteria2" checked>
+                        <div class="criteria-content">
+                            <div class="criteria-title">Đúng kỹ thuật</div>
+                            <div class="criteria-desc">Tuân thủ quy trình kỹ thuật được khuyến nghị</div>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-item">
+                        <input type="checkbox" id="criteria3">
+                        <div class="criteria-content">
+                            <div class="criteria-title">Chứng từ đầy đủ</div>
+                            <div class="criteria-desc">Có ảnh/video minh chứng quá trình thực hiện</div>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-item">
+                        <input type="checkbox" id="criteria4">
+                        <div class="criteria-content">
+                            <div class="criteria-title">Tiết kiệm chi phí</div>
+                            <div class="criteria-desc">Chi phí thực tế không vượt quá 110% dự kiến</div>
+                        </div>
+                    </div>
+                    
+                    <div class="criteria-item">
+                        <input type="checkbox" id="criteria5">
+                        <div class="criteria-content">
+                            <div class="criteria-title">An toàn lao động</div>
+                            <div class="criteria-desc">Tuân thủ quy định an toàn trong quá trình thực hiện</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1.5rem;">
+                    <label for="customCriteria">Thêm tiêu chuẩn tùy chỉnh:</label>
+                    <textarea id="customCriteria" placeholder="Nhập tiêu chuẩn riêng phù hợp với điều kiện của bạn..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('criteriaModal')">Hủy</button>
+                <button class="btn btn-save" onclick="saveCriteriaChanges()">💾 Lưu tiêu chuẩn</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding work -->
+    <div class="modal-overlay" id="addWorkModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ Thêm công việc mới</h3>
+                <button class="close-btn" onclick="closeModal('addWorkModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newWorkTitle">Tên công việc:</label>
+                    <input type="text" id="newWorkTitle" placeholder="VD: Xây dựng hệ thống tưới nhỏ giọt">
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkType">Loại công việc:</label>
+                    <select id="newWorkType">
+                        <option value="">Chọn loại công việc</option>
+                        <option value="soil">Chuẩn bị đất</option>
+                        <option value="planting">Trồng và chăm sóc</option>
+                        <option value="fertilizing">Bón phân</option>
+                        <option value="irrigation">Tưới nước</option>
+                        <option value="pest">Phòng trừ sâu bệnh</option>
+                        <option value="pruning">Cắt tỉa</option>
+                        <option value="harvest">Thu hoạch</option>
+                        <option value="other">Khác</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkDescription">Mô tả chi tiết:</label>
+                    <textarea id="newWorkDescription" placeholder="Mô tả chi tiết cách thực hiện công việc này..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkDuration">Thời gian thực hiện:</label>
+                    <input type="text" id="newWorkDuration" placeholder="VD: 2-3 ngày">
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkCost">Chi phí ước tính:</label>
+                    <input type="text" id="newWorkCost" placeholder="VD: 1-2 triệu">
+                </div>
+
+                <div class="form-group">
+                    <label for="newWorkPriority">Độ ưu tiên:</label>
+                    <select id="newWorkPriority">
+                        <option value="low">Khuyến nghị</option>
+                        <option value="medium">Quan trọng</option>
+                        <option value="high">Rất quan trọng</option>
+                        <option value="required">Bắt buộc</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('addWorkModal')">Hủy</button>
+                <button class="btn btn-save" onclick="saveNewWork()">➕ Thêm công việc</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deployment Confirmation Modal -->
+    <div class="modal-overlay" id="deploymentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">🚀 Xác nhận triển khai quy trình</h3>
+                <button class="close-btn" onclick="closeModal('deploymentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎯</div>
+                    <h4 style="color: #1f2937; margin-bottom: 0.5rem;">Sẵn sàng bắt đầu hành trình canh tác Dona?</h4>
+                    <p style="color: #6b7280; font-size: 0.9rem;">Hệ thống sẽ chuyển bạn vào chế độ triển khai thực tế</p>
+                </div>
+
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                    <h5 style="color: #166534; margin-bottom: 0.5rem;">✅ Điều bạn sẽ có:</h5>
+                    <ul style="color: #166534; font-size: 0.9rem; margin-left: 1rem;">
+                        <li>Lịch nhắc việc hàng ngày</li>
+                        <li>Hướng dẫn chi tiết từng bước</li>
+                        <li>Theo dõi tiến độ real-time</li>
+                        <li>Hỗ trợ chuyên gia 24/7</li>
+                        <li>Báo cáo và phân tích kết quả</li>
+                    </ul>
+                </div>
+
+                <div style="background: #fefce8; border: 1px solid #fde047; border-radius: 8px; padding: 1rem;">
+                    <h5 style="color: #ca8a04; margin-bottom: 0.5rem;">⚠️ Lưu ý quan trọng:</h5>
+                    <ul style="color: #ca8a04; font-size: 0.9rem; margin-left: 1rem;">
+                        <li>Đảm bảo đã chuẩn bị đủ ngân sách cho giai đoạn 1</li>
+                        <li>Liên hệ chuyên gia nếu cần hỗ trợ kỹ thuật</li>
+                        <li>Backup dữ liệu quy trình đã tùy chỉnh</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('deploymentModal')">
+                    🔄 Quay lại kiểm tra
+                </button>
+                <button class="btn btn-save" onclick="confirmDeployment()" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);">
+                    🚀 Xác nhận triển khai
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let hasChanges = false;
+        let changeCount = 0;
+        let readinessScore = 66; // 4/6 items complete
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Deployment functions
+        function scrollToDeployment() {
+            document.getElementById('deploymentSection').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center' 
+            });
+        }
+
+        function startDeployment() {
+            if (readinessScore < 100) {
+                if (confirm('⚠️ Một số mục chuẩn bị chưa hoàn thành.\n\nBạn có muốn tiếp tục triển khai không?\n\n(Khuyến nghị: Hoàn thành tất cả mục trước khi triển khai)')) {
+                    openModal('deploymentModal');
+                }
+            } else {
+                openModal('deploymentModal');
+            }
+        }
+
+        function scheduleDeployment() {
+            alert('📅 Lên lịch triển khai:\n\n• Chọn ngày bắt đầu phù hợp\n• Thiết lập nhắc nhở trước\n• Chuẩn bị tài nguyên\n• Thông báo đội ngũ\n\nHệ thống sẽ tự động kích hoạt vào thời điểm đã chọn.');
+        }
+
+        function confirmDeployment() {
+            // Simulate deployment process
+            closeModal('deploymentModal');
+            
+            // Show loading state
+            const deployBtn = document.getElementById('deploymentBtn');
+            deployBtn.innerHTML = '⏳ Đang triển khai...';
+            deployBtn.disabled = true;
+            
+            // Simulate deployment completion
+            setTimeout(() => {
+                alert('🎉 TRIỂN KHAI THÀNH CÔNG!\n\n✅ Quy trình đã được kích hoạt\n✅ Lịch nhắc việc đã được thiết lập\n✅ Dashboard theo dõi đã sẵn sàng\n\nBạn sẽ được chuyển đến giao diện quản lý tiến độ.');
+                
+                // Redirect to execution dashboard (simulated)
+                setTimeout(() => {
+                    alert('🔄 Chuyển đến Dashboard thực thi...\n\nTại đây bạn sẽ:\n• Xem công việc hôm nay\n• Cập nhật tiến độ\n• Nhận hướng dẫn chi tiết\n• Liên hệ chuyên gia');
+                }, 1000);
+            }, 2000);
+        }
+
+        // Work editing functions
+        function editWork(stageId, workId) {
+            // Populate form with current work data
+            document.getElementById('workTitle').value = 'Khảo sát địa hình và phân tích đất bazan';
+            document.getElementById('workDuration').value = '3-4 ngày';
+            document.getElementById('workCost').value = '600k-800k';
+            document.getElementById('workPriority').value = 'required';
+            document.getElementById('workDescription').value = 'Khảo sát độ dốc, hướng sườn và phân tích đất bazan về pH, hàm lượng Al3+, phospho và khả năng thoát nước.';
+            document.getElementById('workTools').value = 'Máy đo độ dốc và GPS\nBộ test pH và Al3+ nhanh\nÔng khoan đất sâu 1.5m';
+            document.getElementById('workConditions').value = 'Thời tiết khô ráo\nĐất không quá ướt\nCó thể truy cập bằng xe';
+            
+            openModal('workModal');
+        }
+
+        function editCriteria(stageId, workId) {
+            openModal('criteriaModal');
+        }
+
+        function addWork(stageId) {
+            document.getElementById('newWorkTitle').value = '';
+            document.getElementById('newWorkDescription').value = '';
+            document.getElementById('newWorkDuration').value = '';
+            document.getElementById('newWorkCost').value = '';
+            document.getElementById('newWorkType').value = '';
+            document.getElementById('newWorkPriority').value = 'medium';
+            
+            openModal('addWorkModal');
+        }
+
+        function duplicateWork(stageId, workId) {
+            if (confirm('Bạn có muốn sao chép công việc này không?')) {
+                markChanges();
+                alert('✅ Đã sao chép công việc. Bạn có thể chỉnh sửa bản sao.');
+            }
+        }
+
+        function deleteWork(stageId, workId) {
+            if (confirm('⚠️ Bạn có chắc muốn xóa công việc này?\n\nViệc này không thể hoàn tác.')) {
+                markChanges();
+                alert('🗑️ Đã xóa công việc.');
+            }
+        }
+
+        // Stage functions
+        function editStage(stageId) {
+            alert(`✏️ Chỉnh sửa giai đoạn ${stageId}:\n\n• Tên giai đoạn\n• Thời gian thực hiện\n• Mô tả\n• Điều kiện kích hoạt\n• Tài nguyên cần thiết`);
+        }
+
+        function duplicateStage(stageId) {
+            if (confirm('📋 Sao chép toàn bộ giai đoạn này?\n\nTất cả công việc trong giai đoạn sẽ được sao chép.')) {
+                markChanges();
+                alert('✅ Đã sao chép giai đoạn.');
+            }
+        }
+
+        function addStage() {
+            if (confirm('➕ Thêm giai đoạn mới?\n\nGiai đoạn mới sẽ được thêm vào cuối quy trình.')) {
+                markChanges();
+                alert('🎉 Đã thêm giai đoạn mới. Hãy thêm công việc vào giai đoạn này.');
+            }
+        }
+
+        // Save functions
+        function saveWorkChanges() {
+            markChanges();
+            closeModal('workModal');
+            alert('💾 Đã lưu thay đổi công việc.');
+        }
+
+        function saveCriteriaChanges() {
+            markChanges();
+            closeModal('criteriaModal');
+            alert('📋 Đã cập nhật tiêu chuẩn đánh giá.');
+        }
+
+        function saveNewWork() {
+            const title = document.getElementById('newWorkTitle').value;
+            if (!title.trim()) {
+                alert('⚠️ Vui lòng nhập tên công việc.');
+                return;
+            }
+            
+            markChanges();
+            closeModal('addWorkModal');
+            alert(`✅ Đã thêm công việc: "${title}"`);
+        }
+
+        // Changes tracking
+        function markChanges() {
+            hasChanges = true;
+            changeCount++;
+            updateChangesBar();
+            updateReadiness();
+        }
+
+        function updateChangesBar() {
+            const bar = document.getElementById('saveChangesBar');
+            const countSpan = document.getElementById('changesCount');
+            
+            if (hasChanges) {
+                bar.classList.add('show');
+                countSpan.textContent = `${changeCount} thay đổi`;
+            } else {
+                bar.classList.remove('show');
+            }
+        }
+
+        function updateReadiness() {
+            // Update readiness score when changes are made
+            readinessScore = Math.min(83, readinessScore + (changeCount * 2)); // Cap at 83% (5/6 items)
+        }
+
+        function discardChanges() {
+            if (confirm('⚠️ Hủy tất cả thay đổi?\n\nMọi thay đổi sẽ bị mất.')) {
+                hasChanges = false;
+                changeCount = 0;
+                updateChangesBar();
+                alert('🔄 Đã khôi phục về trạng thái ban đầu.');
+            }
+        }
+
+        function saveAllChanges() {
+            if (hasChanges) {
+                // Simulate save
+                setTimeout(() => {
+                    hasChanges = false;
+                    changeCount = 0;
+                    updateChangesBar();
+                    alert('💾 Đã lưu tất cả thay đổi!\n\nQuy trình đã được cập nhật theo tùy chỉnh của bạn.');
+                }, 1000);
+            }
+        }
+
+        // Utility functions
+        function expandAllStages() {
+            alert('📋 Hiển thị đầy đủ 6 giai đoạn:\n\n3. Dưỡng cây chuẩn bị ra hoa\n4. Ra hoa\n5. Chăm sóc trái\n6. Thu hoạch\n\nMỗi giai đoạn có thể tùy chỉnh riêng biệt.');
+        }
+
+        function openDashboard() {
+            alert('📊 Mở Dashboard:\n\n• Tiến độ thực hiện\n• Chi phí theo dõi\n• Lịch nhắc việc\n• Báo cáo tình hình');
+        }
+
+        function openSettings() {
+            alert('⚙️ Cài đặt hệ thống:\n\n• Thông tin vườn\n• Tùy chọn thông báo\n• Kết nối chuyên gia\n• Xuất/nhập dữ liệu');
+        }
+
+        function importTemplate() {
+            alert('📥 Nhập template:\n\n• Template của nông dân khác\n• Template theo vùng miền\n• Template theo giống sầu riêng\n• Template theo quy mô');
+        }
+
+        function previewTimeline() {
+            alert('👁️ Xem trước timeline:\n\n🗓️ Lịch thực hiện chi tiết\n📊 Biểu đồ Gantt\n💰 Phân bổ chi phí theo thời gian\n👥 Phân công nhân lực\n🎯 Mốc quan trọng');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-save changes periodically
+            setInterval(() => {
+                if (hasChanges) {
+                    console.log('Auto-saving changes...');
+                }
+            }, 30000);
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('show');
+                    }
+                });
+            });
+
+            // Add deployment button animation
+            const deployBtn = document.getElementById('deploymentBtn');
+            if (deployBtn) {
+                deployBtn.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px) scale(1.02)';
+                });
+                
+                deployBtn.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            }
+        });
+    </script>
+</body>
+</html>

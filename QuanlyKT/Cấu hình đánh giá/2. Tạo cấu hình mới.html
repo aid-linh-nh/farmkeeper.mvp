@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tạo Cấu hình mới - FARMKEEPER</title>
+
+    <!-- Google Fonts: Noto Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      /* Custom styles for a modern stepper */
+      .step {
+        transition: all 0.3s ease;
+      }
+      .step .step-circle {
+        transition: all 0.3s ease;
+        border-width: 2px;
+      }
+      .step .step-title {
+        transition: all 0.3s ease;
+      }
+      .step-line {
+        transition: all 0.3s ease;
+      }
+
+      /* Inactive State */
+      .step-inactive .step-circle {
+        border-color: #d1d5db; /* gray-300 */
+        background-color: #f9fafb; /* gray-50 */
+      }
+      .step-inactive .step-title {
+        color: #6b7280; /* gray-500 */
+      }
+      .step-inactive + .step-line {
+        background-color: #d1d5db; /* gray-300 */
+      }
+
+      /* Active State */
+      .step-active .step-circle {
+        border-color: #69bd70;
+        background-color: #69bd70;
+        color: #ffffff; /* white */
+        box-shadow: 0 0 15px rgba(105, 189, 112, 0.4);
+      }
+      .step-active .step-title {
+        color: #69bd70;
+      }
+      .step-active + .step-line {
+        background-color: #d1d5db; /* gray-300 */
+      }
+
+      /* Complete State */
+      .step-complete .step-circle {
+        border-color: #16a34a; /* green-600 */
+        background-color: #16a34a;
+        color: #ffffff;
+      }
+      .step-complete .step-title {
+        color: #111827; /* gray-900 */
+      }
+      .step-complete + .step-line {
+        background-color: #16a34a; /* green-600 */
+      }
+
+      .modal-backdrop {
+        transition: opacity 0.3s ease;
+      }
+      /* Custom scrollbar for light theme */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9; /* slate-100 */
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1; /* slate-300 */
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8; /* slate-400 */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <div class="flex min-h-screen">
+      <!-- Sidebar Menu -->
+      <div class="w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
+        <div class="flex items-center space-x-3 p-2 mb-8">
+          <!-- Logo -->
+          <div
+            class="w-9 h-9 rounded-lg bg-[#69BD70] flex items-center justify-center shadow-lg shadow-green-500/20"
+          >
+            <i data-lucide="leaf" class="w-5 h-5 text-white"></i>
+          </div>
+          <span class="text-xl font-bold text-gray-800">FARMKEEPER</span>
+        </div>
+
+        <!-- Menu Navigation -->
+        <nav class="flex-1">
+          <ul>
+            <!-- Parent Menu Item -->
+            <li>
+              <a
+                href="#"
+                class="flex items-center justify-between p-3 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg transition-colors duration-200"
+              >
+                <div class="flex items-center space-x-3">
+                  <i data-lucide="settings" class="w-5 h-5"></i>
+                  <span class="text-sm font-medium">Quản lý kỹ thuật</span>
+                </div>
+                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+              </a>
+              <ul class="pl-6 mt-2 space-y-1 border-l border-gray-200 ml-3">
+                <!-- Child Menu Item -->
+                <li>
+                  <a
+                    href="#"
+                    class="relative flex items-center space-x-3 p-2 text-green-800 bg-green-50 rounded-lg transition-colors duration-200"
+                  >
+                    <span
+                      class="absolute -left-[13px] h-full w-0.5 bg-green-600 rounded-r-full"
+                    ></span>
+                    <i
+                      data-lucide="circle-dot"
+                      class="w-3 h-3 text-green-600"
+                    ></i>
+                    <span class="text-sm font-medium">Cấu hình đánh giá</span>
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-7xl mx-auto">
+          <!-- Header -->
+          <div class="flex items-center mb-6">
+            <a
+              href="#"
+              class="text-gray-500 hover:text-gray-700 p-2 rounded-full transition-colors"
+            >
+              <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            </a>
+            <h1 class="text-2xl font-bold text-gray-900 ml-2">
+              Tạo cấu hình đánh giá mới
+            </h1>
+          </div>
+
+          <!-- Stepper -->
+          <div id="stepper" class="flex items-center justify-center mb-12">
+            <div class="step step-active flex items-center relative">
+              <div
+                class="step-circle rounded-full h-10 w-10 flex items-center justify-center"
+              >
+                <span class="font-bold text-lg">1</span>
+              </div>
+              <div
+                class="step-title absolute top-full text-center mt-3 w-32 text-xs font-medium uppercase"
+              >
+                Thông Tin Chung
+              </div>
+            </div>
+            <div class="step-line flex-auto h-1 mx-4"></div>
+            <div class="step step-inactive flex items-center relative">
+              <div
+                class="step-circle rounded-full h-10 w-10 flex items-center justify-center"
+              >
+                <span class="font-bold text-lg">2</span>
+              </div>
+              <div
+                class="step-title absolute top-full text-center mt-3 w-32 text-xs font-medium uppercase"
+              >
+                HS Kinh Doanh Chung
+              </div>
+            </div>
+            <div class="step-line flex-auto h-1 mx-4"></div>
+            <div class="step step-inactive flex items-center relative">
+              <div
+                class="step-circle rounded-full h-10 w-10 flex items-center justify-center"
+              >
+                <span class="font-bold text-lg">3</span>
+              </div>
+              <div
+                class="step-title absolute top-full text-center mt-3 w-32 text-xs font-medium uppercase"
+              >
+                KPI Cá Nhân
+              </div>
+            </div>
+            <div class="step-line flex-auto h-1 mx-4"></div>
+            <div class="step step-inactive flex items-center relative">
+              <div
+                class="step-circle rounded-full h-10 w-10 flex items-center justify-center"
+              >
+                <span class="font-bold text-lg">4</span>
+              </div>
+              <div
+                class="step-title absolute top-full text-center mt-3 w-32 text-xs font-medium uppercase"
+              >
+                Cơ Chế Thưởng
+              </div>
+            </div>
+            <div class="step-line flex-auto h-1 mx-4"></div>
+            <div class="step step-inactive flex items-center relative">
+              <div
+                class="step-circle rounded-full h-10 w-10 flex items-center justify-center"
+              >
+                <span class="font-bold text-lg">5</span>
+              </div>
+              <div
+                class="step-title absolute top-full text-center mt-3 w-32 text-xs font-medium uppercase"
+              >
+                Áp Dụng
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Content -->
+          <div
+            class="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm"
+          >
+            <div id="form-content">
+              <!-- Step 1: General Info -->
+              <div id="step-1" class="step-content">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">
+                  Bước 1: Thông Tin Chung
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label
+                      for="framework_name"
+                      class="block text-sm font-medium text-gray-600 mb-2"
+                      >Tên Bộ Khung Năng Lực</label
+                    >
+                    <input
+                      type="text"
+                      id="framework_name"
+                      placeholder="Ví dụ: Khung Năng lực - 2026"
+                      class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      for="framework_id"
+                      class="block text-sm font-medium text-gray-600 mb-2"
+                      >Mã định danh (ID Hệ thống)</label
+                    >
+                    <input
+                      type="text"
+                      id="framework_id"
+                      placeholder="Tự động tạo hoặc nhập thủ công"
+                      class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                    />
+                  </div>
+                  <!-- Updated Period field -->
+                  <div>
+                    <label
+                      for="period_type"
+                      class="block text-sm font-medium text-gray-600 mb-2"
+                      >Kỳ Áp Dụng</label
+                    >
+                    <select
+                      id="period_type"
+                      class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                    >
+                      <option value="yearly">Áp dụng cả năm</option>
+                      <option value="quarterly">Áp dụng theo quý</option>
+                    </select>
+                  </div>
+                  <!-- Dynamic fields for Yearly/Quarterly -->
+                  <div id="yearly-period-fields">
+                    <label
+                      for="yearly_period"
+                      class="block text-sm font-medium text-gray-600 mb-2"
+                      >Chọn Năm</label
+                    >
+                    <select
+                      id="yearly_period"
+                      class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                    >
+                      <script>
+                        const currentYear = new Date().getFullYear();
+                        for (
+                          let i = currentYear - 1;
+                          i <= currentYear + 5;
+                          i++
+                        ) {
+                          document.write(`<option>${i}</option>`);
+                        }
+                      </script>
+                    </select>
+                  </div>
+                  <div
+                    id="quarterly-period-fields"
+                    class="hidden grid grid-cols-2 gap-4"
+                  >
+                    <div>
+                      <label
+                        for="quarter"
+                        class="block text-sm font-medium text-gray-600 mb-2"
+                        >Chọn Quý</label
+                      >
+                      <select
+                        id="quarter"
+                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                      >
+                        <option>Q1</option>
+                        <option>Q2</option>
+                        <option>Q3</option>
+                        <option>Q4</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label
+                        for="quarterly_year"
+                        class="block text-sm font-medium text-gray-600 mb-2"
+                        >Chọn Năm</label
+                      >
+                      <select
+                        id="quarterly_year"
+                        class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                      >
+                        <script>
+                          const currentYear2 = new Date().getFullYear();
+                          for (
+                            let i = currentYear2 - 1;
+                            i <= currentYear2 + 5;
+                            i++
+                          ) {
+                            document.write(`<option>${i}</option>`);
+                          }
+                        </script>
+                      </select>
+                    </div>
+                  </div>
+                  <!-- End of Updated Period field -->
+                  <div>
+                    <label
+                      for="target_audience"
+                      class="block text-sm font-medium text-gray-600 mb-2"
+                      >Đối tượng Áp dụng</label
+                    >
+                    <input
+                      type="text"
+                      id="target_audience"
+                      placeholder="Ví dụ: Toàn bộ Kỹ sư Nông nghiệp"
+                      class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Business Performance Factor -->
+              <div id="step-2" class="step-content hidden">
+                <h2 class="text-xl font-bold text-gray-900 mb-2">
+                  Bước 2: Hệ số Hiệu quả Kinh doanh Chung
+                </h2>
+                <p class="text-sm text-gray-500 mb-6">
+                  Thiết lập các quy tắc để hệ thống tự động tính toán hệ số
+                  chung cho cả đội ngũ.
+                </p>
+                <div class="space-y-6">
+                  <!-- Lựa chọn chỉ số và gán trọng số -->
+                  <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                      <h3 class="font-semibold text-gray-800">
+                        2.1. Lựa chọn Chỉ số & Gán Trọng số
+                      </h3>
+                      <button
+                        id="add-metric-btn"
+                        type="button"
+                        class="text-green-600 hover:text-green-700 text-sm font-semibold flex items-center transition-colors duration-200"
+                      >
+                        <i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i
+                        >Thêm Chỉ số
+                      </button>
+                    </div>
+                    <table class="w-full text-sm text-left text-gray-500">
+                      <thead
+                        class="text-xs text-gray-700 uppercase bg-gray-100"
+                      >
+                        <tr>
+                          <th class="px-4 py-3 w-1/3 rounded-l-lg">
+                            Chỉ số Kinh doanh Cốt lõi
+                          </th>
+                          <th class="px-4 py-3 text-center">Trọng số (%)</th>
+                          <th class="px-4 py-3">Mục tiêu</th>
+                          <th class="px-4 py-3 rounded-r-lg"></th>
+                        </tr>
+                      </thead>
+                      <tbody
+                        id="metric-table-body"
+                        class="divide-y divide-gray-200"
+                      >
+                        <!-- Sample data rows -->
+                        <tr class="metric-row">
+                          <td class="px-4 py-2">
+                            <input
+                              type="text"
+                              value="Tổng Lợi nhuận"
+                              class="w-full bg-transparent border-none focus:outline-none text-gray-800"
+                            />
+                          </td>
+                          <td class="px-4 py-2">
+                            <input
+                              type="number"
+                              value="40"
+                              class="metric-weight w-24 text-center bg-white border border-gray-300 rounded-md py-1 text-gray-900"
+                            />
+                          </td>
+                          <td class="px-4 py-2">
+                            <input
+                              type="text"
+                              value="10 tỷ VNĐ"
+                              class="w-full bg-white border border-gray-300 rounded-md py-1 px-2 text-gray-900"
+                            />
+                          </td>
+                          <td class="px-4 py-2 text-center">
+                            <button
+                              class="text-gray-400 hover:text-red-600 remove-metric-btn transition-colors duration-200"
+                            >
+                              <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr class="metric-row">
+                          <td class="px-4 py-2">
+                            <input
+                              type="text"
+                              value="Tổng Doanh thu"
+                              class="w-full bg-transparent border-none focus:outline-none text-gray-800"
+                            />
+                          </td>
+                          <td class="px-4 py-2">
+                            <input
+                              type="number"
+                              value="20"
+                              class="metric-weight w-24 text-center bg-white border border-gray-300 rounded-md py-1 text-gray-900"
+                            />
+                          </td>
+                          <td class="px-4 py-2">
+                            <input
+                              type="text"
+                              value="50 tỷ VNĐ"
+                              class="w-full bg-white border border-gray-300 rounded-md py-1 px-2 text-gray-900"
+                            />
+                          </td>
+                          <td class="px-4 py-2 text-center">
+                            <button
+                              class="text-gray-400 hover:text-red-600 remove-metric-btn transition-colors duration-200"
+                            >
+                              <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr class="font-semibold text-gray-800 bg-gray-100">
+                          <td class="px-4 py-3 text-right">Tổng cộng</td>
+                          <td
+                            id="total-metric-weight"
+                            class="px-4 py-3 text-center text-lg text-green-600"
+                          >
+                            60%
+                          </td>
+                          <td colspan="2"></td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- Thiết lập bảng quy đổi -->
+                  <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <div class="flex justify-between items-center mb-4">
+                      <h3 class="font-semibold text-gray-800">
+                        2.2. Thiết lập Bảng Quy đổi (Decision Matrix)
+                      </h3>
+                      <button
+                        id="show-add-threshold-form"
+                        type="button"
+                        class="text-green-600 hover:text-green-700 text-sm font-semibold flex items-center transition-colors duration-200"
+                      >
+                        <i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i
+                        >Thêm Ngưỡng
+                      </button>
+                    </div>
+                    <table class="w-full text-sm text-left text-gray-500">
+                      <thead
+                        class="text-xs text-gray-700 uppercase bg-gray-100"
+                      >
+                        <tr>
+                          <th class="px-4 py-3 rounded-l-lg">
+                            Phạm vi Điểm Hiệu suất Chung
+                          </th>
+                          <th class="px-4 py-3">Hệ số Kinh doanh Chung</th>
+                          <th class="px-4 py-3 rounded-r-lg"></th>
+                        </tr>
+                      </thead>
+                      <tbody
+                        id="threshold-table-body"
+                        class="divide-y divide-gray-200"
+                      >
+                        <!-- Threshold rows will be added here dynamically -->
+                        <tr class="threshold-row">
+                          <td class="px-4 py-2">
+                            <div class="flex items-center space-x-2">
+                              <span>&ge;</span>
+                              <span class="threshold-display text-gray-900"
+                                >120%</span
+                              >
+                            </div>
+                          </td>
+                          <td class="px-4 py-2">
+                            <span class="text-gray-900">1.2</span>
+                          </td>
+                          <td class="px-4 py-2 text-center">
+                            <button
+                              class="text-gray-400 hover:text-red-600 remove-threshold-btn transition-colors duration-200"
+                            >
+                              <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr class="threshold-row">
+                          <td class="px-4 py-2">
+                            <div class="flex items-center space-x-2">
+                              <span class="threshold-display text-gray-900"
+                                >100% &le; Điểm &lt; 120%</span
+                              >
+                            </div>
+                          </td>
+                          <td class="px-4 py-2">
+                            <span class="text-gray-900">1.0</span>
+                          </td>
+                          <td class="px-4 py-2 text-center">
+                            <button
+                              class="text-gray-400 hover:text-red-600 remove-threshold-btn transition-colors duration-200"
+                            >
+                              <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 3: Individual KPIs -->
+              <div id="step-3" class="step-content hidden">
+                <h2 class="text-xl font-bold text-gray-900 mb-2">
+                  Bước 3: KPI & Mục tiêu Cá nhân
+                </h2>
+                <p class="text-sm text-gray-500 mb-6">
+                  Thiết lập các chỉ số và mục tiêu riêng cho từng kỹ sư.
+                </p>
+                <div
+                  class="mb-6 bg-gray-50 p-6 rounded-lg border border-gray-200"
+                >
+                  <label
+                    for="standard_workload_score"
+                    class="block text-sm font-medium text-gray-600 mb-2"
+                    >Mục tiêu Điểm Khối lượng Công việc Chuẩn</label
+                  >
+                  <div class="flex items-center space-x-4">
+                    <input
+                      type="number"
+                      step="0.1"
+                      id="standard_workload_score"
+                      placeholder="Ví dụ: 3.0"
+                      class="w-full md:w-1/2 bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                    />
+                    <button
+                      type="button"
+                      id="show-report-btn"
+                      class="text-sm text-green-600 hover:text-green-700 font-semibold flex items-center whitespace-nowrap"
+                    >
+                      <i data-lucide="file-analytics" class="w-4 h-4 mr-2"></i
+                      >Xem Báo cáo & Gợi ý
+                    </button>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-2">
+                    Điểm tham chiếu, đại diện cho khối lượng công việc hợp lý mà
+                    công ty kỳ vọng ở một kỹ sư tiêu chuẩn trong kỳ này.
+                  </p>
+                </div>
+
+                <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                  <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold text-gray-800">
+                      3.1. Danh sách KPI Cá nhân
+                    </h3>
+                    <button
+                      id="add-kpi-btn"
+                      type="button"
+                      class="text-green-600 hover:text-green-700 text-sm font-semibold flex items-center transition-colors duration-200"
+                    >
+                      <i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Thêm
+                      KPI
+                    </button>
+                  </div>
+                  <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                      <tr>
+                        <th scope="col" class="px-6 py-3 w-1/3 rounded-l-lg">
+                          Tên KPI
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-center">
+                          Trọng số (%)
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                          Mục Tiêu Chuẩn (Mức 100%)
+                        </th>
+                        <th scope="col" class="px-6 py-3 rounded-r-lg"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="kpi-table-body" class="divide-y divide-gray-200">
+                      <!-- Sample KPI rows -->
+                      <tr class="kpi-row">
+                        <td class="px-6 py-4 font-medium text-gray-800">
+                          <input
+                            type="text"
+                            value="Doanh số Vật tư"
+                            class="kpi-input w-full bg-transparent border-none focus:outline-none text-gray-800"
+                            placeholder="Tìm kiếm hoặc chọn KPI..."
+                          />
+                        </td>
+                        <td class="px-6 py-4">
+                          <input
+                            type="number"
+                            value="35"
+                            class="kpi-weight w-24 text-center bg-white border border-gray-300 rounded-md py-1 text-gray-900"
+                          />
+                        </td>
+                        <td class="px-6 py-4">
+                          <input
+                            type="text"
+                            value="1.5 tỷ / kỹ sư / năm"
+                            class="w-full bg-white border border-gray-300 rounded-md py-1 px-2 text-gray-900"
+                          />
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                          <button
+                            class="text-gray-400 hover:text-red-600 remove-kpi-btn"
+                          >
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot>
+                      <tr class="font-semibold text-gray-800 bg-gray-100">
+                        <td class="px-6 py-3 text-right">Tổng cộng</td>
+                        <td
+                          id="total-kpi-weight"
+                          class="px-6 py-3 text-center text-lg text-green-600"
+                        >
+                          35%
+                        </td>
+                        <td colspan="2"></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Step 4: Bonus Mechanism -->
+              <div id="step-4" class="step-content hidden">
+                <h2 class="text-xl font-bold text-gray-900 mb-2">
+                  Bước 4: Cơ chế Thưởng Cá nhân
+                </h2>
+                <p class="text-sm text-gray-500 mb-6">
+                  Thiết lập các chính sách đãi ngộ để ghi nhận và tưởng thưởng
+                  cho hiệu suất của nhân viên.
+                </p>
+                <div class="space-y-8">
+                  <!-- Evaluation Scale Section -->
+                  <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h3 class="font-semibold text-gray-800">
+                      4.1. Thang điểm Đánh giá
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4">
+                      Quy tắc quy đổi từ Tỷ lệ Hoàn thành Mục tiêu sang Điểm
+                      Hiệu suất.
+                    </p>
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+                    >
+                      <div>
+                        <label
+                          class="block text-sm font-medium text-gray-500 mb-2"
+                          >Không đạt (&lt;80%)</label
+                        >
+                        <input
+                          type="number"
+                          step="0.1"
+                          value="0.0"
+                          class="w-full bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          class="block text-sm font-medium text-gray-500 mb-2"
+                          >Đạt (80-99%)</label
+                        >
+                        <input
+                          type="number"
+                          step="0.1"
+                          value="0.8"
+                          class="w-full bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          class="block text-sm font-medium text-gray-500 mb-2"
+                          >Tốt (100-119%)</label
+                        >
+                        <input
+                          type="number"
+                          step="0.1"
+                          value="1.0"
+                          class="w-full bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          class="block text-sm font-medium text-gray-500 mb-2"
+                          >Vượt trội (&ge;120%)</label
+                        >
+                        <input
+                          type="number"
+                          step="0.1"
+                          value="1.2"
+                          class="w-full bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Bonus Tier Factor Section -->
+                  <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h3 class="font-semibold text-gray-800">
+                      4.2. Hệ số Bậc Thưởng
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4">
+                      Hệ số nhân được áp dụng cho "Quỹ Thưởng Cơ Sở" để tính ra
+                      mức thưởng cá nhân.
+                    </p>
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+                    >
+                      <div>
+                        <label
+                          class="block text-sm font-medium text-gray-500 mb-2"
+                          >Không đạt</label
+                        >
+                        <input
+                          type="number"
+                          step="0.1"
+                          value="0.0"
+                          class="w-full bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          class="block text-sm font-medium text-gray-500 mb-2"
+                          >Đạt</label
+                        >
+                        <input
+                          type="number"
+                          step="0.1"
+                          value="0.7"
+                          class="w-full bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          class="block text-sm font-medium text-gray-500 mb-2"
+                          >Tốt</label
+                        >
+                        <input
+                          type="number"
+                          step="0.1"
+                          value="1.0"
+                          class="w-full bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          class="block text-sm font-medium text-gray-500 mb-2"
+                          >Vượt trội</label
+                        >
+                        <input
+                          type="number"
+                          step="0.1"
+                          value="1.5"
+                          class="w-full bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Base Bonus Fund Section -->
+                  <div class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h3 class="font-semibold text-gray-800">
+                      4.3. Phương án xác định "Quỹ Thưởng Cơ Sở"
+                    </h3>
+                    <p class="text-xs text-gray-500 mt-1 mb-4">
+                      Đây là mức thưởng chuẩn cho nhân viên đạt xếp loại "Tốt".
+                    </p>
+                    <select
+                      id="bonus-fund-method"
+                      class="w-full md:w-2/3 bg-white border border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                    >
+                      <option value="salary_ratio" selected>
+                        Theo Tỷ lệ Lương Cơ bản
+                      </option>
+                      <option value="fixed_amount">
+                        Theo Mức Cố định cho từng Cấp bậc
+                      </option>
+                    </select>
+                    <div
+                      id="salary-ratio-config"
+                      class="mt-4 p-4 bg-white rounded-lg border border-gray-200"
+                    >
+                      <label class="block text-sm font-medium text-gray-600"
+                        >Quỹ thưởng cơ sở tương đương</label
+                      >
+                      <div class="flex items-center mt-1">
+                        <input
+                          type="number"
+                          step="0.5"
+                          value="2.0"
+                          class="w-24 bg-white border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                        <span class="ml-3 text-gray-600"
+                          >tháng lương cơ bản / quý.</span
+                        >
+                      </div>
+                    </div>
+                    <div
+                      id="fixed-amount-config"
+                      class="hidden mt-4 p-4 bg-white rounded-lg border border-gray-200"
+                    >
+                      <!-- Content for fixed amount configuration will go here -->
+                      <p class="text-gray-600">
+                        Cấu hình mức thưởng cố định sẽ được thiết lập ở đây.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 5: Apply to Employees -->
+              <div id="step-5" class="step-content hidden">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">
+                  Bước 5: Áp Dụng Cho Nhân Viên
+                </h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <!-- Available Engineers Column -->
+                  <div>
+                    <h3
+                      id="available-title"
+                      class="font-semibold mb-4 text-gray-800"
+                    >
+                      Danh sách Kỹ sư khả dụng (4)
+                    </h3>
+                    <div
+                      class="bg-gray-50 p-4 rounded-lg border border-gray-200 h-96 flex flex-col"
+                    >
+                      <div class="mb-4 shrink-0 relative">
+                        <i
+                          data-lucide="search"
+                          class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        ></i>
+                        <input
+                          type="text"
+                          id="search-engineer"
+                          placeholder="Tìm kiếm theo tên hoặc ID..."
+                          class="w-full bg-white border-gray-300 rounded-md py-2 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                        />
+                      </div>
+                      <ul id="available-list" class="space-y-2 overflow-y-auto">
+                        <li
+                          data-id="NV001"
+                          class="p-3 rounded-md hover:bg-gray-100 flex justify-between items-center transition-colors duration-200"
+                        >
+                          <div>
+                            <p class="font-medium text-gray-800">
+                              Nguyễn Văn An
+                            </p>
+                            <p class="text-xs text-gray-500">ID: NV001</p>
+                          </div>
+                          <button
+                            class="add-btn text-gray-400 hover:text-green-600 p-1 rounded-full hover:bg-green-100 transition-colors"
+                          >
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                          </button>
+                        </li>
+                        <li
+                          data-id="NV002"
+                          class="p-3 rounded-md hover:bg-gray-100 flex justify-between items-center transition-colors duration-200"
+                        >
+                          <div>
+                            <p class="font-medium text-gray-800">
+                              Trần Thị Bích
+                            </p>
+                            <p class="text-xs text-gray-500">ID: NV002</p>
+                          </div>
+                          <button
+                            class="add-btn text-gray-400 hover:text-green-600 p-1 rounded-full hover:bg-green-100 transition-colors"
+                          >
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                          </button>
+                        </li>
+                        <li
+                          data-id="NV003"
+                          class="p-3 rounded-md hover:bg-gray-100 flex justify-between items-center transition-colors duration-200"
+                        >
+                          <div>
+                            <p class="font-medium text-gray-800">
+                              Lê Minh Cường
+                            </p>
+                            <p class="text-xs text-gray-500">ID: NV003</p>
+                          </div>
+                          <button
+                            class="add-btn text-gray-400 hover:text-green-600 p-1 rounded-full hover:bg-green-100 transition-colors"
+                          >
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                          </button>
+                        </li>
+                        <li
+                          data-id="NV004"
+                          class="p-3 rounded-md hover:bg-gray-100 flex justify-between items-center transition-colors duration-200"
+                        >
+                          <div>
+                            <p class="font-medium text-gray-800">
+                              Phạm Thu Duyên
+                            </p>
+                            <p class="text-xs text-gray-500">ID: NV004</p>
+                          </div>
+                          <button
+                            class="add-btn text-gray-400 hover:text-green-600 p-1 rounded-full hover:bg-green-100 transition-colors"
+                          >
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <!-- Applied Engineers Column -->
+                  <div>
+                    <h3
+                      id="applied-title"
+                      class="font-semibold mb-4 text-gray-800"
+                    >
+                      Kỹ sư sẽ được áp dụng (0)
+                    </h3>
+                    <div
+                      class="bg-gray-50 p-4 rounded-lg border border-gray-200 h-96 flex flex-col"
+                    >
+                      <ul
+                        id="applied-list"
+                        class="space-y-2 overflow-y-auto flex-1"
+                      ></ul>
+                      <div
+                        id="applied-empty-state"
+                        class="flex flex-col items-center justify-center h-full text-center text-gray-400"
+                      >
+                        <i data-lucide="users" class="w-12 h-12 mb-2"></i>
+                        <p>Chưa có kỹ sư nào được chọn.</p>
+                        <p class="text-xs">
+                          Nhấn vào nút
+                          <i
+                            data-lucide="plus-circle"
+                            class="w-3 h-3 inline-block mx-1"
+                          ></i
+                          >để thêm.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="mt-10 flex justify-between items-center">
+              <button
+                type="button"
+                id="back-btn"
+                class="bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-6 rounded-md hidden transition-colors border border-gray-300"
+              >
+                Quay Lại
+              </button>
+              <div class="flex space-x-4 ml-auto">
+                <button
+                  type="button"
+                  id="next-btn"
+                  class="bg-[#69BD70] hover:bg-[#5aa860] text-white font-bold py-2 px-6 rounded-md transition-colors shadow-lg shadow-green-500/20"
+                >
+                  Tiếp tục
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal/Form for adding new threshold -->
+    <div
+      id="add-threshold-modal"
+      class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white border border-gray-200 rounded-lg p-6 w-full max-w-md shadow-lg"
+      >
+        <h3 class="text-xl font-bold mb-4 text-gray-900">
+          Thêm Ngưỡng Quy đổi mới
+        </h3>
+        <div class="space-y-4">
+          <div>
+            <label
+              for="operator-select"
+              class="block text-sm font-medium text-gray-700"
+              >Chọn loại ngưỡng</label
+            >
+            <select
+              id="operator-select"
+              class="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+            >
+              <option value="gte">&ge; (Lớn hơn hoặc bằng)</option>
+              <option value="gt">&gt; (Lớn hơn)</option>
+              <option value="lte">&le; (Nhỏ hơn hoặc bằng)</option>
+              <option value="lt">&lt; (Nhỏ hơn)</option>
+              <option value="range">Khoảng giá trị</option>
+            </select>
+          </div>
+          <div id="single-value-input">
+            <label
+              for="single-value"
+              class="block text-sm font-medium text-gray-700"
+              >Giá trị Điểm Hiệu suất (%)</label
+            >
+            <input
+              type="number"
+              id="single-value"
+              placeholder="Nhập giá trị..."
+              class="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+            />
+          </div>
+          <div id="range-value-input" class="hidden grid grid-cols-2 gap-4">
+            <div>
+              <label
+                for="range-min"
+                class="block text-sm font-medium text-gray-700"
+                >Giá trị Tối thiểu (%)</label
+              >
+              <input
+                type="number"
+                id="range-min"
+                placeholder="Min"
+                class="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+              />
+            </div>
+            <div>
+              <label
+                for="range-max"
+                class="block text-sm font-medium text-gray-700"
+                >Giá trị Tối đa (%)</label
+              >
+              <input
+                type="number"
+                id="range-max"
+                placeholder="Max"
+                class="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              for="factor-value"
+              class="block text-sm font-medium text-gray-700"
+              >Hệ số Kinh doanh Chung</label
+            >
+            <input
+              type="number"
+              step="0.1"
+              id="factor-value"
+              placeholder="Ví dụ: 1.0"
+              class="w-full mt-1 px-3 py-2 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+            />
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end space-x-4">
+          <button
+            type="button"
+            id="cancel-threshold-btn"
+            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+          >
+            Hủy
+          </button>
+          <button
+            type="button"
+            id="add-threshold-btn"
+            class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+          >
+            Thêm
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End Modal/Form -->
+
+    <!-- Workload Analysis Report Modal -->
+    <div
+      id="report-modal"
+      class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden modal-backdrop opacity-0"
+    >
+      <div
+        class="bg-white rounded-xl border border-gray-200 w-full max-w-4xl max-h-[90vh] flex flex-col"
+      >
+        <div
+          class="flex justify-between items-center p-6 border-b border-gray-200 shrink-0"
+        >
+          <h2 class="text-2xl font-bold text-gray-900">
+            Báo cáo Phân tích Khối lượng Công việc
+          </h2>
+          <button
+            id="close-report-modal-btn"
+            class="text-gray-500 hover:text-gray-800"
+          >
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="space-y-6">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                1. Tóm tắt các chỉ số Thống kê
+              </h3>
+              <div class="grid grid-cols-2 gap-4 text-center">
+                <div class="bg-gray-100 p-4 rounded-lg">
+                  <p class="text-xs text-gray-500">Điểm CV Trung bình</p>
+                  <p class="text-2xl font-bold text-gray-900">2.85</p>
+                </div>
+                <div class="bg-gray-100 p-4 rounded-lg">
+                  <p class="text-xs text-gray-500">Điểm CV Trung vị</p>
+                  <p class="text-2xl font-bold text-gray-900">2.95</p>
+                </div>
+                <div class="bg-gray-100 p-4 rounded-lg">
+                  <p class="text-xs text-gray-500">Điểm CV Cao nhất</p>
+                  <p class="text-2xl font-bold text-red-600">4.36</p>
+                </div>
+                <div class="bg-gray-100 p-4 rounded-lg">
+                  <p class="text-xs text-gray-500">Điểm CV Thấp nhất</p>
+                  <p class="text-2xl font-bold text-green-600">1.95</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                2. Phân tích & Đề xuất
+              </h3>
+              <div class="bg-gray-100 p-4 rounded-lg text-sm space-y-2">
+                <p>
+                  <span class="font-semibold text-gray-800">Nhận xét:</span>
+                  Khối lượng công việc của đội ngũ đang được phân bổ tương đối
+                  hợp lý, với 60% nhân sự đang ở mức tải tối ưu.
+                </p>
+                <p class="text-green-700">
+                  <span class="font-semibold text-green-800"
+                    >Đề xuất `Điểm Khối lượng Công việc Chuẩn` cho kỳ tới:</span
+                  >
+                </p>
+                <p class="text-3xl font-bold text-green-600 text-center py-2">
+                  3.0
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-3">
+              3. Phân bổ Khối lượng Công việc theo Kỹ sư
+            </h3>
+            <div class="h-80 bg-gray-50 p-4 rounded-lg">
+              <canvas id="workloadDistributionChart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex justify-end items-center p-6 border-t border-gray-200 shrink-0"
+        >
+          <button
+            type="button"
+            id="apply-suggestion-btn"
+            class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md transition-colors"
+          >
+            Áp dụng Điểm Gợi ý
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- End Workload Analysis Report Modal -->
+
+    <script>
+      // Initialize lucide icons
+      lucide.createIcons();
+
+      // Simple stepper logic
+      document.addEventListener('DOMContentLoaded', function () {
+        let currentStep = 1;
+        const totalSteps = 5;
+        const steps = document.querySelectorAll('.step');
+        const stepContents = document.querySelectorAll('.step-content');
+        const nextBtn = document.getElementById('next-btn');
+        const backBtn = document.getElementById('back-btn');
+
+        // Function to update UI based on the current step
+        function updateStepUI() {
+          steps.forEach((step, index) => {
+            step.classList.remove(
+              'step-active',
+              'step-complete',
+              'step-inactive'
+            );
+            if (index + 1 < currentStep) {
+              step.classList.add('step-complete');
+              const icon = step.querySelector('.step-circle span');
+              if (icon)
+                icon.innerHTML = `<i data-lucide="check" class="w-6 h-6"></i>`;
+            } else if (index + 1 === currentStep) {
+              step.classList.add('step-active');
+              const icon = step.querySelector('.step-circle span');
+              if (icon) icon.textContent = currentStep;
+            } else {
+              step.classList.add('step-inactive');
+              const icon = step.querySelector('.step-circle span');
+              if (icon) icon.textContent = index + 1;
+            }
+          });
+          stepContents.forEach((content, index) => {
+            content.classList.toggle('hidden', index + 1 !== currentStep);
+          });
+          backBtn.classList.toggle('hidden', currentStep === 1);
+
+          // Change button text and color on the last step
+          if (currentStep === totalSteps) {
+            nextBtn.textContent = 'Lưu & Kích Hoạt';
+            nextBtn.classList.remove(
+              'bg-[#69BD70]',
+              'hover:bg-[#5aa860]',
+              'shadow-green-500/20'
+            );
+            nextBtn.classList.add(
+              'bg-green-600',
+              'hover:bg-green-700',
+              'shadow-green-600/20'
+            );
+          } else {
+            nextBtn.textContent = 'Tiếp tục';
+            nextBtn.classList.add(
+              'bg-[#69BD70]',
+              'hover:bg-[#5aa860]',
+              'shadow-green-500/20'
+            );
+            nextBtn.classList.remove(
+              'bg-green-600',
+              'hover:bg-green-700',
+              'shadow-green-600/20'
+            );
+          }
+
+          // Re-initialize icons for the newly visible content
+          lucide.createIcons();
+        }
+
+        // Event listener for the "Next" button
+        nextBtn.addEventListener('click', () => {
+          if (currentStep < totalSteps) {
+            currentStep++;
+          } else {
+            alert('Đã Lưu & Kích Hoạt!');
+          }
+          updateStepUI();
+        });
+
+        // Event listener for the "Back" button
+        backBtn.addEventListener('click', () => {
+          if (currentStep > 1) {
+            currentStep--;
+            updateStepUI();
+          }
+        });
+
+        // Initial UI setup
+        updateStepUI();
+
+        // Logic for dynamic period fields
+        const periodTypeSelect = document.getElementById('period_type');
+        const yearlyFields = document.getElementById('yearly-period-fields');
+        const quarterlyFields = document.getElementById(
+          'quarterly-period-fields'
+        );
+
+        periodTypeSelect.addEventListener('change', (event) => {
+          if (event.target.value === 'yearly') {
+            yearlyFields.classList.remove('hidden');
+            quarterlyFields.classList.add('hidden');
+          } else {
+            yearlyFields.classList.add('hidden');
+            quarterlyFields.classList.remove('hidden');
+          }
+        });
+
+        // Logic for Step 2
+        const metricTableBody = document.getElementById('metric-table-body');
+        const addMetricBtn = document.getElementById('add-metric-btn');
+        const totalMetricWeight = document.getElementById(
+          'total-metric-weight'
+        );
+
+        function updateMetricWeightTotal() {
+          let total = 0;
+          document.querySelectorAll('.metric-weight').forEach((input) => {
+            total += parseInt(input.value) || 0;
+          });
+          totalMetricWeight.textContent = total + '%';
+        }
+
+        function addMetricRow() {
+          const newRow = document.createElement('tr');
+          newRow.classList.add('metric-row');
+          newRow.innerHTML = `
+                    <td class="px-4 py-2"><input type="text" placeholder="Tên chỉ số..." class="w-full bg-transparent border-none focus:outline-none text-gray-800"></td>
+                    <td class="px-4 py-2"><input type="number" value="0" class="metric-weight w-24 text-center bg-white border border-gray-300 rounded-md py-1 text-gray-900"></td>
+                    <td class="px-4 py-2"><input type="text" placeholder="Mục tiêu..." class="w-full bg-white border border-gray-300 rounded-md py-1 px-2 text-gray-900"></td>
+                    <td class="px-4 py-2 text-center">
+                        <button class="text-gray-400 hover:text-red-600 remove-metric-btn transition-colors duration-200">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                `;
+          metricTableBody.appendChild(newRow);
+          lucide.createIcons();
+          updateMetricWeightTotal();
+        }
+
+        // Event listener for adding a new metric
+        if (addMetricBtn) {
+          addMetricBtn.addEventListener('click', addMetricRow);
+        }
+
+        // Event delegation for removing a metric and updating total weight
+        if (metricTableBody) {
+          metricTableBody.addEventListener('click', (event) => {
+            if (event.target.closest('.remove-metric-btn')) {
+              event.target.closest('.metric-row').remove();
+              updateMetricWeightTotal();
+            }
+          });
+
+          metricTableBody.addEventListener('input', (event) => {
+            if (event.target.classList.contains('metric-weight')) {
+              updateMetricWeightTotal();
+            }
+          });
+        }
+
+        // Logic for dynamic threshold form
+        const addThresholdModal = document.getElementById(
+          'add-threshold-modal'
+        );
+        const showAddThresholdFormBtn = document.getElementById(
+          'show-add-threshold-form'
+        );
+        const cancelThresholdBtn = document.getElementById(
+          'cancel-threshold-btn'
+        );
+        const addThresholdBtn = document.getElementById('add-threshold-btn');
+        const operatorSelect = document.getElementById('operator-select');
+        const singleValueInput = document.getElementById('single-value-input');
+        const rangeValueInput = document.getElementById('range-value-input');
+        const thresholdTableBody = document.getElementById(
+          'threshold-table-body'
+        );
+
+        showAddThresholdFormBtn.addEventListener('click', () => {
+          addThresholdModal.classList.remove('hidden');
+        });
+
+        cancelThresholdBtn.addEventListener('click', () => {
+          addThresholdModal.classList.add('hidden');
+        });
+
+        operatorSelect.addEventListener('change', (event) => {
+          if (event.target.value === 'range') {
+            singleValueInput.classList.add('hidden');
+            rangeValueInput.classList.remove('hidden');
+          } else {
+            singleValueInput.classList.remove('hidden');
+            rangeValueInput.classList.add('hidden');
+          }
+        });
+
+        addThresholdBtn.addEventListener('click', () => {
+          const operator = document.getElementById('operator-select').value;
+          const factorValue = document.getElementById('factor-value').value;
+          let thresholdText = '';
+          let isValid = true;
+
+          if (operator === 'range') {
+            const min = document.getElementById('range-min').value;
+            const max = document.getElementById('range-max').value;
+            if (min && max) {
+              thresholdText = `${min}% &le; Điểm &lt; ${max}%`;
+            } else {
+              isValid = false;
+            }
+          } else {
+            const value = document.getElementById('single-value').value;
+            if (value) {
+              const operatorSymbol =
+                operator === 'gte'
+                  ? '&ge;'
+                  : operator === 'gt'
+                  ? '&gt;'
+                  : operator === 'lte'
+                  ? '&le;'
+                  : '&lt;';
+              thresholdText = `${operatorSymbol} ${value}%`;
+            } else {
+              isValid = false;
+            }
+          }
+
+          if (isValid && factorValue) {
+            const newRow = document.createElement('tr');
+            newRow.classList.add('threshold-row');
+            newRow.innerHTML = `
+                        <td class="px-4 py-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="threshold-display text-gray-900">${thresholdText}</span>
+                            </div>
+                        </td>
+                        <td class="px-4 py-2">
+                            <span class="text-gray-900">${factorValue}</span>
+                        </td>
+                        <td class="px-4 py-2 text-center">
+                            <button class="text-gray-400 hover:text-red-600 remove-threshold-btn transition-colors duration-200">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </td>
+                    `;
+            thresholdTableBody.appendChild(newRow);
+            lucide.createIcons();
+            addThresholdModal.classList.add('hidden');
+          } else {
+            alert('Vui lòng điền đầy đủ thông tin!');
+          }
+        });
+
+        if (thresholdTableBody) {
+          thresholdTableBody.addEventListener('click', (event) => {
+            if (event.target.closest('.remove-threshold-btn')) {
+              event.target.closest('.threshold-row').remove();
+            }
+          });
+        }
+
+        // Logic for Step 3
+        const kpiTableBody = document.getElementById('kpi-table-body');
+        const addKpiBtn = document.getElementById('add-kpi-btn');
+        const totalKpiWeight = document.getElementById('total-kpi-weight');
+
+        function updateKpiWeightTotal() {
+          let total = 0;
+          document.querySelectorAll('.kpi-weight').forEach((input) => {
+            total += parseInt(input.value) || 0;
+          });
+          totalKpiWeight.textContent = total + '%';
+        }
+
+        function addKpiRow() {
+          const newRow = document.createElement('tr');
+          newRow.classList.add('kpi-row');
+          newRow.innerHTML = `
+                    <td class="px-6 py-4 font-medium text-gray-800">
+                        <input type="text" class="kpi-input w-full bg-transparent border-none focus:outline-none text-gray-800" placeholder="Nhập hoặc chọn KPI...">
+                    </td>
+                    <td class="px-6 py-4"><input type="number" value="0" class="kpi-weight w-24 text-center bg-white border border-gray-300 rounded-md py-1 text-gray-900"></td>
+                    <td class="px-6 py-4"><input type="text" placeholder="Mục tiêu..." class="w-full bg-white border border-gray-300 rounded-md py-1 px-2 text-gray-900"></td>
+                    <td class="px-6 py-4 text-center">
+                        <button class="text-gray-400 hover:text-red-600 remove-kpi-btn"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                `;
+          kpiTableBody.appendChild(newRow);
+          lucide.createIcons();
+          updateKpiWeightTotal();
+        }
+
+        if (addKpiBtn) {
+          addKpiBtn.addEventListener('click', addKpiRow);
+        }
+        if (kpiTableBody) {
+          kpiTableBody.addEventListener('click', (event) => {
+            if (event.target.closest('.remove-kpi-btn')) {
+              event.target.closest('.kpi-row').remove();
+              updateKpiWeightTotal();
+            }
+          });
+          kpiTableBody.addEventListener('input', (event) => {
+            if (event.target.classList.contains('kpi-weight')) {
+              updateKpiWeightTotal();
+            }
+          });
+        }
+
+        // Logic for Step 4
+        const bonusFundMethodSelect =
+          document.getElementById('bonus-fund-method');
+        const salaryRatioConfig = document.getElementById(
+          'salary-ratio-config'
+        );
+        const fixedAmountConfig = document.getElementById(
+          'fixed-amount-config'
+        );
+
+        if (bonusFundMethodSelect) {
+          bonusFundMethodSelect.addEventListener('change', (event) => {
+            if (event.target.value === 'salary_ratio') {
+              salaryRatioConfig.classList.remove('hidden');
+              fixedAmountConfig.classList.add('hidden');
+            } else {
+              salaryRatioConfig.classList.add('hidden');
+              fixedAmountConfig.classList.remove('hidden');
+            }
+          });
+        }
+
+        // --- Step 5 Logic ---
+        const availableList = document.getElementById('available-list');
+        const appliedList = document.getElementById('applied-list');
+        const availableTitle = document.getElementById('available-title');
+        const appliedTitle = document.getElementById('applied-title');
+        const appliedEmptyState = document.getElementById(
+          'applied-empty-state'
+        );
+        const searchInput = document.getElementById('search-engineer');
+
+        function updateCounters() {
+          if (!availableList || !appliedList) return;
+          const availableCount = Array.from(availableList.children).filter(
+            (child) => child.style.display !== 'none'
+          ).length;
+          const appliedCount = appliedList.children.length;
+
+          availableTitle.textContent = `Danh sách Kỹ sư khả dụng (${availableCount})`;
+          appliedTitle.textContent = `Kỹ sư sẽ được áp dụng (${appliedCount})`;
+
+          if (appliedEmptyState) {
+            appliedEmptyState.classList.toggle('hidden', appliedCount > 0);
+          }
+        }
+
+        function moveEngineer(event) {
+          const button = event.target.closest('button');
+          if (!button) return;
+
+          const listItem = button.closest('li');
+          if (!listItem) return;
+
+          if (button.classList.contains('add-btn')) {
+            appliedList.appendChild(listItem);
+            button.classList.remove(
+              'add-btn',
+              'text-gray-400',
+              'hover:text-green-600',
+              'hover:bg-green-100'
+            );
+            button.classList.add(
+              'remove-btn',
+              'text-gray-400',
+              'hover:text-red-600',
+              'hover:bg-red-100'
+            );
+            button.innerHTML = `<i data-lucide="minus-circle" class="w-5 h-5"></i>`;
+          } else if (button.classList.contains('remove-btn')) {
+            availableList.appendChild(listItem);
+            button.classList.remove(
+              'remove-btn',
+              'text-gray-400',
+              'hover:text-red-600',
+              'hover:bg-red-100'
+            );
+            button.classList.add(
+              'add-btn',
+              'text-gray-400',
+              'hover:text-green-600',
+              'hover:bg-green-100'
+            );
+            button.innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5"></i>`;
+          }
+
+          lucide.createIcons();
+          updateCounters();
+        }
+
+        if (availableList && appliedList) {
+          availableList.addEventListener('click', moveEngineer);
+          appliedList.addEventListener('click', moveEngineer);
+        }
+
+        if (searchInput) {
+          searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const engineers = availableList.getElementsByTagName('li');
+            Array.from(engineers).forEach((engineer) => {
+              const name = engineer
+                .querySelector('p.font-medium')
+                .textContent.toLowerCase();
+              const id = engineer
+                .querySelector('p.text-xs')
+                .textContent.toLowerCase();
+              if (name.includes(searchTerm) || id.includes(searchTerm)) {
+                engineer.style.display = 'flex';
+              } else {
+                engineer.style.display = 'none';
+              }
+            });
+            updateCounters();
+          });
+        }
+        // Initial call
+        updateCounters();
+
+        // Workload report modal logic
+        const reportModal = document.getElementById('report-modal');
+        const showReportBtn = document.getElementById('show-report-btn');
+        const closeReportModalBtn = document.getElementById(
+          'close-report-modal-btn'
+        );
+        const applySuggestionBtn = document.getElementById(
+          'apply-suggestion-btn'
+        );
+        const workloadScoreInput = document.getElementById(
+          'standard_workload_score'
+        );
+        let workloadChart = null;
+
+        function renderWorkloadChart() {
+          const ctx = document.getElementById('workloadDistributionChart');
+          if (!ctx) return;
+          if (workloadChart) {
+            workloadChart.destroy();
+          }
+          workloadChart = new Chart(ctx.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: ['An', 'Bích', 'Cường', 'Duyên', 'Em', 'Hoa'],
+              datasets: [
+                {
+                  label: 'Điểm Khối lượng Công việc',
+                  data: [4.36, 2.95, 3.1, 2.5, 3.8, 1.95],
+                  backgroundColor: (context) => {
+                    const value = context.raw;
+                    if (value >= 3.5) return 'rgba(220, 38, 38, 0.7)'; // red-600
+                    if (value < 2.5) return 'rgba(37, 99, 235, 0.7)'; // blue-600
+                    return 'rgba(22, 163, 74, 0.7)'; // green-600
+                  },
+                  borderColor: '#e5e7eb',
+                  borderWidth: 1,
+                  borderRadius: 4,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  grid: { color: '#e5e7eb' },
+                  ticks: { color: '#6b7280' },
+                },
+                x: { grid: { display: false }, ticks: { color: '#6b7280' } },
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: '#111827',
+                  titleColor: '#f9fafb',
+                  bodyColor: '#d1d5db',
+                  callbacks: {
+                    title: (tooltipItems) => `Kỹ sư: ${tooltipItems[0].label}`,
+                  },
+                },
+              },
+            },
+          });
+        }
+
+        if (showReportBtn) {
+          showReportBtn.addEventListener('click', () => {
+            reportModal.classList.remove('hidden');
+            setTimeout(() => reportModal.classList.remove('opacity-0'), 10);
+            renderWorkloadChart();
+          });
+        }
+
+        if (closeReportModalBtn) {
+          closeReportModalBtn.addEventListener('click', () => {
+            reportModal.classList.add('opacity-0');
+            setTimeout(() => reportModal.classList.add('hidden'), 300);
+          });
+        }
+
+        if (applySuggestionBtn && workloadScoreInput) {
+          applySuggestionBtn.addEventListener('click', () => {
+            workloadScoreInput.value = '3.0'; // Value from report
+            reportModal.classList.add('opacity-0');
+            setTimeout(() => reportModal.classList.add('hidden'), 300);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

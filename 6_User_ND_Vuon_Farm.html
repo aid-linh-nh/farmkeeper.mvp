@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper - Vườn Anh Hiền • Dashboard Chi tiết</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .farm-green { color: #2E7D32; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f8fafc; border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .card-modern {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.08);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        .card-iot {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 24px;
+        }
+        
+        .card-iot:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.15) 100%);
+        }
+        
+        .card-green {
+            background: linear-gradient(135deg, rgba(240, 253, 244, 0.8) 0%, rgba(220, 252, 231, 0.6) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-top: 4px solid #22c55e;
+        }
+        
+        .card-blue {
+            background: linear-gradient(135deg, rgba(239, 246, 255, 0.8) 0%, rgba(219, 234, 254, 0.6) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .card-purple {
+            background: linear-gradient(135deg, rgba(250, 245, 255, 0.8) 0%, rgba(243, 232, 255, 0.6) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-top: 4px solid #a855f7;
+        }
+        
+        .card-orange {
+            background: linear-gradient(135deg, rgba(255, 247, 237, 0.8) 0%, rgba(254, 215, 170, 0.6) 100%);
+            border: 1px solid rgba(251, 146, 60, 0.3);
+            border-left: 4px solid #fb923c;
+        }
+        
+        .card-teal {
+            background: linear-gradient(135deg, rgba(240, 253, 250, 0.8) 0%, rgba(204, 251, 241, 0.6) 100%);
+            border: 1px solid rgba(20, 184, 166, 0.3);
+            border-top: 4px solid #14b8a6;
+        }
+        
+        .card-red {
+            background: linear-gradient(135deg, rgba(254, 242, 242, 0.8) 0%, rgba(254, 202, 202, 0.6) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-left: 4px solid #ef4444;
+        }
+        
+        .card-yellow {
+            background: linear-gradient(135deg, rgba(255, 251, 235, 0.8) 0%, rgba(254, 240, 138, 0.6) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-top: 4px solid #f59e0b;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+            border-right: 1px solid rgba(226, 232, 240, 0.6);
+            min-height: 100vh;
+            width: 300px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin: 2px 12px;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(34, 197, 94, 0.08);
+            transform: translateX(2px);
+        }
+        
+        .sidebar-item.active {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.25);
+            color: white;
+        }
+        
+        .main-content {
+            margin-left: 300px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .sensor-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .sensor-optimal { background: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
+        .sensor-warning { background: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.6); }
+        .sensor-critical { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring__circle {
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.8s ease-in-out;
+        }
+        
+        .gauge-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .process-step {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .process-step.active {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        .process-step.completed {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+            opacity: 0.8;
+        }
+        
+        .weather-card {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(14, 165, 233, 0.1) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        
+        .chart-mini {
+            height: 40px;
+            background: linear-gradient(45deg, transparent 0%, rgba(34, 197, 94, 0.1) 50%, transparent 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="p-6 border-b border-gray-200">
+            <div class="flex items-center space-x-3">
+                <div class="bg-green-100 p-3 rounded-xl">
+                    <i class="fas fa-seedling text-2xl text-green-600"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800">Vườn Anh Hiền</h1>
+                    <p class="text-sm text-gray-500">12.5 ha • Cú M'Gar, Đắk Lắk</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="py-4 custom-scroll" style="max-height: calc(100vh - 200px); overflow-y: auto;">
+            <div class="px-4 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">TỔNG QUAN</p>
+            </div>
+            
+            <a href="#" class="sidebar-item active flex items-center px-4 py-3 text-white">
+                <i class="fas fa-chart-pie w-5 text-center mr-3"></i>
+                <span class="font-medium">Dashboard Vườn</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-wifi w-5 text-center mr-3"></i>
+                <span class="font-medium">Hệ thống IoT</span>
+                <span class="ml-auto bg-green-500 text-white text-xs px-2 py-1 rounded-full">Online</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-map-marked-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Bản đồ Vườn</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">SẢN XUẤT</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-tasks w-5 text-center mr-3"></i>
+                <span class="font-medium">Quy trình Canh tác</span>
+                <span class="ml-auto bg-blue-500 text-white text-xs px-2 py-1 rounded-full">12</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-calendar-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Lịch Công việc</span>
+                <span class="ml-auto bg-orange-500 text-white text-xs px-2 py-1 rounded-full">5</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-tint w-5 text-center mr-3"></i>
+                <span class="font-medium">Quản lý Tưới</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-seedling w-5 text-center mr-3"></i>
+                <span class="font-medium">Quản lý Phân bón</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-bug w-5 text-center mr-3"></i>
+                <span class="font-medium">Kiểm soát Sâu bệnh</span>
+                <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">!</span>
+            </a>
+            
+            <div class="px-4 mt-6 mb-4">
+                <p class="text-xs text-gray-400 uppercase tracking-wider font-semibold">QUẢN LÝ</p>
+            </div>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-apple-alt w-5 text-center mr-3"></i>
+                <span class="font-medium">Thu hoạch</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-wallet w-5 text-center mr-3"></i>
+                <span class="font-medium">Tài chính Vườn</span>
+            </a>
+            
+            <a href="#" class="sidebar-item flex items-center px-4 py-3 text-gray-600 hover:text-gray-800">
+                <i class="fas fa-chart-bar w-5 text-center mr-3"></i>
+                <span class="font-medium">Báo cáo</span>
+            </a>
+        </nav>
+        
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+            <div class="bg-green-50 p-3 rounded-lg border border-green-200">
+                <div class="flex items-center space-x-2 mb-2">
+                    <div class="sensor-optimal"></div>
+                    <p class="text-xs text-green-600 font-medium">Tất cả hệ thống hoạt động bình thường</p>
+                </div>
+                <p class="text-xs text-gray-600">Cập nhật: 2 phút trước</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-filter backdrop-blur-lg shadow-sm border-b border-gray-200">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Dashboard Vườn Anh Hiền</h1>
+                        <p class="text-sm text-gray-600">Sầu riêng Ri6 • 156 cây • 8 năm tuổi • Cú M'Gar, Đắk Lắk</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-green-50 p-3 rounded-xl border border-green-100 relative">
+                            <i class="fas fa-leaf text-green-500"></i>
+                            <span class="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">✓</span>
+                        </div>
+                        <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                            <i class="fas fa-cloud-sun text-blue-500"></i>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded-xl border border-purple-100">
+                            <i class="fas fa-cog text-purple-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="px-6 py-8">
+            <!-- Farm Zone Map -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+                <div class="lg:col-span-8 card-modern card-blue">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800">Bản đồ Phân khu Vườn</h3>
+                                <p class="text-gray-600">12.5 hecta • 156 cây • Chia làm 8 khu vực</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-all" onclick="openTreeManagement()">
+                                    <i class="fas fa-edit mr-2"></i>Cập nhật thông tin cây
+                                </button>
+                                <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition-all">
+                                    <i class="fas fa-map mr-2"></i>Xem toàn bộ
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Zone Map Grid -->
+                        <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border-2 border-dashed border-blue-300 mb-6">
+                            <div class="grid grid-cols-4 gap-4 h-80">
+                                <!-- Zone A1 -->
+                                <div class="bg-green-100 border-2 border-green-300 rounded-lg p-3 hover:bg-green-200 transition-all cursor-pointer relative">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-green-800">A1</span>
+                                        <div class="sensor-optimal"></div>
+                                    </div>
+                                    <p class="text-xs text-green-700">20 cây • Khỏe mạnh</p>
+                                    <p class="text-xs text-gray-600">1.6 ha</p>
+                                    <div class="absolute bottom-2 right-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
+                                        <i class="fas fa-leaf mr-1"></i>96%
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone A2 -->
+                                <div class="bg-green-100 border-2 border-green-300 rounded-lg p-3 hover:bg-green-200 transition-all cursor-pointer relative">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-green-800">A2</span>
+                                        <div class="sensor-optimal"></div>
+                                    </div>
+                                    <p class="text-xs text-green-700">19 cây • Khỏe mạnh</p>
+                                    <p class="text-xs text-gray-600">1.5 ha</p>
+                                    <div class="absolute bottom-2 right-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
+                                        <i class="fas fa-leaf mr-1"></i>95%
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone A3 -->
+                                <div class="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-3 hover:bg-yellow-200 transition-all cursor-pointer relative animate-pulse">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-yellow-800">A3</span>
+                                        <div class="sensor-warning"></div>
+                                    </div>
+                                    <p class="text-xs text-yellow-700">18 cây • Sâu phủ quả</p>
+                                    <p class="text-xs text-gray-600">1.4 ha</p>
+                                    <div class="absolute bottom-2 right-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded">
+                                        <i class="fas fa-bug mr-1"></i>Cảnh báo
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone A4 -->
+                                <div class="bg-green-100 border-2 border-green-300 rounded-lg p-3 hover:bg-green-200 transition-all cursor-pointer relative">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-green-800">A4</span>
+                                        <div class="sensor-optimal"></div>
+                                    </div>
+                                    <p class="text-xs text-green-700">21 cây • Khỏe mạnh</p>
+                                    <p class="text-xs text-gray-600">1.7 ha</p>
+                                    <div class="absolute bottom-2 right-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
+                                        <i class="fas fa-leaf mr-1"></i>98%
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone B1 -->
+                                <div class="bg-yellow-100 border-2 border-yellow-400 rounded-lg p-3 hover:bg-yellow-200 transition-all cursor-pointer relative">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-yellow-800">B1</span>
+                                        <div class="sensor-warning"></div>
+                                    </div>
+                                    <p class="text-xs text-yellow-700">17 cây • Sâu phủ quả</p>
+                                    <p class="text-xs text-gray-600">1.3 ha</p>
+                                    <div class="absolute bottom-2 right-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded">
+                                        <i class="fas fa-bug mr-1"></i>Cảnh báo
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone B2 -->
+                                <div class="bg-green-100 border-2 border-green-300 rounded-lg p-3 hover:bg-green-200 transition-all cursor-pointer relative">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-green-800">B2</span>
+                                        <div class="sensor-optimal"></div>
+                                    </div>
+                                    <p class="text-xs text-green-700">20 cây • Khỏe mạnh</p>
+                                    <p class="text-xs text-gray-600">1.6 ha</p>
+                                    <div class="absolute bottom-2 right-2 text-xs bg-green-200 text-green-800 px-2 py-1 rounded">
+                                        <i class="fas fa-leaf mr-1"></i>94%
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone B3 -->
+                                <div class="bg-red-100 border-2 border-red-400 rounded-lg p-3 hover:bg-red-200 transition-all cursor-pointer relative">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-red-800">B3</span>
+                                        <div class="sensor-critical"></div>
+                                    </div>
+                                    <p class="text-xs text-red-700">16 cây • 2 cây chết</p>
+                                    <p class="text-xs text-gray-600">1.2 ha</p>
+                                    <div class="absolute bottom-2 right-2 text-xs bg-red-200 text-red-800 px-2 py-1 rounded">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>Cần xử lý
+                                    </div>
+                                </div>
+                                
+                                <!-- Zone B4 -->
+                                <div class="bg-blue-100 border-2 border-blue-300 rounded-lg p-3 hover:bg-blue-200 transition-all cursor-pointer relative">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold text-blue-800">B4</span>
+                                        <div class="sensor-optimal"></div>
+                                    </div>
+                                    <p class="text-xs text-blue-700">19 cây • Trồng mới</p>
+                                    <p class="text-xs text-gray-600">1.5 ha</p>
+                                    <div class="absolute bottom-2 right-2 text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded">
+                                        <i class="fas fa-seedling mr-1"></i>Năm 2
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Zone Status Summary -->
+                        <div class="grid grid-cols-4 gap-4">
+                            <div class="text-center bg-green-50 rounded-xl p-3 border border-green-200">
+                                <p class="text-2xl font-bold text-green-700">5</p>
+                                <p class="text-sm text-gray-600">Khu vực khỏe mạnh</p>
+                            </div>
+                            <div class="text-center bg-yellow-50 rounded-xl p-3 border border-yellow-200">
+                                <p class="text-2xl font-bold text-yellow-700">2</p>
+                                <p class="text-sm text-gray-600">Cần theo dõi</p>
+                            </div>
+                            <div class="text-center bg-red-50 rounded-xl p-3 border border-red-200">
+                                <p class="text-2xl font-bold text-red-700">1</p>
+                                <p class="text-sm text-gray-600">Cần xử lý gấp</p>
+                            </div>
+                            <div class="text-center bg-blue-50 rounded-xl p-3 border border-blue-200">
+                                <p class="text-2xl font-bold text-blue-700">154</p>
+                                <p class="text-sm text-gray-600">Cây còn lại</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certification Management -->
+                <div class="lg:col-span-4 card-modern card-teal">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">Chứng nhận Tiêu chuẩn</h3>
+                                <p class="text-gray-600">Quản lý các chứng nhận GAP</p>
+                            </div>
+                            <button class="bg-teal-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-teal-600 transition-all">
+                                <i class="fas fa-plus mr-1"></i>Thêm
+                            </button>
+                        </div>
+                        
+                        <!-- Current Certifications -->
+                        <div class="space-y-4 mb-6">
+                            <!-- VietGAP -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-green-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-shield-alt text-green-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-800">VietGAP</p>
+                                            <p class="text-xs text-gray-500">Mã: VG2024-DL-001</p>
+                                        </div>
+                                    </div>
+                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Có hiệu lực</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    <div>
+                                        <p class="text-gray-600">Cấp ngày:</p>
+                                        <p class="font-semibold">15/03/2024</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-600">Hết hạn:</p>
+                                        <p class="font-semibold text-orange-600">15/03/2027</p>
+                                    </div>
+                                </div>
+                                <button class="w-full mt-3 bg-green-500 text-white py-2 rounded-lg text-sm hover:bg-green-600 transition-all">
+                                    <i class="fas fa-download mr-2"></i>Tải chứng nhận
+                                </button>
+                            </div>
+                            
+                            <!-- GlobalGAP (In Progress) -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-blue-200">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-globe text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-semibold text-gray-800">GlobalGAP</p>
+                                            <p class="text-xs text-gray-500">Đang xin cấp</p>
+                                        </div>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">Đang xử lý</span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-xs">
+                                        <span class="text-gray-600">Tiến độ hồ sơ</span>
+                                        <span class="font-semibold text-blue-600">75%</span>
+                                    </div>
+                                    <div class="w-full bg-blue-100 rounded-full h-2">
+                                        <div class="bg-blue-500 h-2 rounded-full" style="width: 75%"></div>
+                                    </div>
+                                    <p class="text-xs text-gray-600">Dự kiến hoàn thành: 15/02/2025</p>
+                                </div>
+                                <button class="w-full mt-3 bg-blue-500 text-white py-2 rounded-lg text-sm hover:bg-blue-600 transition-all">
+                                    <i class="fas fa-edit mr-2"></i>Cập nhật hồ sơ
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Compliance Score -->
+                        <div class="bg-gradient-to-r from-teal-50 to-green-50 rounded-xl p-4 border border-teal-200">
+                            <h4 class="font-semibold text-teal-800 mb-3">Điểm tuân thủ tổng thể</h4>
+                            <div class="text-center">
+                                <p class="text-3xl font-bold text-teal-700 mb-2">87/100</p>
+                                <div class="w-full bg-teal-100 rounded-full h-3 mb-2">
+                                    <div class="bg-teal-500 h-3 rounded-full" style="width: 87%"></div>
+                                </div>
+                                <p class="text-sm text-gray-600">Đạt chuẩn xuất khẩu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farm KPIs -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                <!-- Tree Health -->
+                <div class="card-modern card-green">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-leaf text-green-600 text-xl"></i>
+                            </div>
+                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-semibold">Khỏe mạnh</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Sức khỏe cây</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">94%</p>
+                        <p class="text-xs text-green-600">148/156 cây tốt</p>
+                    </div>
+                </div>
+
+                <!-- Current Stage -->
+                <div class="card-modern card-blue">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-seedling text-blue-600 text-xl"></i>
+                            </div>
+                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">Đang ra quả</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Giai đoạn hiện tại</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">Quả non</p>
+                        <p class="text-xs text-blue-600">3-5 tháng nữa thu hoạch</p>
+                    </div>
+                </div>
+
+                <!-- Expected Yield -->
+                <div class="card-modern card-purple">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-apple-alt text-purple-600 text-xl"></i>
+                            </div>
+                            <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs font-semibold">Dự kiến</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Sản lượng năm</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">160 tấn</p>
+                        <p class="text-xs text-purple-600">12.8 tấn/ha</p>
+                    </div>
+                </div>
+
+                <!-- Water Usage -->
+                <div class="card-modern card-teal">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-tint text-teal-600 text-xl"></i>
+                            </div>
+                            <span class="bg-teal-100 text-teal-700 px-2 py-1 rounded-full text-xs font-semibold">Tiết kiệm</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Lượng nước/tháng</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">2,840</p>
+                        <p class="text-xs text-teal-600">m³ • -15% tháng trước</p>
+                    </div>
+                </div>
+
+                <!-- Revenue -->
+                <div class="card-modern card-orange">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-coins text-orange-600 text-xl"></i>
+                            </div>
+                            <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-semibold">+24%</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-1">Doanh thu dự kiến</p>
+                        <p class="text-2xl font-bold text-gray-800 mb-1">1.12 tỷ</p>
+                        <p class="text-xs text-orange-600">89.6 tr/ha</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Process Management -->
+                <div class="lg:col-span-8 card-modern">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">Quy trình Canh tác</h3>
+                                <p class="text-gray-600">Theo dõi chi tiết các công việc theo giai đoạn</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition-all">
+                                    <i class="fas fa-calendar-plus mr-2"></i>Thêm công việc
+                                </button>
+                                <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition-all">
+                                    <i class="fas fa-history mr-2"></i>Lịch sử
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Process Timeline -->
+                        <div class="mb-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-gray-700">Tiến độ canh tác mùa vụ 2024-2025</h4>
+                                <span class="text-sm text-gray-500">Giai đoạn: Ra quả (Tháng 3-7)</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                                <div class="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full relative" style="width: 65%">
+                                    <div class="absolute right-0 top-0 h-3 w-3 bg-white rounded-full border-2 border-green-500"></div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500">
+                                <span>Chuẩn bị đất</span>
+                                <span>Chăm sóc</span>
+                                <span>Ra hoa</span>
+                                <span class="font-semibold text-green-600">Ra quả</span>
+                                <span>Thu hoạch</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Current Week Tasks -->
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-semibold text-gray-700 mb-4 flex items-center">
+                                    <i class="fas fa-tasks text-green-500 mr-2"></i>
+                                    Công việc tuần này
+                                </h4>
+                                <div class="space-y-3">
+                                    <div class="process-step active bg-white p-4 rounded-xl border border-green-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                    <i class="fas fa-seedling text-green-600"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="font-semibold text-sm text-gray-800">Bón phán lân (NPK 16-16-8)</p>
+                                                    <p class="text-xs text-gray-500">Thứ 5, 12/12 • 2kg/cây</p>
+                                                </div>
+                                            </div>
+                                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Đang thực hiện</span>
+                                        </div>
+                                        <div class="flex items-center justify-between text-xs">
+                                            <span class="text-gray-600">Tiến độ: 45/156 cây</span>
+                                            <span class="text-green-600 font-semibold">29%</span>
+                                        </div>
+                                        <div class="w-full bg-green-100 rounded-full h-2 mt-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 29%"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="process-step bg-white p-4 rounded-xl border border-blue-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                    <i class="fas fa-eye text-blue-600"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="font-semibold text-sm text-gray-800">Kiểm tra quả non định kỳ</p>
+                                                    <p class="text-xs text-gray-500">Thứ 6, 13/12 • Toàn vườn</p>
+                                                </div>
+                                            </div>
+                                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Sắp tới</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600">Đánh giá tình trạng quả, loại bỏ quả dị tật</p>
+                                    </div>
+                                    
+                                    <div class="process-step bg-white p-4 rounded-xl border border-yellow-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                    <i class="fas fa-spray-can text-yellow-600"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="font-semibold text-sm text-gray-800">Phun phòng sâu phủ quả</p>
+                                                    <p class="text-xs text-gray-500">Chủ nhật, 15/12 • Đúng thời điểm</p>
+                                                </div>
+                                            </div>
+                                            <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">Quan trọng</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600">Sử dụng thuốc sinh học, tuân thủ GAP</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="font-semibold text-gray-700 flex items-center">
+                                        <i class="fas fa-chart-line text-purple-500 mr-2"></i>
+                                        Theo dõi phát triển
+                                    </h4>
+                                    <button class="bg-purple-500 text-white px-3 py-1 rounded-lg text-xs hover:bg-purple-600 transition-all" onclick="openYieldAssessment()">
+                                        <i class="fas fa-edit mr-1"></i>Cập nhật đánh giá
+                                    </button>
+                                </div>
+                                <div class="bg-white rounded-xl p-4 border border-purple-200 mb-4">
+                                    <div class="grid grid-cols-2 gap-4 mb-4">
+                                        <div class="text-center">
+                                            <p class="text-2xl font-bold text-purple-700">4,680</p>
+                                            <p class="text-sm text-gray-600">Quả đang phát triển</p>
+                                        </div>
+                                        <div class="text-center">
+                                            <p class="text-2xl font-bold text-green-700">92%</p>
+                                            <p class="text-sm text-gray-600">Tỷ lệ đậu quả</p>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-2 mb-4">
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-gray-600">Quả nhỏ (2-5cm)</span>
+                                            <span class="font-semibold text-blue-600">2,340 quả</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-gray-600">Quả vừa (5-10cm)</span>
+                                            <span class="font-semibold text-green-600">1,890 quả</span>
+                                        </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-gray-600">Quả lớn (>10cm)</span>
+                                            <span class="font-semibold text-purple-600">450 quả</span>
+                                        </div>
+                                    </div>
+                                    <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                                        <div class="flex items-center justify-between text-xs">
+                                            <span class="text-gray-600">Đánh giá gần nhất:</span>
+                                            <span class="font-semibold text-purple-700">08/12/2024</span>
+                                        </div>
+                                        <div class="flex items-center justify-between text-xs mt-1">
+                                            <span class="text-gray-600">Người đánh giá:</span>
+                                            <span class="font-semibold text-gray-800">Anh Hiền</span>
+                                        </div>
+                                        <p class="text-xs text-purple-600 mt-2">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Dự báo sản lượng cập nhật dựa trên đánh giá thực tế
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Growth Chart -->
+                                <div class="bg-white rounded-xl p-4 border border-gray-200">
+                                    <h5 class="font-semibold text-sm text-gray-700 mb-3">Tốc độ tăng trưởng (30 ngày)</h5>
+                                    <div class="chart-mini rounded mb-2 flex items-end justify-between px-2">
+                                        <div class="w-2 bg-green-400 rounded-t" style="height: 60%"></div>
+                                        <div class="w-2 bg-green-500 rounded-t" style="height: 75%"></div>
+                                        <div class="w-2 bg-green-600 rounded-t" style="height: 45%"></div>
+                                        <div class="w-2 bg-green-700 rounded-t" style="height: 90%"></div>
+                                        <div class="w-2 bg-green-800 rounded-t" style="height: 100%"></div>
+                                        <div class="w-2 bg-green-500 rounded-t" style="height: 85%"></div>
+                                        <div class="w-2 bg-green-600 rounded-t" style="height: 70%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-500">
+                                        <span>T1</span>
+                                        <span>T2</span>
+                                        <span>T3</span>
+                                        <span>T4</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts & Recommendations -->
+                <div class="lg:col-span-4 space-y-6">
+                    <!-- Critical Alerts -->
+                    <div class="card-modern card-red">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-red-700 mb-4 flex items-center">
+                                <i class="fas fa-exclamation-triangle text-red-600 mr-2 animate-pulse"></i>
+                                Cảnh báo Khẩn cấp
+                            </h3>
+                            
+                            <div class="space-y-3">
+                                <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-bug text-red-500 mt-1"></i>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-sm text-red-700">Sâu phủ quả phát hiện</p>
+                                            <p class="text-xs text-red-600">Khu vực A3-A5 • 23 cây bị ảnh hưởng</p>
+                                            <p class="text-xs text-gray-500 mt-1">Cần phun thuốc trong 24h</p>
+                                        </div>
+                                        <button class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 transition-all">
+                                            Xử lý
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                                    <div class="flex items-start space-x-3">
+                                        <i class="fas fa-leaf text-yellow-500 mt-1"></i>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-sm text-yellow-700">Thiếu dinh dưỡng Đạm</p>
+                                            <p class="text-xs text-yellow-600">Theo dõi cảm biến • Mức 45 mg/kg</p>
+                                            <p class="text-xs text-gray-500 mt-1">Khuyến nghị bón phân bổ sung</p>
+                                        </div>
+                                        <button class="bg-yellow-500 text-white px-2 py-1 rounded text-xs hover:bg-yellow-600 transition-all">
+                                            Lên kế hoạch
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Recommendations -->
+                    <div class="card-modern card-blue">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-blue-700 mb-4 flex items-center">
+                                <i class="fas fa-robot text-blue-600 mr-2"></i>
+                                Khuyến nghị AI
+                            </h3>
+                            
+                            <div class="space-y-4">
+                                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-cloud-rain text-blue-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-sm text-blue-800">Dự báo thời tiết</p>
+                                            <p class="text-xs text-blue-700 mb-2">Mưa lớn trong 3 ngày tới (40-60mm)</p>
+                                            <ul class="text-xs text-blue-600 space-y-1">
+                                                <li>• Tạm ngừng tưới nước</li>
+                                                <li>• Kiểm tra hệ thống thoát nước</li>
+                                                <li>• Hoãn việc bón phân đến sau mưa</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-seedling text-green-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-sm text-green-800">Tối ưu phân bón</p>
+                                            <p class="text-xs text-green-700 mb-2">Dựa trên phân tích đất và IoT</p>
+                                            <ul class="text-xs text-green-600 space-y-1">
+                                                <li>• Tăng đạm: 2.5kg NPK/cây</li>
+                                                <li>• Bổ sung vi lượng Bo, Zn</li>
+                                                <li>• Phun dinh dưỡng lá 2 tuần/lần</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="card-modern card-orange">
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold text-orange-700 mb-4">Thao tác Nhanh</h3>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="bg-orange-500 text-white p-3 rounded-lg text-sm hover:bg-orange-600 transition-all text-center">
+                                    <i class="fas fa-tint mb-2 text-lg block"></i>
+                                    Bật tưới nước
+                                </button>
+                                
+                                <button class="bg-green-500 text-white p-3 rounded-lg text-sm hover:bg-green-600 transition-all text-center">
+                                    <i class="fas fa-plus-circle mb-2 text-lg block"></i>
+                                    Ghi nhận CV
+                                </button>
+                                
+                                <button class="bg-blue-500 text-white p-3 rounded-lg text-sm hover:bg-blue-600 transition-all text-center">
+                                    <i class="fas fa-camera mb-2 text-lg block"></i>
+                                    Chụp ảnh cây
+                                </button>
+                                
+                                <button class="bg-purple-500 text-white p-3 rounded-lg text-sm hover:bg-purple-600 transition-all text-center">
+                                    <i class="fas fa-chart-bar mb-2 text-lg block"></i>
+                                    Xem báo cáo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Overview -->
+                <div class="lg:col-span-6 card-modern card-green">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">Tài chính Vườn</h3>
+                                <p class="text-gray-600">Thu chi và lợi nhuận năm 2024</p>
+                            </div>
+                            <button class="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition-all">
+                                <i class="fas fa-plus mr-2"></i>Thêm giao dịch
+                            </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="text-center bg-white/70 rounded-xl p-4 border border-green-200">
+                                <p class="text-sm text-gray-600 mb-1">Doanh thu YTD</p>
+                                <p class="text-2xl font-bold text-green-700">890 tr</p>
+                                <p class="text-xs text-green-600">71.2 tr/ha</p>
+                            </div>
+                            <div class="text-center bg-white/70 rounded-xl p-4 border border-red-200">
+                                <p class="text-sm text-gray-600 mb-1">Chi phí YTD</p>
+                                <p class="text-2xl font-bold text-red-700">320 tr</p>
+                                <p class="text-xs text-red-600">25.6 tr/ha</p>
+                            </div>
+                            <div class="text-center bg-white/70 rounded-xl p-4 border border-blue-200">
+                                <p class="text-sm text-gray-600 mb-1">Lợi nhuận</p>
+                                <p class="text-2xl font-bold text-blue-700">570 tr</p>
+                                <p class="text-xs text-blue-600">45.6 tr/ha</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Cost Breakdown -->
+                        <div class="bg-white/70 rounded-xl p-4 border border-green-200">
+                            <h4 class="font-semibold text-gray-700 mb-3">Chi phí theo danh mục</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-orange-500 rounded"></div>
+                                        <span class="text-sm text-gray-600">Phân bón & thuốc BVTV</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-bold text-orange-700">140 tr</span>
+                                        <div class="w-16 bg-orange-100 rounded-full h-2">
+                                            <div class="bg-orange-500 h-2 rounded-full" style="width: 44%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-blue-500 rounded"></div>
+                                        <span class="text-sm text-gray-600">Nhân công</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-bold text-blue-700">95 tr</span>
+                                        <div class="w-16 bg-blue-100 rounded-full h-2">
+                                            <div class="bg-blue-500 h-2 rounded-full" style="width: 30%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-teal-500 rounded"></div>
+                                        <span class="text-sm text-gray-600">Điện nước & nhiên liệu</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-bold text-teal-700">52 tr</span>
+                                        <div class="w-16 bg-teal-100 rounded-full h-2">
+                                            <div class="bg-teal-500 h-2 rounded-full" style="width: 16%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-gray-500 rounded"></div>
+                                        <span class="text-sm text-gray-600">Chi phí khác</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-bold text-gray-700">33 tr</span>
+                                        <div class="w-16 bg-gray-100 rounded-full h-2">
+                                            <div class="bg-gray-500 h-2 rounded-full" style="width: 10%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Production & Quality -->
+                <div class="lg:col-span-6 card-modern card-purple">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800">Sản lượng & Chất lượng</h3>
+                                <p class="text-gray-600">Theo dõi năng suất và phân loại sản phẩm</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-purple-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-purple-600 transition-all">
+                                    <i class="fas fa-apple-alt mr-1"></i>Dự báo
+                                </button>
+                                <button class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-sm hover:bg-gray-200 transition-all">
+                                    <i class="fas fa-history mr-1"></i>Lịch sử
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Production Forecast -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-white/70 rounded-xl p-4 border border-purple-200 text-center">
+                                <div class="relative w-20 h-20 mx-auto mb-3">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#f3e8ff" stroke-width="10"/>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#a855f7" stroke-width="10" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="47.1"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="text-lg font-bold text-purple-700">85%</span>
+                                    </div>
+                                </div>
+                                <p class="font-semibold text-purple-700">Tiến độ mùa vụ</p>
+                                <p class="text-sm text-gray-600">Dự kiến thu hoạch T8</p>
+                            </div>
+                            
+                            <div class="bg-white/70 rounded-xl p-4 border border-green-200 text-center">
+                                <div class="relative w-20 h-20 mx-auto mb-3">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#dcfce7" stroke-width="10"/>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="62.8"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="text-lg font-bold text-green-700">80%</span>
+                                    </div>
+                                </div>
+                                <p class="font-semibold text-green-700">Chất lượng dự kiến</p>
+                                <p class="text-sm text-gray-600">Hạng A + B</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Quality Distribution -->
+                        <div class="bg-white/70 rounded-xl p-4 border border-purple-200 mb-4">
+                            <h4 class="font-semibold text-gray-700 mb-3">Phân bố chất lượng dự kiến</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                        <span class="text-sm text-gray-600">Hạng A (Xuất khẩu)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-bold text-green-700">96 tấn (60%)</span>
+                                        <div class="w-20 bg-green-100 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 60%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                                        <span class="text-sm text-gray-600">Hạng B (Nội địa)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-bold text-blue-700">48 tấn (30%)</span>
+                                        <div class="w-20 bg-blue-100 rounded-full h-2">
+                                            <div class="bg-blue-500 h-2 rounded-full" style="width: 30%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-4 h-4 bg-yellow-500 rounded"></div>
+                                        <span class="text-sm text-gray-600">Hạng C (Chế biến)</span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-bold text-yellow-700">16 tấn (10%)</span>
+                                        <div class="w-20 bg-yellow-100 rounded-full h-2">
+                                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 10%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Revenue Projection -->
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-200">
+                            <h4 class="font-semibold text-purple-800 mb-3">Dự báo doanh thu thu hoạch</h4>
+                            <div class="grid grid-cols-3 gap-3 text-center">
+                                <div>
+                                    <p class="text-lg font-bold text-green-700">576 tr</p>
+                                    <p class="text-xs text-gray-600">Hạng A • 60k/kg</p>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-bold text-blue-700">192 tr</p>
+                                    <p class="text-xs text-gray-600">Hạng B • 40k/kg</p>
+                                </div>
+                                <div>
+                                    <p class="text-lg font-bold text-yellow-700">32 tr</p>
+                                    <p class="text-xs text-gray-600">Hạng C • 20k/kg</p>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3 pt-3 border-t border-purple-200">
+                                <p class="text-xl font-bold text-purple-800">800 triệu VNĐ</p>
+                                <p class="text-sm text-gray-600">Tổng doanh thu dự kiến</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- IoT Environmental Monitoring System -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-8">
+                <div class="lg:col-span-12 card-modern card-iot">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-microchip text-blue-600 mr-3"></i>
+                                    Hệ thống Giám sát IoT
+                                </h3>
+                                <p class="text-gray-600">Thông số môi trường thời gian thực từ 24 cảm biến</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="flex items-center space-x-2">
+                                    <div class="sensor-optimal"></div>
+                                    <span class="text-sm text-green-600 font-medium">Online</span>
+                                </div>
+                                <button class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-all">
+                                    <i class="fas fa-sync-alt mr-2"></i>Làm mới
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Environmental Sensors Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+                            <!-- Temperature -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-red-200 text-center hover:border-red-300 transition-all">
+                                <div class="gauge-container mx-auto mb-3">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#fee2e2" stroke-width="8"/>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#dc2626" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="125.6"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <i class="fas fa-thermometer-half text-red-500 mb-1"></i>
+                                        <span class="text-lg font-bold text-red-700">32°C</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-700">Nhiệt độ</p>
+                                <p class="text-xs text-gray-500">Tối ưu: 28-35°C</p>
+                                <div class="sensor-optimal mx-auto mt-2"></div>
+                            </div>
+                            
+                            <!-- Humidity -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-blue-200 text-center hover:border-blue-300 transition-all">
+                                <div class="gauge-container mx-auto mb-3">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#dbeafe" stroke-width="8"/>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="94.2"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <i class="fas fa-tint text-blue-500 mb-1"></i>
+                                        <span class="text-lg font-bold text-blue-700">70%</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-700">Độ ẩm</p>
+                                <p class="text-xs text-gray-500">Tối ưu: 60-80%</p>
+                                <div class="sensor-optimal mx-auto mt-2"></div>
+                            </div>
+                            
+                            <!-- Soil pH -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-green-200 text-center hover:border-green-300 transition-all">
+                                <div class="gauge-container mx-auto mb-3">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#dcfce7" stroke-width="8"/>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#16a34a" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="157"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <i class="fas fa-vial text-green-500 mb-1"></i>
+                                        <span class="text-lg font-bold text-green-700">6.2</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-700">pH Đất</p>
+                                <p class="text-xs text-gray-500">Tối ưu: 6.0-6.8</p>
+                                <div class="sensor-optimal mx-auto mt-2"></div>
+                            </div>
+                            
+                            <!-- Nitrogen -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-purple-200 text-center hover:border-purple-300 transition-all">
+                                <div class="gauge-container mx-auto mb-3">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#f3e8ff" stroke-width="8"/>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#a855f7" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="188.4"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span class="text-xs font-bold text-purple-600">N</span>
+                                        <span class="text-lg font-bold text-purple-700">45</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-700">Đạm (N)</p>
+                                <p class="text-xs text-gray-500">mg/kg • Thấp</p>
+                                <div class="sensor-warning mx-auto mt-2"></div>
+                            </div>
+                            
+                            <!-- Phosphorus -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-orange-200 text-center hover:border-orange-300 transition-all">
+                                <div class="gauge-container mx-auto mb-3">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#fed7aa" stroke-width="8"/>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#ea580c" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="125.6"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span class="text-xs font-bold text-orange-600">P</span>
+                                        <span class="text-lg font-bold text-orange-700">28</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-700">Lân (P)</p>
+                                <p class="text-xs text-gray-500">mg/kg • Tốt</p>
+                                <div class="sensor-optimal mx-auto mt-2"></div>
+                            </div>
+                            
+                            <!-- Potassium -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-yellow-200 text-center hover:border-yellow-300 transition-all">
+                                <div class="gauge-container mx-auto mb-3">
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#fef3c7" stroke-width="8"/>
+                                        <circle cx="60" cy="60" r="50" fill="none" stroke="#d97706" stroke-width="8" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="94.2"/>
+                                    </svg>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span class="text-xs font-bold text-yellow-600">K</span>
+                                        <span class="text-lg font-bold text-yellow-700">125</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm font-semibold text-gray-700">Kali (K)</p>
+                                <p class="text-xs text-gray-500">mg/kg • Tốt</p>
+                                <div class="sensor-optimal mx-auto mt-2"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Weather & Irrigation -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Weather Station -->
+                            <div class="weather-card rounded-xl p-4 border">
+                                <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                    <i class="fas fa-cloud-sun text-sky-500 mr-2"></i>
+                                    Trạm Thời tiết
+                                </h4>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="text-center">
+                                        <i class="fas fa-cloud-rain text-blue-500 text-2xl mb-2"></i>
+                                        <p class="text-sm text-gray-600">Lượng mưa 24h</p>
+                                        <p class="text-xl font-bold text-blue-700">12mm</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <i class="fas fa-wind text-gray-500 text-2xl mb-2"></i>
+                                        <p class="text-sm text-gray-600">Tốc độ gió</p>
+                                        <p class="text-xl font-bold text-gray-700">8 km/h</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <i class="fas fa-sun text-yellow-500 text-2xl mb-2"></i>
+                                        <p class="text-sm text-gray-600">UV Index</p>
+                                        <p class="text-xl font-bold text-yellow-700">7</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <i class="fas fa-eye text-blue-400 text-2xl mb-2"></i>
+                                        <p class="text-sm text-gray-600">Tầm nhìn</p>
+                                        <p class="text-xl font-bold text-blue-600">10km</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Irrigation System -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-cyan-200">
+                                <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                    <i class="fas fa-tint text-cyan-500 mr-2"></i>
+                                    Hệ thống Tưới
+                                </h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Độ ẩm đất</span>
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-16 bg-cyan-100 rounded-full h-2">
+                                                <div class="bg-cyan-500 h-2 rounded-full" style="width: 85%"></div>
+                                            </div>
+                                            <span class="text-sm font-bold text-cyan-700">85%</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Áp suất nước</span>
+                                        <span class="text-sm font-bold text-green-600">2.8 bar</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm text-gray-600">Trạng thái</span>
+                                        <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">Tự động</span>
+                                    </div>
+                                    <button class="w-full bg-cyan-500 text-white py-2 rounded-lg text-sm hover:bg-cyan-600 transition-all">
+                                        <i class="fas fa-play mr-2"></i>Kích hoạt tưới
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Pest & Disease Detection -->
+                            <div class="bg-white/80 rounded-xl p-4 border border-red-200">
+                                <h4 class="font-semibold text-gray-700 mb-3 flex items-center">
+                                    <i class="fas fa-bug text-red-500 mr-2"></i>
+                                    Giám sát Sâu bệnh
+                                </h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-2 bg-yellow-50 rounded-lg">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="sensor-warning"></div>
+                                            <span class="text-sm font-medium text-yellow-700">Sâu phủ quả</span>
+                                        </div>
+                                        <span class="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded">Vừa</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-green-50 rounded-lg">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="sensor-optimal"></div>
+                                            <span class="text-sm font-medium text-green-700">Bệnh nấm</span>
+                                        </div>
+                                        <span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">Thấp</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-600 mb-2">Lần phun gần nhất</p>
+                                        <p class="text-sm font-bold text-gray-800">3 ngày trước</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Enhanced interactivity for single farm dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate real-time sensor updates
+            setInterval(updateSensorData, 30000); // Update every 30 seconds
+            
+            // Gauge animations
+            animateGauges();
+            
+            // Process step interactions
+            initializeProcessSteps();
+            
+            // Zone map interactions
+            initializeZoneMap();
+        });
+        
+        function updateSensorData() {
+            // Simulate random sensor data updates
+            const sensors = [
+                { id: 'temperature', value: (30 + Math.random() * 5).toFixed(1) },
+                { id: 'humidity', value: (65 + Math.random() * 15).toFixed(0) },
+                { id: 'ph', value: (6.0 + Math.random() * 0.8).toFixed(1) },
+                { id: 'nitrogen', value: (40 + Math.random() * 20).toFixed(0) },
+                { id: 'phosphorus', value: (25 + Math.random() * 10).toFixed(0) },
+                { id: 'potassium', value: (120 + Math.random() * 20).toFixed(0) }
+            ];
+            
+            sensors.forEach(sensor => {
+                const element = document.querySelector(`[data-sensor="${sensor.id}"]`);
+                if (element) {
+                    element.textContent = sensor.value;
+                }
+            });
+        }
+        
+        function animateGauges() {
+            const gauges = document.querySelectorAll('.progress-ring__circle');
+            gauges.forEach(gauge => {
+                const strokeDasharray = gauge.getAttribute('stroke-dasharray');
+                const strokeDashoffset = gauge.getAttribute('stroke-dashoffset');
+                
+                gauge.style.strokeDashoffset = strokeDasharray;
+                setTimeout(() => {
+                    gauge.style.strokeDashoffset = strokeDashoffset;
+                }, 500);
+            });
+        }
+        
+        function initializeProcessSteps() {
+            const steps = document.querySelectorAll('.process-step');
+            steps.forEach(step => {
+                step.addEventListener('click', function() {
+                    // Toggle step details or navigate to task details
+                    console.log('Process step clicked:', this);
+                });
+            });
+        }
+        
+        function initializeZoneMap() {
+            const zones = document.querySelectorAll('.bg-green-100, .bg-yellow-100, .bg-red-100, .bg-blue-100');
+            zones.forEach(zone => {
+                zone.addEventListener('click', function() {
+                    const zoneName = this.querySelector('span').textContent;
+                    showZoneDetails(zoneName);
+                });
+            });
+        }
+        
+        function showZoneDetails(zoneName) {
+            alert(`Chi tiết khu vực ${zoneName}\n\nTính năng này sẽ hiển thị:\n- Thông tin chi tiết từng cây\n- Lịch sử chăm sóc\n- Kế hoạch công việc\n- Cập nhật trạng thái cây`);
+        }
+        
+        function openTreeManagement() {
+            // Simulate opening tree management modal
+            const modal = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; border-radius: 20px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                        <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #374151;">
+                            <i class="fas fa-tree" style="color: #22c55e; margin-right: 8px;"></i>
+                            Cập nhật Thông tin Cây
+                        </h3>
+                        <form>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Khu vực:</label>
+                                    <select style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px;">
+                                        <option>A1 (20 cây)</option>
+                                        <option>A2 (19 cây)</option>
+                                        <option>A3 (18 cây)</option>
+                                        <option>A4 (21 cây)</option>
+                                        <option>B1 (17 cây)</option>
+                                        <option>B2 (20 cây)</option>
+                                        <option>B3 (16 cây)</option>
+                                        <option>B4 (19 cây)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Số cây hiện tại:</label>
+                                    <input type="number" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px;" value="156">
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Thay đổi:</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                                    <div style="text-align: center; padding: 10px; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px;">
+                                        <label style="display: block; font-size: 12px; color: #92400e; margin-bottom: 5px;">Cây chết</label>
+                                        <input type="number" style="width: 60px; padding: 4px; border: 1px solid #f59e0b; border-radius: 4px; text-align: center;" value="2">
+                                    </div>
+                                    <div style="text-align: center; padding: 10px; background: #dcfce7; border: 1px solid #22c55e; border-radius: 8px;">
+                                        <label style="display: block; font-size: 12px; color: #166534; margin-bottom: 5px;">Trồng mới</label>
+                                        <input type="number" style="width: 60px; padding: 4px; border: 1px solid #22c55e; border-radius: 4px; text-align: center;" value="0">
+                                    </div>
+                                    <div style="text-align: center; padding: 10px; background: #e0f2fe; border: 1px solid #0284c7; border-radius: 8px;">
+                                        <label style="display: block; font-size: 12px; color: #0c4a6e; margin-bottom: 5px;">Thay thế</label>
+                                        <input type="number" style="width: 60px; padding: 4px; border: 1px solid #0284c7; border-radius: 4px; text-align: center;" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Lý do thay đổi:</label>
+                                <select style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px;">
+                                    <option>Bệnh tật</option>
+                                    <option>Thiên tai</option>
+                                    <option>Tuổi thọ cây</option>
+                                    <option>Điều chỉnh mật độ</option>
+                                    <option>Khác</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Ghi chú chi tiết:</label>
+                                <textarea style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px; height: 80px;" placeholder="Mô tả tình trạng cây, vị trí cây chết, kế hoạch thay thế..."></textarea>
+                            </div>
+                            <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                                <h4 style="font-weight: 600; color: #374151; margin-bottom: 10px;">Thông tin sau cập nhật:</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; text-align: center;">
+                                    <div>
+                                        <p style="font-size: 12px; color: #6b7280;">Tổng số cây</p>
+                                        <p style="font-size: 18px; font-weight: bold; color: #374151;">154</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 12px; color: #6b7280;">Mật độ cây/ha</p>
+                                        <p style="font-size: 18px; font-weight: bold; color: #374151;">12.3</p>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: 12px; color: #6b7280;">Tỷ lệ sống</p>
+                                        <p style="font-size: 18px; font-weight: bold; color: #059669;">98.7%</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="button" onclick="this.closest('div').remove()" style="flex: 1; background: #22c55e; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: 600;">
+                                    <i class="fas fa-save"></i> Lưu thay đổi
+                                </button>
+                                <button type="button" onclick="this.closest('div').remove()" style="flex: 1; background: #6b7280; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: 600;">
+                                    <i class="fas fa-times"></i> Hủy
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+        
+        function openYieldAssessment() {
+            // Simulate opening yield assessment modal
+            const modal = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 30px; border-radius: 20px; max-width: 600px; width: 90%;">
+                        <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; color: #374151;">
+                            <i class="fas fa-edit" style="color: #a855f7; margin-right: 8px;"></i>
+                            Cập nhật Đánh giá Sản lượng
+                        </h3>
+                        <form>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Giai đoạn quả:</label>
+                                <select style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px;">
+                                    <option>Quả nhỏ (2-5cm)</option>
+                                    <option>Quả vừa (5-10cm)</option>
+                                    <option>Quả lớn (>10cm)</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Số lượng quả đếm được:</label>
+                                <input type="number" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px;" placeholder="Nhập số quả">
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Khu vực đánh giá:</label>
+                                <select style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px;">
+                                    <option>Toàn vườn</option>
+                                    <option>Khu A1</option>
+                                    <option>Khu A2</option>
+                                    <option>Khu A3</option>
+                                    <option>Khu B1</option>
+                                </select>
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; font-weight: 600; margin-bottom: 5px; color: #4b5563;">Ghi chú:</label>
+                                <textarea style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px; height: 80px;" placeholder="Mô tả tình trạng quả, chất lượng..."></textarea>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button type="button" onclick="this.closest('div').remove()" style="flex: 1; background: #22c55e; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: 600;">
+                                    <i class="fas fa-save"></i> Lưu đánh giá
+                                </button>
+                                <button type="button" onclick="this.closest('div').remove()" style="flex: 1; background: #6b7280; color: white; padding: 10px; border: none; border-radius: 8px; font-weight: 600;">
+                                    <i class="fas fa-times"></i> Hủy
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modal);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cài Đặt Chung của Hệ Thống</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans p-6 lg:p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-white">Cài Đặt Chung của Hệ Thống</h1>
+            <p class="text-gray-400 mt-1">Quản lý các tham số toàn cục, ảnh hưởng đến toàn bộ logic tính toán hiệu suất và thưởng.</p>
+        </div>
+
+        <!-- Settings Form -->
+        <div class="bg-gray-800 p-8 rounded-xl border border-gray-700">
+            <form>
+                <!-- Section 1: Workload Settings -->
+                <section class="mb-10">
+                    <h2 class="text-xl font-semibold text-white border-b border-gray-700 pb-3 mb-6 flex items-center">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5 mr-3 text-blue-400"></i>
+                        Cài đặt Khối lượng Công việc
+                    </h2>
+                    <div>
+                        <label for="standard_workload_score" class="block text-sm font-medium text-gray-300 mb-2">Điểm Khối lượng Công việc Chuẩn</label>
+                        <input type="number" step="0.1" id="standard_workload_score" value="3.0" class="w-full md:w-1/2 bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                        <p class="text-xs text-gray-500 mt-2">
+                            Đây là điểm tham chiếu (benchmark) để so sánh khối lượng công việc thực tế của từng kỹ sư. <br>
+                            Hệ thống sẽ dùng điểm này để điều chỉnh mục tiêu cá nhân hóa một cách công bằng.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Section 2: Rating Scale Settings -->
+                <section class="mb-10">
+                    <h2 class="text-xl font-semibold text-white border-b border-gray-700 pb-3 mb-6 flex items-center">
+                        <i data-lucide="gem" class="w-5 h-5 mr-3 text-purple-400"></i>
+                        Cài đặt Thang điểm Đánh giá
+                    </h2>
+                    <p class="text-sm text-gray-400 mb-6">
+                        Thiết lập các mốc điểm hiệu suất tương ứng với từng xếp loại. Các điểm này được dùng để quy đổi từ Tỷ lệ Hoàn thành Mục tiêu.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Không đạt (&lt;80%)</label>
+                            <input type="number" step="0.1" value="0.0" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Đạt (80-99%)</label>
+                            <input type="number" step="0.1" value="0.8" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Tốt (100-119%)</label>
+                            <input type="number" step="0.1" value="1.0" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Vượt trội (&ge;120%)</label>
+                            <input type="number" step="0.1" value="1.2" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Section 3: Bonus Multiplier Settings -->
+                <section>
+                    <h2 class="text-xl font-semibold text-white border-b border-gray-700 pb-3 mb-6 flex items-center">
+                        <i data-lucide="percent" class="w-5 h-5 mr-3 text-green-400"></i>
+                        Cài đặt Hệ số Bậc Thưởng
+                    </h2>
+                    <p class="text-sm text-gray-400 mb-6">
+                        Thiết lập các hệ số nhân được áp dụng cho "Quỹ Thưởng Cơ Sở" để tính ra mức thưởng cuối cùng cho từng xếp loại.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Không đạt</label>
+                            <input type="number" step="0.1" value="0.0" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Đạt</label>
+                            <input type="number" step="0.1" value="0.7" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Tốt</label>
+                            <input type="number" step="0.1" value="1.0" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-500 mb-2">Vượt trội</label>
+                            <input type="number" step="0.1" value="1.5" class="w-full bg-gray-900 border-gray-600 text-white rounded-md px-3 py-2">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Action Buttons -->
+                <div class="mt-10 pt-6 border-t border-gray-700 flex justify-end">
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-md flex items-center">
+                        <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                        Lưu Cài Đặt
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

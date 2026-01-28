@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper - Tạo Quy trình Canh tác</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .step-indicator {
+            transition: all 0.3s ease;
+        }
+        
+        .step-indicator.active {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step-indicator.completed {
+            background: #22c55e;
+            color: white;
+        }
+        
+        .step-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .step-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .crop-card {
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .crop-card:hover {
+            border-color: #22c55e;
+            transform: translateY(-2px);
+        }
+        
+        .crop-card.selected {
+            border-color: #22c55e;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%);
+        }
+        
+        .variety-option {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .variety-option:hover {
+            background: #f0fdf4;
+            border-color: #22c55e;
+        }
+        
+        .variety-option.selected {
+            background: #f0fdf4;
+            border-color: #22c55e;
+            border-width: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+            transition: width 0.8s ease;
+        }
+        
+        .ai-suggestion {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-left: 4px solid #a855f7;
+        }
+        
+        .preview-card {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center mb-4">
+                <div class="bg-green-100 p-4 rounded-full">
+                    <i class="fas fa-seedling text-3xl text-green-600"></i>
+                </div>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Tạo Quy trình Canh tác Thông minh</h1>
+            <p class="text-gray-600">Hệ thống sẽ tự động tạo lịch công việc chi tiết dựa trên thông tin bạn cung cấp</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="card-modern mb-8">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="step-indicator active w-12 h-12 rounded-full flex items-center justify-center border-2 border-gray-300">
+                        <span class="font-bold">1</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-4">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="step-indicator w-12 h-12 rounded-full flex items-center justify-center border-2 border-gray-300">
+                        <span class="font-bold">2</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-4">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="step-indicator w-12 h-12 rounded-full flex items-center justify-center border-2 border-gray-300">
+                        <span class="font-bold">3</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-4">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="step-indicator w-12 h-12 rounded-full flex items-center justify-center border-2 border-gray-300">
+                        <span class="font-bold">4</span>
+                    </div>
+                    <div class="flex-1 h-1 bg-gray-200 mx-4">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="step-indicator w-12 h-12 rounded-full flex items-center justify-center border-2 border-gray-300">
+                        <span class="font-bold">5</span>
+                    </div>
+                </div>
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span class="font-medium">Loại cây</span>
+                    <span>Thông tin vườn</span>
+                    <span>Điều kiện</span>
+                    <span>Mục tiêu</span>
+                    <span>Xác nhận</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="card-modern">
+            <div class="p-8">
+                
+                <!-- Step 1: Crop Selection -->
+                <div class="step-content active" id="step-1">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Chọn loại cây trồng</h2>
+                        <p class="text-gray-600">Hệ thống sẽ gợi ý quy trình canh tác phù hợp nhất</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Durian -->
+                        <div class="crop-card selected bg-white rounded-xl p-6 text-center" data-crop="durian">
+                            <div class="w-20 h-20 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-seedling text-3xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Sầu riêng</h3>
+                            <p class="text-sm text-gray-600 mb-4">Cây lâu năm, chu kỳ 8-10 năm</p>
+                            <div class="flex justify-center space-x-2">
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Xuất khẩu</span>
+                                <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">Cao cấp</span>
+                            </div>
+                        </div>
+
+                        <!-- Mango -->
+                        <div class="crop-card bg-white rounded-xl p-6 text-center" data-crop="mango">
+                            <div class="w-20 h-20 bg-yellow-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-leaf text-3xl text-yellow-600"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Xoài</h3>
+                            <p class="text-sm text-gray-600 mb-4">Cây ăn quả nhiệt đới</p>
+                            <div class="flex justify-center space-x-2">
+                                <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">Phổ biến</span>
+                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Dễ trồng</span>
+                            </div>
+                        </div>
+
+                        <!-- Avocado -->
+                        <div class="crop-card bg-white rounded-xl p-6 text-center" data-crop="avocado">
+                            <div class="w-20 h-20 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                                <i class="fas fa-apple-alt text-3xl text-green-600"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Bơ</h3>
+                            <p class="text-sm text-gray-600 mb-4">Cây ăn quả giàu dinh dưỡng</p>
+                            <div class="flex justify-center space-x-2">
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Organic</span>
+                                <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-xs">Cao cấp</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Variety Selection -->
+                    <div class="mb-8" id="variety-section">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Chọn giống cây</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4" id="variety-options">
+                            <div class="variety-option selected bg-white border border-gray-200 rounded-lg p-4" data-variety="ri6">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-green-700">R6</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Ri 6</h4>
+                                        <p class="text-sm text-gray-600">Phổ biến, ngon</p>
+                                        <p class="text-xs text-green-600">Năng suất cao</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="variety-option bg-white border border-gray-200 rounded-lg p-4" data-variety="monthong">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-yellow-700">MT</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Monthong</h4>
+                                        <p class="text-sm text-gray-600">Xuất khẩu</p>
+                                        <p class="text-xs text-yellow-600">Quả to</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="variety-option bg-white border border-gray-200 rounded-lg p-4" data-variety="chanee">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-orange-700">CN</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Chanee</h4>
+                                        <p class="text-sm text-gray-600">Chống bệnh</p>
+                                        <p class="text-xs text-orange-600">Ổn định</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="variety-option bg-white border border-gray-200 rounded-lg p-4" data-variety="kanyao">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <span class="font-bold text-purple-700">KY</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Kan Yao</h4>
+                                        <p class="text-sm text-gray-600">Ngọt đậm</p>
+                                        <p class="text-xs text-purple-600">Cao cấp</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Suggestion -->
+                    <div class="ai-suggestion rounded-xl p-4 mb-6">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-robot text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-purple-800 mb-2">Khuyến nghị AI</h4>
+                                <p class="text-sm text-purple-700 mb-2">Dựa trên vị trí "Đắk Lắk", giống <strong>Ri 6</strong> phù hợp nhất:</p>
+                                <ul class="text-sm text-purple-600 space-y-1">
+                                    <li>• Thích nghi tốt với khí hậu địa phương</li>
+                                    <li>• Năng suất ổn định 12-15 tấn/ha</li>
+                                    <li>• Thị trường tiêu thụ rộng rãi</li>
+                                    <li>• Quy trình canh tác đã được tối ưu</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Farm Information -->
+                <div class="step-content" id="step-2">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Thông tin về vườn</h2>
+                        <p class="text-gray-600">Cung cấp thông tin chi tiết để hệ thống tính toán chính xác</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Basic Farm Info -->
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Thông tin cơ bản</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Tên vườn/farm</label>
+                                <input type="text" class="form-input" placeholder="VD: Vườn Anh Hiền" value="Vườn Anh Hiền">
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="form-group">
+                                    <label class="form-label">Tổng diện tích (ha)</label>
+                                    <input type="number" class="form-input" placeholder="12.5" value="12.5" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Diện tích trồng (ha)</label>
+                                    <input type="number" class="form-input" placeholder="10.8" value="10.8" step="0.1">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="form-group">
+                                    <label class="form-label">Số cây hiện tại</label>
+                                    <input type="number" class="form-input" placeholder="156" value="156">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Tuổi cây (năm)</label>
+                                    <select class="form-input">
+                                        <option value="">Chọn tuổi cây</option>
+                                        <option value="1">1 năm (mới trồng)</option>
+                                        <option value="2">2 năm (cây con)</option>
+                                        <option value="3">3 năm (bắt đầu cho trái)</option>
+                                        <option value="4">4 năm</option>
+                                        <option value="5" selected>5 năm (khai thác chính)</option>
+                                        <option value="6">6 năm</option>
+                                        <option value="7">7 năm</option>
+                                        <option value="8">8 năm (ổn định)</option>
+                                        <option value="9">9 năm</option>
+                                        <option value="10+">10+ năm (trưởng thành)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Vị trí địa lý</label>
+                                <input type="text" class="form-input" placeholder="VD: Cú M'Gar, Đắk Lắk" value="Cú M'Gar, Đắk Lắk">
+                            </div>
+                        </div>
+
+                        <!-- Farm Layout -->
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Bố trí vườn</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Khoảng cách trồng</label>
+                                <select class="form-input">
+                                    <option value="">Chọn khoảng cách</option>
+                                    <option value="6x6">6m x 6m (278 cây/ha)</option>
+                                    <option value="7x7">7m x 7m (204 cây/ha)</option>
+                                    <option value="8x8" selected>8m x 8m (156 cây/ha)</option>
+                                    <option value="9x9">9m x 9m (123 cây/ha)</option>
+                                    <option value="10x10">10m x 10m (100 cây/ha)</option>
+                                    <option value="custom">Khoảng cách khác</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Số khu vực phân chia</label>
+                                <select class="form-input" id="zone-count">
+                                    <option value="4">4 khu vực</option>
+                                    <option value="6">6 khu vực</option>
+                                    <option value="8" selected>8 khu vực</option>
+                                    <option value="10">10 khu vực</option>
+                                    <option value="12">12 khu vực</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Zone Management Preview -->
+                            <div class="bg-gray-50 rounded-xl p-4 mb-4">
+                                <h4 class="font-semibold text-gray-700 mb-3">Sơ đồ phân khu (Dự kiến)</h4>
+                                <div class="grid grid-cols-4 gap-2" id="zone-preview">
+                                    <div class="bg-green-100 border border-green-300 rounded-lg p-2 text-center">
+                                        <span class="text-xs font-bold text-green-800">A1</span>
+                                        <p class="text-xs text-green-600">20 cây</p>
+                                    </div>
+                                    <div class="bg-green-100 border border-green-300 rounded-lg p-2 text-center">
+                                        <span class="text-xs font-bold text-green-800">A2</span>
+                                        <p class="text-xs text-green-600">19 cây</p>
+                                    </div>
+                                    <div class="bg-green-100 border border-green-300 rounded-lg p-2 text-center">
+                                        <span class="text-xs font-bold text-green-800">A3</span>
+                                        <p class="text-xs text-green-600">18 cây</p>
+                                    </div>
+                                    <div class="bg-green-100 border border-green-300 rounded-lg p-2 text-center">
+                                        <span class="text-xs font-bold text-green-800">A4</span>
+                                        <p class="text-xs text-green-600">21 cây</p>
+                                    </div>
+                                    <div class="bg-green-100 border border-green-300 rounded-lg p-2 text-center">
+                                        <span class="text-xs font-bold text-green-800">B1</span>
+                                        <p class="text-xs text-green-600">17 cây</p>
+                                    </div>
+                                    <div class="bg-green-100 border border-green-300 rounded-lg p-2 text-center">
+                                        <span class="text-xs font-bold text-green-800">B2</span>
+                                        <p class="text-xs text-green-600">20 cây</p>
+                                    </div>
+                                    <div class="bg-green-100 border border-green-300 rounded-lg p-2 text-center">
+                                        <span class="text-xs font-bold text-green-800">B3</span>
+                                        <p class="text-xs text-green-600">16 cây</p>
+                                    </div>
+                                    <div class="bg-green-100 border border-green-300 rounded-lg p-2 text-center">
+                                        <span class="text-xs font-bold text-green-800">B4</span>
+                                        <p class="text-xs text-green-600">19 cây</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Hệ thống tưới hiện có</label>
+                                <select class="form-input">
+                                    <option value="">Chọn hệ thống tưới</option>
+                                    <option value="none">Chưa có (tưới thủ công)</option>
+                                    <option value="sprinkler">Phun mưa</option>
+                                    <option value="drip" selected>Nhỏ giọt</option>
+                                    <option value="smart">Tưới tự động IoT</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Environmental Conditions -->
+                <div class="step-content" id="step-3">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Điều kiện môi trường</h2>
+                        <p class="text-gray-600">Thông tin về đất đai, khí hậu và điều kiện tự nhiên</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Soil Information -->
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Thông tin đất đai</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Loại đất</label>
+                                <select class="form-input">
+                                    <option value="">Chọn loại đất</option>
+                                    <option value="clay">Đất sét</option>
+                                    <option value="sandy-clay">Đất sét pha cát</option>
+                                    <option value="loam" selected>Đất pha</option>
+                                    <option value="sandy-loam">Đất pha cát</option>
+                                    <option value="sandy">Đất cát</option>
+                                </select>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="form-group">
+                                    <label class="form-label">pH đất</label>
+                                    <input type="number" class="form-input" placeholder="6.2" step="0.1" min="3" max="9">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Độ dốc (%)</label>
+                                    <select class="form-input">
+                                        <option value="0-3" selected>0-3% (Bằng phẳng)</option>
+                                        <option value="3-8">3-8% (Dốc nhẹ)</option>
+                                        <option value="8-15">8-15% (Dốc vừa)</option>
+                                        <option value="15+">15%+ (Dốc nhiều)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Khả năng thoát nước</label>
+                                <select class="form-input">
+                                    <option value="">Đánh giá thoát nước</option>
+                                    <option value="poor">Kém (hay bị ngập)</option>
+                                    <option value="moderate">Trung bình</option>
+                                    <option value="good" selected>Tốt</option>
+                                    <option value="excellent">Rất tốt</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Độ phì nhiêu đất</label>
+                                <select class="form-input">
+                                    <option value="">Đánh giá độ phì nhiêu</option>
+                                    <option value="low">Thấp (cần cải tạo nhiều)</option>
+                                    <option value="moderate" selected>Trung bình</option>
+                                    <option value="high">Cao</option>
+                                    <option value="very-high">Rất cao</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Climate & Water -->
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Khí hậu & Nguồn nước</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Vùng khí hậu</label>
+                                <select class="form-input">
+                                    <option value="">Chọn vùng khí hậu</option>
+                                    <option value="highland">Tây Nguyên</option>
+                                    <option value="south" selected>Miền Nam</option>
+                                    <option value="central">Miền Trung</option>
+                                    <option value="north">Miền Bắc</option>
+                                </select>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="form-group">
+                                    <label class="form-label">Lượng mưa năm (mm)</label>
+                                    <select class="form-input">
+                                        <option value="">Chọn lượng mưa</option>
+                                        <option value="1200-1500">1200-1500mm</option>
+                                        <option value="1500-2000" selected>1500-2000mm</option>
+                                        <option value="2000-2500">2000-2500mm</option>
+                                        <option value="2500+">2500mm+</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Mùa khô (tháng)</label>
+                                    <select class="form-input">
+                                        <option value="">Độ dài mùa khô</option>
+                                        <option value="2-3">2-3 tháng</option>
+                                        <option value="4-5" selected>4-5 tháng</option>
+                                        <option value="6+">6+ tháng</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Nguồn nước tưới</label>
+                                <select class="form-input">
+                                    <option value="">Chọn nguồn nước</option>
+                                    <option value="well">Giếng khoan</option>
+                                    <option value="river">Sông/suối</option>
+                                    <option value="pond" selected>Ao/hồ</option>
+                                    <option value="rain">Chỉ nước mưa</option>
+                                    <option value="multiple">Nhiều nguồn</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Chất lượng nước</label>
+                                <select class="form-input">
+                                    <option value="">Đánh giá chất lượng</option>
+                                    <option value="poor">Kém (mặn, ô nhiễm)</option>
+                                    <option value="moderate">Trung bình</option>
+                                    <option value="good" selected>Tốt</option>
+                                    <option value="excellent">Rất tốt</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Environmental Analysis -->
+                            <div class="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                                <h4 class="font-semibold text-blue-800 mb-2">Phân tích môi trường</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-700">Phù hợp khí hậu:</span>
+                                        <span class="font-semibold text-green-600">Rất tốt</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-700">Chất lượng đất:</span>
+                                        <span class="font-semibold text-green-600">Phù hợp</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-700">Nguồn nước:</span>
+                                        <span class="font-semibold text-green-600">Đảm bảo</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-blue-700">Rủi ro tự nhiên:</span>
+                                        <span class="font-semibold text-yellow-600">Thấp</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Production Goals -->
+                <div class="step-content" id="step-4">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Mục tiêu sản xuất</h2>
+                        <p class="text-gray-600">Xác định hướng phát triển và nguồn lực có sẵn</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Production Standards -->
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Tiêu chuẩn sản xuất</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Chứng nhận mục tiêu</label>
+                                <div class="space-y-3">
+                                    <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                        <div>
+                                            <span class="font-medium text-gray-800">VietGAP</span>
+                                            <p class="text-sm text-gray-600">Thực hành nông nghiệp tốt Việt Nam</p>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <input type="checkbox" class="w-4 h-4 text-green-600">
+                                        <div>
+                                            <span class="font-medium text-gray-800">GlobalGAP</span>
+                                            <p class="text-sm text-gray-600">Tiêu chuẩn quốc tế cho xuất khẩu</p>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <input type="checkbox" class="w-4 h-4 text-green-600">
+                                        <div>
+                                            <span class="font-medium text-gray-800">Organic</span>
+                                            <p class="text-sm text-gray-600">Hữu cơ, không hóa chất</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Thị trường mục tiêu</label>
+                                <select class="form-input">
+                                    <option value="">Chọn thị trường</option>
+                                    <option value="local">Địa phương/khu vực</option>
+                                    <option value="domestic" selected>Trong nước</option>
+                                    <option value="export">Xuất khẩu</option>
+                                    <option value="mixed">Kết hợp nhiều thị trường</option>
+                                </select>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="form-group">
+                                    <label class="form-label">Sản lượng mục tiêu (tấn/ha)</label>
+                                    <input type="number" class="form-input" placeholder="12" step="0.5">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Chất lượng mục tiêu</label>
+                                    <select class="form-input">
+                                        <option value="">Chọn chất lượng</option>
+                                        <option value="standard">Tiêu chuẩn</option>
+                                        <option value="premium" selected>Cao cấp</option>
+                                        <option value="luxury">Siêu cao cấp</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resources & Budget -->
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-4">Nguồn lực & Ngân sách</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Ngân sách hàng năm (triệu VNĐ)</label>
+                                <select class="form-input">
+                                    <option value="">Chọn mức ngân sách</option>
+                                    <option value="50-100">50-100 triệu</option>
+                                    <option value="100-200" selected>100-200 triệu</option>
+                                    <option value="200-500">200-500 triệu</option>
+                                    <option value="500+">500+ triệu</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Nhân sự hiện có</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="text-sm text-gray-600">Nhân sự thường xuyên</label>
+                                        <input type="number" class="form-input" placeholder="3" value="3">
+                                    </div>
+                                    <div>
+                                        <label class="text-sm text-gray-600">Có thể thuê thêm</label>
+                                        <select class="form-input">
+                                            <option value="yes" selected>Có</option>
+                                            <option value="limited">Hạn chế</option>
+                                            <option value="no">Không</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Thiết bị/máy móc có sẵn</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                        <span class="text-sm">Hệ thống tưới</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                        <span class="text-sm">Máy phun thuốc</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="w-4 h-4 text-green-600">
+                                        <span class="text-sm">Máy cắt cỏ</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="w-4 h-4 text-green-600">
+                                        <span class="text-sm">Hệ thống IoT</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" class="w-4 h-4 text-green-600">
+                                        <span class="text-sm">Kho bảo quản</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Mức độ tự động hóa mong muốn</label>
+                                <select class="form-input">
+                                    <option value="">Chọn mức độ tự động</option>
+                                    <option value="manual">Thủ công chủ yếu</option>
+                                    <option value="semi" selected>Bán tự động</option>
+                                    <option value="auto">Tự động cao</option>
+                                    <option value="smart">Smart Farm đầy đủ</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Budget Breakdown Preview -->
+                            <div class="bg-green-50 rounded-xl p-4 border border-green-200">
+                                <h4 class="font-semibold text-green-800 mb-2">Dự tính phân bổ ngân sách</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-green-700">Phân bón & BVTV:</span>
+                                        <span class="font-semibold">60% (120tr)</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-green-700">Nhân công:</span>
+                                        <span class="font-semibold">25% (50tr)</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-green-700">Điện nước:</span>
+                                        <span class="font-semibold">10% (20tr)</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-green-700">Chi phí khác:</span>
+                                        <span class="font-semibold">5% (10tr)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Review & Confirm -->
+                <div class="step-content" id="step-5">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Xác nhận quy trình</h2>
+                        <p class="text-gray-600">Kiểm tra và xác nhận thông tin trước khi tạo quy trình</p>
+                    </div>
+
+                    <!-- Process Preview -->
+                    <div class="preview-card rounded-xl p-6 mb-6">
+                        <h3 class="text-xl font-bold text-green-800 mb-4 flex items-center">
+                            <i class="fas fa-seedling text-green-600 mr-2"></i>
+                            Quy trình Canh tác Sầu riêng Ri6 - Vườn Anh Hiền
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                            <!-- Basic Info Summary -->
+                            <div class="bg-white/70 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-800 mb-3">Thông tin cơ bản</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Loại cây:</span>
+                                        <span class="font-medium">Sầu riêng Ri6</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Diện tích:</span>
+                                        <span class="font-medium">12.5 ha</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Số cây:</span>
+                                        <span class="font-medium">156 cây</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Tuổi cây:</span>
+                                        <span class="font-medium">5 năm</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Vị trí:</span>
+                                        <span class="font-medium">Đắk Lắk</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Production Goals -->
+                            <div class="bg-white/70 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-800 mb-3">Mục tiêu sản xuất</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Chứng nhận:</span>
+                                        <span class="font-medium">VietGAP</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Thị trường:</span>
+                                        <span class="font-medium">Trong nước</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Sản lượng:</span>
+                                        <span class="font-medium">150 tấn</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Chất lượng:</span>
+                                        <span class="font-medium">Cao cấp</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Ngân sách:</span>
+                                        <span class="font-medium">100-200tr</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Process Summary -->
+                            <div class="bg-white/70 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-800 mb-3">Tóm tắt quy trình</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Tổng thời gian:</span>
+                                        <span class="font-medium">12 tháng</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Số giai đoạn:</span>
+                                        <span class="font-medium">4 giai đoạn</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Công việc:</span>
+                                        <span class="font-medium">28 công việc</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Cảnh báo:</span>
+                                        <span class="font-medium">12 điểm</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">IoT tích hợp:</span>
+                                        <span class="font-medium text-green-600">Có</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Generated Timeline Preview -->
+                        <div class="bg-white/70 rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-800 mb-3">Timeline Quy trình được tạo</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">1</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h5 class="font-semibold text-green-800">Chuẩn bị ra hoa (Tháng 12-1)</h5>
+                                        <p class="text-sm text-green-600">7 công việc • Stress nước, bón phân kích hoa, tỉa lá</p>
+                                    </div>
+                                    <span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">8 tuần</span>
+                                </div>
+                                
+                                <div class="flex items-center space-x-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">2</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h5 class="font-semibold text-blue-800">Ra hoa và thụ phấn (Tháng 2-4)</h5>
+                                        <p class="text-sm text-blue-600">6 công việc • Quản lý hoa, bảo vệ thực vật, thụ phấn</p>
+                                    </div>
+                                    <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs">10 tuần</span>
+                                </div>
+                                
+                                <div class="flex items-center space-x-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
+                                    <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">3</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h5 class="font-semibold text-purple-800">Nuôi quả và phát triển (Tháng 5-7)</h5>
+                                        <p class="text-sm text-purple-600">8 công việc • Tỉa trái, bón phân, bao trái, kiểm soát sâu bệnh</p>
+                                    </div>
+                                    <span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs">12 tuần</span>
+                                </div>
+                                
+                                <div class="flex items-center space-x-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
+                                    <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">4</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h5 class="font-semibold text-orange-800">Thu hoạch và sau thu hoạch (Tháng 8-11)</h5>
+                                        <p class="text-sm text-orange-600">7 công việc • Đánh giá độ chín, thu hoạch, bảo quản, phục hồi cây</p>
+                                    </div>
+                                    <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs">16 tuần</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Analysis -->
+                    <div class="ai-suggestion rounded-xl p-6 mb-6">
+                        <h4 class="font-semibold text-purple-800 mb-4 flex items-center">
+                            <i class="fas fa-robot text-purple-600 mr-2"></i>
+                            Phân tích AI về Quy trình
+                        </h4>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <h5 class="font-semibold text-purple-700 mb-2">Điểm mạnh:</h5>
+                                <ul class="text-sm text-purple-600 space-y-1">
+                                    <li>• Điều kiện khí hậu rất phù hợp với Ri6</li>
+                                    <li>• Diện tích và mật độ cây hợp lý</li>
+                                    <li>• Nguồn nước đảm bảo ổn định</li>
+                                    <li>• Ngân sách phù hợp với mục tiêu</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 class="font-semibold text-purple-700 mb-2">Khuyến nghị:</h5>
+                                <ul class="text-sm text-purple-600 space-y-1">
+                                    <li>• Đầu tư thêm hệ thống IoT để giám sát</li>
+                                    <li>• Chuẩn bị GlobalGAP để xuất khẩu</li>
+                                    <li>• Tăng cường đào tạo nhân sự</li>
+                                    <li>• Thiết lập hệ thống truy xuất nguồn gốc</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-4 bg-white/70 rounded-lg">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-purple-800">Điểm đánh giá tổng thể:</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-32 bg-purple-100 rounded-full h-3">
+                                        <div class="bg-purple-500 h-3 rounded-full" style="width: 87%"></div>
+                                    </div>
+                                    <span class="font-bold text-purple-700">87/100</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Final Confirmation -->
+                    <div class="bg-white rounded-xl p-6 border border-gray-200">
+                        <h4 class="font-semibold text-gray-800 mb-4">Xác nhận tạo quy trình</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="w-5 h-5 text-green-600 mt-1" required>
+                                <div>
+                                    <span class="font-medium text-gray-800">Tôi xác nhận tất cả thông tin đã cung cấp là chính xác</span>
+                                    <p class="text-sm text-gray-600">Thông tin này sẽ được sử dụng để tạo lịch công việc chi tiết</p>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="w-5 h-5 text-green-600 mt-1" required>
+                                <div>
+                                    <span class="font-medium text-gray-800">Tôi đồng ý nhận thông báo và nhắc nhở từ hệ thống</span>
+                                    <p class="text-sm text-gray-600">Hệ thống sẽ gửi cảnh báo và khuyến nghị qua email/SMS</p>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start space-x-3">
+                                <input type="checkbox" class="w-5 h-5 text-green-600 mt-1">
+                                <div>
+                                    <span class="font-medium text-gray-800">Kích hoạt chế độ học AI từ dữ liệu vườn của tôi</span>
+                                    <p class="text-sm text-gray-600">Giúp hệ thống cải thiện khuyến nghị dựa trên kết quả thực tế</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between mt-8 pt-6 border-t border-gray-200">
+                    <button id="prev-btn" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all" style="display: none;">
+                        <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                    </button>
+                    
+                    <div class="flex space-x-4">
+                        <button id="save-draft-btn" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-600 transition-all">
+                            <i class="fas fa-save mr-2"></i>Lưu nháp
+                        </button>
+                        
+                        <button id="next-btn" class="bg-green-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-600 transition-all">
+                            Tiếp theo<i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                        
+                        <button id="create-btn" class="bg-green-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-700 transition-all" style="display: none;">
+                            <i class="fas fa-rocket mr-2"></i>Tạo Quy trình
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        function updateStepIndicators() {
+            // Update step indicators
+            for (let i = 1; i <= totalSteps; i++) {
+                const indicator = document.querySelectorAll('.step-indicator')[i - 1];
+                indicator.classList.remove('active', 'completed');
+                
+                if (i < currentStep) {
+                    indicator.classList.add('completed');
+                } else if (i === currentStep) {
+                    indicator.classList.add('active');
+                }
+            }
+            
+            // Update progress bars
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach((bar, index) => {
+                if (index < currentStep - 1) {
+                    bar.style.width = '100%';
+                } else {
+                    bar.style.width = '0%';
+                }
+            });
+        }
+
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show current step
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const createBtn = document.getElementById('create-btn');
+            
+            if (step === 1) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'block';
+            }
+            
+            if (step === totalSteps) {
+                nextBtn.style.display = 'none';
+                createBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                createBtn.style.display = 'none';
+            }
+            
+            updateStepIndicators();
+        }
+
+        function nextStep() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function saveDraft() {
+            alert('Đã lưu nháp quy trình!\n\nBạn có thể tiếp tục chỉnh sửa và hoàn thiện sau.');
+        }
+
+        function createProcess() {
+            const requiredCheckboxes = document.querySelectorAll('#step-5 input[type="checkbox"][required]');
+            let allChecked = true;
+            
+            requiredCheckboxes.forEach(checkbox => {
+                if (!checkbox.checked) {
+                    allChecked = false;
+                }
+            });
+            
+            if (!allChecked) {
+                alert('Vui lòng xác nhận tất cả các điều khoản bắt buộc!');
+                return;
+            }
+            
+            // Simulate process creation
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <i class="fas fa-check text-2xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Quy trình đã được tạo thành công!</h3>
+                    <p class="text-gray-600 mb-6">Hệ thống đã tạo lịch công việc chi tiết và sẽ bắt đầu gửi thông báo nhắc nhở.</p>
+                    <div class="space-y-3">
+                        <button onclick="window.location.href='#'" class="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition-all">
+                            <i class="fas fa-eye mr-2"></i>Xem Quy trình
+                        </button>
+                        <button onclick="window.location.href='#'" class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition-all">
+                            <i class="fas fa-calendar mr-2"></i>Xem Lịch công việc
+                        </button>
+                        <button onclick="this.closest('.fixed').remove()" class="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-all">
+                            Đóng
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Event listeners
+        document.getElementById('next-btn').addEventListener('click', nextStep);
+        document.getElementById('prev-btn').addEventListener('click', prevStep);
+        document.getElementById('save-draft-btn').addEventListener('click', saveDraft);
+        document.getElementById('create-btn').addEventListener('click', createProcess);
+
+        // Crop selection
+        document.querySelectorAll('.crop-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.crop-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Variety selection
+        document.querySelectorAll('.variety-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.variety-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Initialize
+        showStep(1);
+    </script>
+</body>
+</html>

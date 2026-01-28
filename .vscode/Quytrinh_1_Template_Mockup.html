@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xây dựng Quy trình Canh tác Toàn diện</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+            color: #1a202c;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0f766e 0%, #059669 100%);
+            color: white;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="0,100 1000,0 1000,100"/></svg>');
+            background-size: cover;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+        
+        .header p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 2rem;
+            padding: 2rem;
+        }
+        
+        .content-area {
+            min-width: 0;
+        }
+        
+        .sidebar {
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+        
+        .section {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            border-color: #10b981;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #d1fae5;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #065f46;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section-icon {
+            width: 24px;
+            height: 24px;
+            background: #10b981;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .section-body {
+            padding: 1.5rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-grid-4 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            position: relative;
+        }
+        
+        .form-group.span-2 {
+            grid-column: span 2;
+        }
+        
+        .form-group.span-full {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .autocomplete-container {
+            position: relative;
+        }
+        
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .autocomplete-suggestion {
+            padding: 0.75rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.875rem;
+        }
+        
+        .autocomplete-suggestion:hover {
+            background: #f9fafb;
+        }
+        
+        .autocomplete-suggestion:last-child {
+            border-bottom: none;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        
+        .stage-item {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .stage-item:hover {
+            border-color: #10b981;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+        }
+        
+        .stage-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .stage-number {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .stage-content {
+            padding: 1.25rem;
+        }
+        
+        .work-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px dashed #e5e7eb;
+        }
+        
+        .work-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .work-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .work-item {
+            background: #fafbfc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .work-item:hover {
+            border-color: #fbbf24;
+            background: #fffbeb;
+        }
+        
+        .work-header {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .work-number {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        
+        .work-content {
+            padding: 1rem;
+        }
+        
+        .work-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .subwork-item {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            margin-left: 1rem;
+            border-left: 3px solid #64748b;
+        }
+        
+        .subwork-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subwork-number {
+            background: #64748b;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6875rem;
+            font-weight: 600;
+        }
+        
+        .environment-section {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 1px solid #a7f3d0;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+        
+        .environment-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #065f46;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .save-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            grid-column: 1 / -1;
+        }
+        
+        .save-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .required {
+            color: #ef4444;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #3730a3;
+            margin-top: 0.25rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 12px;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .sidebar {
+                position: static;
+                order: -1;
+            }
+            
+            .form-grid,
+            .form-grid-2,
+            .form-grid-3,
+            .form-grid-4 {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .save-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .work-controls {
+                flex-direction: column;
+            }
+            
+            .work-controls .btn {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>🧬 Hệ thống Xây dựng Quy trình Canh tác Toàn diện</h1>
+                <p>Platform khoa học cho nghiên cứu và xuất bản quy trình kỹ thuật sản xuất nông nghiệp hiện đại</p>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="content-area">
+                <!-- Thông tin cơ bản -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="section-icon">📋</span>
+                            Thông tin cơ bản
+                        </h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="organization">Đơn vị xây dựng/xuất bản quy trình <span class="required">*</span></label>
+                                <input type="text" id="organization" placeholder="VD: Viện Nghiên cứu Nông nghiệp Việt Nam">
+                            </div>
+                            <div class="form-group">
+                                <label for="project">Dự án <span class="required">*</span></label>
+                                <input type="text" id="project" placeholder="VD: Nghiên cứu quy trình canh tác bền vững">
+                            </div>
+                            <div class="form-group span-full">
+                                <label for="author">Người xây dựng/Đề xuất <span class="required">*</span></label>
+                                <input type="text" id="author" placeholder="VD: TS. Nguyễn Văn A, ThS. Trần Thị B">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thông tin đối tượng sản xuất -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="section-icon">🎯</span>
+                            Thông tin đối tượng sản xuất
+                        </h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="production-type">Đối tượng sản xuất <span class="required">*</span></label>
+                                <select id="production-type" onchange="updateSpecificOptions()">
+                                    <option value="">Chọn đối tượng sản xuất</option>
+                                    <option value="crops">Trồng trọt</option>
+                                    <option value="livestock">Chăn nuôi</option>
+                                    <option value="aquaculture">Thủy hải sản</option>
+                                    <option value="ornamental">Sinh vật cảnh</option>
+                                    <option value="other">Khác</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="specific-object">Đối tượng cụ thể <span class="required">*</span></label>
+                                <select id="specific-object">
+                                    <option value="">Chọn đối tượng cụ thể</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="variety">Giống</label>
+                                <input type="text" id="variety" placeholder="VD: Sầu riêng Ri6, Cà phê Robusta">
+                            </div>
+                            <div class="form-group">
+                                <label for="region">Khu vực áp dụng</label>
+                                <input type="text" id="region" placeholder="VD: Đồng bằng sông Cửu Long, Tây Nguyên">
+                            </div>
+                            <div class="form-group span-full">
+                                <label for="description">Mô tả</label>
+                                <textarea id="description" placeholder="Mô tả chi tiết về quy trình, điều kiện áp dụng, lợi ích..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tham số sinh trưởng -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="section-icon">📊</span>
+                            Tham số sinh trưởng
+                        </h2>
+                    </div>
+                    <div class="section-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="growth-variety">Giống chính</label>
+                                <input type="text" id="growth-variety" placeholder="Giống sử dụng">
+                            </div>
+                            <div class="form-group">
+                                <label for="harvest-age">Tuổi bắt đầu thu hoạch</label>
+                                <input type="text" id="harvest-age" placeholder="VD: 3-4 năm">
+                            </div>
+                            <div class="form-group">
+                                <label for="stable-age">Tuổi ổn định</label>
+                                <input type="text" id="stable-age" placeholder="VD: 7-8 năm">
+                            </div>
+                            <div class="form-group">
+                                <label for="seasons-per-year">Số vụ/Lứa mỗi năm</label>
+                                <input type="number" id="seasons-per-year" placeholder="VD: 2">
+                            </div>
+                            <div class="form-group">
+                                <label for="growth-days">Ngày sinh trưởng trái/Mang thai</label>
+                                <input type="text" id="growth-days" placeholder="VD: 110-130 ngày">
+                            </div>
+                            <div class="form-group">
+                                <label for="density">Mật độ/Tỉ lệ Cây/Con</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="density" placeholder="VD: 200" style="flex: 1;">
+                                    <select style="width: 120px;">
+                                        <option>cây/ha</option>
+                                        <option>con/m²</option>
+                                        <option>cây/m²</option>
+                                        <option>con/ha</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="yield">Năng suất/Sản lượng</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="yield" placeholder="VD: 15-20" style="flex: 1;">
+                                    <select style="width: 100px;">
+                                        <option>kg/cây</option>
+                                        <option>kg/con</option>
+                                        <option>tấn/ha</option>
+                                        <option>kg/m²</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="environment-section">
+                            <h3 class="environment-title">🌡️ Tham số môi trường</h3>
+                            <div class="form-grid-3">
+                                <div class="form-group">
+                                    <label for="soil-ph">pH đất</label>
+                                    <input type="text" id="soil-ph" placeholder="VD: 5.5-6.5">
+                                </div>
+                                <div class="form-group">
+                                    <label for="temperature">Nhiệt độ (°C)</label>
+                                    <input type="text" id="temperature" placeholder="VD: 25-30°C">
+                                </div>
+                                <div class="form-group">
+                                    <label for="humidity">Độ ẩm (%)</label>
+                                    <input type="text" id="humidity" placeholder="VD: 70-85%">
+                                </div>
+                                <div class="form-group">
+                                    <label for="rainfall">Lượng mưa (mm/năm)</label>
+                                    <input type="text" id="rainfall" placeholder="VD: 1500-2500mm">
+                                </div>
+                                <div class="form-group">
+                                    <label for="sunlight">Ánh sáng</label>
+                                    <input type="text" id="sunlight" placeholder="VD: 6-8 giờ/ngày">
+                                </div>
+                                <div class="form-group">
+                                    <label for="altitude">Độ cao (m)</label>
+                                    <input type="text" id="altitude" placeholder="VD: 0-800m">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Giai đoạn và công việc -->
+                <div class="section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <span class="section-icon">⚙️</span>
+                            Giai đoạn và công việc chi tiết
+                        </h2>
+                    </div>
+                    <div class="section-body">
+                        <div id="stages-container">
+                            <!-- Stages will be dynamically added here -->
+                        </div>
+                        <button type="button" class="btn" onclick="addStage()">
+                            ➕ Thêm giai đoạn mới
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Thống kê quy trình -->
+                <div class="section">
+                    <div class="section-header">
+                        <h3 class="section-title" style="font-size: 1rem;">
+                            <span class="section-icon">📈</span>
+                            Thống kê quy trình
+                        </h3>
+                    </div>
+                    <div class="section-body">
+                        <div style="display: grid; gap: 0.75rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <span style="font-size: 0.875rem; color: #6b7280;">Tổng giai đoạn</span>
+                                <span style="font-weight: 600; color: #1f2937;" id="total-stages">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <span style="font-size: 0.875rem; color: #6b7280;">Thiết lập 1 lần</span>
+                                <span style="font-weight: 600; color: #059669;" id="onetime-stages">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <span style="font-size: 0.875rem; color: #6b7280;">Lặp lại chu kỳ</span>
+                                <span style="font-weight: 600; color: #dc2626;" id="cyclic-stages">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <span style="font-size: 0.875rem; color: #6b7280;">Tổng công việc</span>
+                                <span style="font-weight: 600; color: #1f2937;" id="total-works">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0;">
+                                <span style="font-size: 0.875rem; color: #6b7280;">Hoàn thiện</span>
+                                <span style="font-weight: 600; color: #3b82f6;" id="completion-percent">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tham số tổng quan -->
+                <div class="section">
+                    <div class="section-header">
+                        <h3 class="section-title" style="font-size: 1rem;">
+                            <span class="section-icon">📋</span>
+                            Tham số tổng quan
+                        </h3>
+                    </div>
+                    <div class="section-body">
+                        <div style="display: grid; gap: 0.75rem;">
+                            <div style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Tuổi thu hoạch</div>
+                                <div style="font-weight: 500; color: #1f2937;" id="summary-harvest-age">Chưa nhập</div>
+                            </div>
+                            <div style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Thời gian sinh trưởng</div>
+                                <div style="font-weight: 500; color: #1f2937;" id="summary-growth-days">Chưa nhập</div>
+                            </div>
+                            <div style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Mật độ/Tỉ lệ</div>
+                                <div style="font-weight: 500; color: #1f2937;" id="summary-density">Chưa nhập</div>
+                            </div>
+                            <div style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Năng suất mục tiêu</div>
+                                <div style="font-weight: 500; color: #1f2937;" id="summary-yield">Chưa nhập</div>
+                            </div>
+                            <div style="padding: 0.5rem 0; border-bottom: 1px solid #e5e7eb;">
+                                <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Số vụ/năm</div>
+                                <div style="font-weight: 500; color: #1f2937;" id="summary-seasons">Chưa nhập</div>
+                            </div>
+                            <div style="padding: 0.5rem 0;">
+                                <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Khu vực chính</div>
+                                <div style="font-weight: 500; color: #1f2937;" id="summary-region">Chưa nhập</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Thư viện Template -->
+                <div class="section">
+                    <div class="section-header">
+                        <h3 class="section-title" style="font-size: 1rem;">
+                            <span class="section-icon">📚</span>
+                            Thư viện Template
+                        </h3>
+                    </div>
+                    <div class="section-body">
+                        <div style="margin-bottom: 1rem;">
+                            <h4 style="font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">🌱 Giai đoạn mẫu</h4>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <button class="btn btn-sm btn-secondary" onclick="applyStageTemplate('Cải tạo đất')" style="justify-content: flex-start; font-size: 0.75rem;">Cải tạo đất</button>
+                                <button class="btn btn-sm btn-secondary" onclick="applyStageTemplate('Trồng cây con')" style="justify-content: flex-start; font-size: 0.75rem;">Trồng cây con</button>
+                                <button class="btn btn-sm btn-secondary" onclick="applyStageTemplate('Xử lý ra hoa')" style="justify-content: flex-start; font-size: 0.75rem;">Xử lý ra hoa</button>
+                                <button class="btn btn-sm btn-secondary" onclick="applyStageTemplate('Xử lý sâu bệnh')" style="justify-content: flex-start; font-size: 0.75rem;">Xử lý sâu bệnh</button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 style="font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">🧬 Tham số theo giống</h4>
+                            <select style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.8rem;" onchange="applyVarietyParams(this.value)">
+                                <option value="">Chọn giống mẫu</option>
+                                <option value="durian-ri6">Sầu riêng Ri6</option>
+                                <option value="coffee-robusta">Cà phê Robusta</option>
+                                <option value="passion-fruit">Chanh leo</option>
+                                <option value="cacao">Cacao</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Section -->
+        <div class="save-section">
+            <div class="save-controls">
+                <button type="button" class="btn btn-primary" onclick="saveProcess()">
+                    💾 Lưu và Xuất bản Quy trình
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="previewProcess()">
+                    👁️ Xem trước
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="exportProcess()">
+                    📄 Xuất file PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stageCounter = 0;
+        let workCounter = 0;
+        let subworkCounter = 0;
+        
+        // Thư viện gợi ý giai đoạn
+        const stageLibrary = {
+            crops: [
+                'Chuẩn bị đất và môi trường',
+                'Xử lý giống và nhân giống',
+                'Trồng và chăm sóc ban đầu',
+                'Bón phân và tưới nước',
+                'Phòng trừ sâu bệnh',
+                'Chăm sóc và tỉa cành',
+                'Thu hoạch và bảo quản',
+                'Xử lý sau thu hoạch'
+            ],
+            livestock: [
+                'Chuẩn bị chuồng trại',
+                'Chọn giống và nhập đàn',
+                'Chăm sóc giai đoạn non',
+                'Cho ăn và dinh dưỡng',
+                'Phòng bệnh và tiêm phòng',
+                'Chăm sóc sinh sản',
+                'Thu hoạch sản phẩm',
+                'Xử lý chất thải'
+            ],
+            aquaculture: [
+                'Chuẩn bị ao và môi trường nước',
+                'Thả giống và quản lý mật độ',
+                'Cho ăn và dinh dưỡng',
+                'Quản lý chất lượng nước',
+                'Phòng trừ bệnh',
+                'Theo dõi sinh trưởng',
+                'Thu hoạch và bảo quản',
+                'Xử lý môi trường'
+            ]
+        };
+        
+        // Thư viện gợi ý công việc
+        const workLibrary = {
+            'Chuẩn bị đất và môi trường': [
+                'Làm đất và xới bừa',
+                'Bón phân cơ bản',
+                'Xử lý pH đất',
+                'Làm hệ thống tưới',
+                'Chuẩn bị giàn đỡ'
+            ],
+            'Xử lý giống và nhân giống': [
+                'Chọn lọc giống',
+                'Xử lý hạt giống',
+                'Ươm cây giống',
+                'Kiểm tra chất lượng giống',
+                'Vận chuyển giống'
+            ],
+            'Trồng và chăm sóc ban đầu': [
+                'Trồng cây theo khoảng cách',
+                'Tưới nước sau trồng',
+                'Phủ mulch',
+                'Dựng cây',
+                'Kiểm tra tỷ lệ sống'
+            ],
+            'Chuẩn bị chuồng trại': [
+                'Xây dựng chuồng',
+                'Lắp đặt hệ thống thông gió',
+                'Chuẩn bị hệ thống cấp nước',
+                'Khử trùng chuồng',
+                'Chuẩn bị thức ăn'
+            ],
+            'Chọn giống và nhập đàn': [
+                'Lựa chọn giống',
+                'Kiểm tra sức khỏe',
+                'Vận chuyển',
+                'Cách ly quan sát',
+                'Tiêm phòng cơ bản'
+            ]
+        };
+        
+        // Object mapping for specific options
+        const specificOptions = {
+            crops: ['Sầu riêng', 'Cà phê', 'Chanh leo', 'Cacao', 'Lúa', 'Ngô', 'Khoai lang', 'Khác'],
+            livestock: ['Lợn', 'Gà', 'Bò', 'Vịt', 'Dê', 'Cừu', 'Thỏ', 'Khác'],
+            aquaculture: ['Cá tra', 'Cá basa', 'Tôm thẻ chân trắng', 'Cá lóc', 'Cá diêu hồng', 'Khác'],
+            ornamental: ['Hoa lan', 'Hoa hồng', 'Cây cảnh', 'Cá cảnh', 'Chim cảnh', 'Khác'],
+            other: ['Khác']
+        };
+
+        function updateSpecificOptions() {
+            const productionType = document.getElementById('production-type').value;
+            const specificSelect = document.getElementById('specific-object');
+            
+            specificSelect.innerHTML = '<option value="">Chọn đối tượng cụ thể</option>';
+            
+            if (productionType && specificOptions[productionType]) {
+                specificOptions[productionType].forEach(option => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.toLowerCase().replace(/ /g, '-');
+                    optionElement.textContent = option;
+                    specificSelect.appendChild(optionElement);
+                });
+            }
+        }
+
+        function createAutocomplete(input, suggestions) {
+            const container = document.createElement('div');
+            container.className = 'autocomplete-container';
+            input.parentNode.insertBefore(container, input);
+            container.appendChild(input);
+            
+            const suggestionsList = document.createElement('div');
+            suggestionsList.className = 'autocomplete-suggestions';
+            container.appendChild(suggestionsList);
+            
+            input.addEventListener('input', function() {
+                const value = this.value.toLowerCase();
+                suggestionsList.innerHTML = '';
+                
+                if (value) {
+                    const filtered = suggestions.filter(item => 
+                        item.toLowerCase().includes(value)
+                    );
+                    
+                    if (filtered.length > 0) {
+                        filtered.forEach(item => {
+                            const div = document.createElement('div');
+                            div.className = 'autocomplete-suggestion';
+                            div.textContent = item;
+                            div.onclick = () => {
+                                input.value = item;
+                                suggestionsList.style.display = 'none';
+                                input.focus();
+                            };
+                            suggestionsList.appendChild(div);
+                        });
+                        suggestionsList.style.display = 'block';
+                    } else {
+                        suggestionsList.style.display = 'none';
+                    }
+                } else {
+                    suggestionsList.style.display = 'none';
+                }
+            });
+            
+            input.addEventListener('focus', function() {
+                if (suggestionsList.children.length > 0) {
+                    suggestionsList.style.display = 'block';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (!container.contains(e.target)) {
+                    suggestionsList.style.display = 'none';
+                }
+            });
+        }
+
+        function addStage() {
+            stageCounter++;
+            const stagesContainer = document.getElementById('stages-container');
+            const productionType = document.getElementById('production-type').value;
+            const suggestions = stageLibrary[productionType] || [];
+            
+            const stageHtml = `
+                <div class="stage-item" id="stage-${stageCounter}">
+                    <div class="stage-header">
+                        <div class="stage-number">${stageCounter}</div>
+                        <div style="flex: 1;">
+                            <input type="text" id="stage-name-${stageCounter}" placeholder="Tên giai đoạn (VD: Chuẩn bị và xử lý đất)" style="width: 100%; border: none; background: transparent; font-weight: 600; font-size: 1rem;">
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeStage(${stageCounter})">🗑️ Xóa</button>
+                    </div>
+                    
+                    <div class="stage-content">
+                        <div class="form-grid-4">
+                            <div class="form-group">
+                                <label>Thời gian thực hiện</label>
+                                <input type="text" placeholder="VD: 15-30 ngày">
+                            </div>
+                            <div class="form-group">
+                                <label>Thời gian triển khai tối ưu</label>
+                                <input type="text" placeholder="VD: Tháng 1-2">
+                            </div>
+                            <div class="form-group">
+                                <label>Loại công việc</label>
+                                <select>
+                                    <option value="">Chọn loại</option>
+                                    <option value="onetime">Thiết lập 1 lần</option>
+                                    <option value="cyclic">Lặp lại theo chu kỳ</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Độ ưu tiên</label>
+                                <select>
+                                    <option value="high">Cao</option>
+                                    <option value="medium">Trung bình</option>
+                                    <option value="low">Thấp</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Mô tả cơ bản giai đoạn</label>
+                            <textarea placeholder="Mô tả chi tiết về giai đoạn này..."></textarea>
+                        </div>
+                        
+                        <div class="work-section">
+                            <div class="work-section-header">
+                                <h4 class="work-section-title">
+                                    🔧 Công việc trong giai đoạn
+                                </h4>
+                                <button type="button" class="btn btn-sm" onclick="addWork(${stageCounter})">➕ Thêm công việc</button>
+                            </div>
+                            <div id="works-${stageCounter}" class="works-container">
+                                <!-- Works will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            stagesContainer.insertAdjacentHTML('beforeend', stageHtml);
+            
+            // Add autocomplete for stage name
+            setTimeout(() => {
+                const stageInput = document.getElementById(`stage-name-${stageCounter}`);
+                if (suggestions.length > 0) {
+                    createAutocomplete(stageInput, suggestions);
+                }
+            }, 100);
+            
+            updateStats();
+        }
+
+        function removeStage(stageId) {
+            const stage = document.getElementById(`stage-${stageId}`);
+            if (stage && confirm('Bạn có chắc chắn muốn xóa giai đoạn này?')) {
+                stage.remove();
+                updateStats();
+            }
+        }
+
+        function addWork(stageId) {
+            workCounter++;
+            const worksContainer = document.getElementById(`works-${stageId}`);
+            const workNumber = worksContainer.children.length + 1;
+            
+            // Get current stage name for work suggestions
+            const stageNameInput = document.getElementById(`stage-name-${stageId}`);
+            const stageName = stageNameInput ? stageNameInput.value : '';
+            const workSuggestions = workLibrary[stageName] || [
+                'Chuẩn bị vật tư',
+                'Thực hiện công việc chính',
+                'Kiểm tra chất lượng',
+                'Ghi nhận kết quả',
+                'Dọn dẹp và bảo quản'
+            ];
+            
+            const workHtml = `
+                <div class="work-item" id="work-${workCounter}">
+                    <div class="work-header">
+                        <div class="work-number">${workNumber}</div>
+                        <div style="flex: 1;">
+                            <input type="text" id="work-name-${workCounter}" placeholder="Tên công việc (VD: Làm đất, Bón phân cơ bản)" style="width: 100%; border: none; background: transparent; font-weight: 500;">
+                        </div>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="removeWork(${workCounter})">🗑️</button>
+                    </div>
+                    
+                    <div class="work-content">
+                        <div class="form-grid-4">
+                            <div class="form-group">
+                                <label>Thời gian thực hiện</label>
+                                <input type="text" placeholder="VD: 3-5 ngày">
+                            </div>
+                            <div class="form-group">
+                                <label>Thời điểm thực hiện</label>
+                                <input type="text" placeholder="VD: Trước khi trồng 2 tuần">
+                            </div>
+                            <div class="form-group">
+                                <label>Loại công việc</label>
+                                <select>
+                                    <option value="">Chọn loại</option>
+                                    <option value="onetime">Thiết lập 1 lần</option>
+                                    <option value="cyclic">Lặp lại theo chu kỳ</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Mức độ quan trọng</label>
+                                <select>
+                                    <option value="critical">Rất quan trọng</option>
+                                    <option value="important">Quan trọng</option>
+                                    <option value="normal">Bình thường</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Mô tả công việc</label>
+                            <textarea placeholder="Mô tả chi tiết cách thực hiện công việc này..."></textarea>
+                        </div>
+                        
+                        <div class="work-controls">
+                            <button type="button" class="btn btn-sm" onclick="setupWorkDetails(${workCounter})">⚙️ Thiết lập Chi tiết</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="setupEvaluationCriteria(${workCounter})">📋 Tiêu chuẩn đánh giá</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="addSubWork(${workCounter})">➕ Thêm công việc con</button>
+                        </div>
+                        
+                        <div id="subworks-${workCounter}" class="subworks-container" style="margin-top: 1rem;">
+                            <!-- Sub-works will be added here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            worksContainer.insertAdjacentHTML('beforeend', workHtml);
+            
+            // Add autocomplete for work name
+            setTimeout(() => {
+                const workInput = document.getElementById(`work-name-${workCounter}`);
+                createAutocomplete(workInput, workSuggestions);
+            }, 100);
+            
+            updateStats();
+        }
+
+        function removeWork(workId) {
+            const work = document.getElementById(`work-${workId}`);
+            if (work && confirm('Bạn có chắc chắn muốn xóa công việc này?')) {
+                work.remove();
+                updateStats();
+            }
+        }
+
+        function addSubWork(workId) {
+            subworkCounter++;
+            const subworksContainer = document.getElementById(`subworks-${workId}`);
+            const subworkNumber = subworksContainer.children.length + 1;
+            
+            const subworkHtml = `
+                <div class="subwork-item" id="subwork-${subworkCounter}">
+                    <div class="subwork-header">
+                        <div class="subwork-number">${subworkNumber}</div>
+                        <input type="text" placeholder="Công việc con" style="flex: 1; border: none; background: transparent; font-size: 0.875rem;">
+                        <button type="button" class="btn btn-danger btn-sm" style="padding: 0.25rem 0.5rem;" onclick="removeSubWork(${subworkCounter})">🗑️</button>
+                    </div>
+                    <textarea placeholder="Mô tả chi tiết công việc con..." style="width: 100%; border: 1px solid #e5e7eb; border-radius: 4px; padding: 0.5rem; font-size: 0.8rem; min-height: 60px; resize: vertical;"></textarea>
+                </div>
+            `;
+            
+            subworksContainer.insertAdjacentHTML('beforeend', subworkHtml);
+            updateStats();
+        }
+
+        function removeSubWork(subworkId) {
+            const subwork = document.getElementById(`subwork-${subworkId}`);
+            if (subwork) {
+                subwork.remove();
+                updateStats();
+            }
+        }
+
+        function setupWorkDetails(workId) {
+            alert(`Mở dialog thiết lập chi tiết cho công việc ID: ${workId}\n\nTính năng sẽ bao gồm:\n- Danh sách vật tư, công cụ cần thiết\n- Hướng dẫn từng bước chi tiết\n- Lưu ý an toàn\n- Điều kiện thời tiết\n- Nguồn lực cần thiết`);
+        }
+
+        function setupEvaluationCriteria(workId) {
+            alert(`Mở dialog thiết lập tiêu chuẩn đánh giá cho công việc ID: ${workId}\n\nTính năng sẽ bao gồm:\n- Tiêu chí đánh giá chất lượng\n- Thang điểm\n- Phương pháp kiểm tra\n- Mốc thời gian đánh giá\n- Hành động khắc phục`);
+        }
+
+        function updateStats() {
+            const stageCount = document.querySelectorAll('.stage-item').length;
+            const workCount = document.querySelectorAll('.work-item').length;
+            const subworkCount = document.querySelectorAll('.subwork-item').length;
+            
+            // Count onetime vs cyclic stages
+            let onetimeCount = 0;
+            let cyclicCount = 0;
+            
+            document.querySelectorAll('.stage-item select').forEach(select => {
+                if (select.value === 'onetime') onetimeCount++;
+                if (select.value === 'cyclic') cyclicCount++;
+            });
+            
+            // Update main stats
+            document.getElementById('total-stages').textContent = stageCount;
+            document.getElementById('onetime-stages').textContent = onetimeCount;
+            document.getElementById('cyclic-stages').textContent = cyclicCount;
+            document.getElementById('total-works').textContent = workCount;
+            
+            // Calculate completion rate
+            const requiredFields = ['organization', 'project', 'author', 'production-type', 'specific-object'];
+            let filledFields = 0;
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field && field.value.trim()) {
+                    filledFields++;
+                }
+            });
+            
+            const completionRate = Math.round(((filledFields / requiredFields.length) * 100));
+            document.getElementById('completion-percent').textContent = completionRate + '%';
+            
+            // Update summary data
+            updateSummaryData();
+        }
+
+        function updateSummaryData() {
+            // Update harvest age
+            const harvestAge = document.getElementById('harvest-age');
+            document.getElementById('summary-harvest-age').textContent = 
+                harvestAge && harvestAge.value ? harvestAge.value : 'Chưa nhập';
+            
+            // Update growth days
+            const growthDays = document.getElementById('growth-days');
+            document.getElementById('summary-growth-days').textContent = 
+                growthDays && growthDays.value ? growthDays.value : 'Chưa nhập';
+            
+            // Update density
+            const density = document.getElementById('density');
+            const densityUnit = density ? density.nextElementSibling.value : '';
+            document.getElementById('summary-density').textContent = 
+                density && density.value ? `${density.value} ${densityUnit}` : 'Chưa nhập';
+            
+            // Update yield
+            const yieldInput = document.getElementById('yield');
+            const yieldUnit = yieldInput ? yieldInput.nextElementSibling.value : '';
+            document.getElementById('summary-yield').textContent = 
+                yieldInput && yieldInput.value ? `${yieldInput.value} ${yieldUnit}` : 'Chưa nhập';
+            
+            // Update seasons
+            const seasons = document.getElementById('seasons-per-year');
+            document.getElementById('summary-seasons').textContent = 
+                seasons && seasons.value ? `${seasons.value} vụ/năm` : 'Chưa nhập';
+            
+            // Update region
+            const region = document.getElementById('region');
+            document.getElementById('summary-region').textContent = 
+                region && region.value ? region.value : 'Chưa nhập';
+        }
+
+        function applyStageTemplate(templateName) {
+            const templates = {
+                'Cải tạo đất': {
+                    name: 'Cải tạo đất',
+                    description: 'Xử lý và chuẩn bị đất trồng, cải thiện độ phì nhiêu và cấu trúc đất',
+                    duration: '15-20 ngày',
+                    optimalTime: 'Tháng 11-12',
+                    type: 'onetime',
+                    works: [
+                        'Phân tích đất và đánh giá pH',
+                        'Làm đất và xới bừa',
+                        'Bón vôi cải thiện pH',
+                        'Bón phân chuồng hoai mục'
+                    ]
+                },
+                'Trồng cây con': {
+                    name: 'Trồng cây con',
+                    description: 'Trồng cây giống theo khoảng cách và chăm sóc ban đầu',
+                    duration: '7-10 ngày',
+                    optimalTime: 'Đầu mùa mưa',
+                    type: 'onetime',
+                    works: [
+                        'Đào hố trồng theo khoảng cách',
+                        'Trồng cây giống',
+                        'Tưới nước sau trồng',
+                        'Dựng cây và che chắn'
+                    ]
+                },
+                'Xử lý ra hoa': {
+                    name: 'Xử lý ra hoa',
+                    description: 'Kích thích và điều hòa quá trình ra hoa của cây trồng',
+                    duration: '30-45 ngày',
+                    optimalTime: 'Tháng 2-3',
+                    type: 'cyclic',
+                    works: [
+                        'Cắt tỉa cành và lá',
+                        'Xử lý kích thích ra hoa',
+                        'Bón phân lân kali',
+                        'Theo dõi và đánh giá'
+                    ]
+                },
+                'Xử lý sâu bệnh': {
+                    name: 'Xử lý sâu bệnh',
+                    description: 'Phòng ngừa và điều trị các loại sâu bệnh hại',
+                    duration: 'Liên tục',
+                    optimalTime: 'Quanh năm',
+                    type: 'cyclic',
+                    works: [
+                        'Quan sát và phát hiện sâu bệnh',
+                        'Xử lý bằng thuốc sinh học',
+                        'Phun thuốc hóa học (nếu cần)',
+                        'Dọn dẹp và xử lý cành bệnh'
+                    ]
+                }
+            };
+            
+            const template = templates[templateName];
+            if (!template) return;
+            
+            if (confirm(`Áp dụng template "${templateName}"?\nSẽ tạo giai đoạn mới với ${template.works.length} công việc.`)) {
+                addStage();
+                
+                setTimeout(() => {
+                    const latestStage = document.querySelector(`#stage-${stageCounter}`);
+                    if (latestStage) {
+                        // Fill stage info
+                        latestStage.querySelector(`#stage-name-${stageCounter}`).value = template.name;
+                        latestStage.querySelector('input[placeholder*="15-30 ngày"]').value = template.duration;
+                        latestStage.querySelector('input[placeholder*="Tháng 1-2"]').value = template.optimalTime;
+                        latestStage.querySelector('select').value = template.type;
+                        latestStage.querySelector('textarea').value = template.description;
+                        
+                        // Add works
+                        template.works.forEach((workName, index) => {
+                            addWork(stageCounter);
+                            setTimeout(() => {
+                                const workInput = document.querySelector(`#work-name-${workCounter}`);
+                                if (workInput) workInput.value = workName;
+                            }, 100 * (index + 1));
+                        });
+                    }
+                }, 200);
+            }
+        }
+
+        function applyVarietyParams(variety) {
+            const params = {
+                'durian-ri6': {
+                    growthVariety: 'Sầu riêng Ri6',
+                    harvestAge: '7-8 năm',
+                    stableAge: '12-15 năm',
+                    seasons: '1',
+                    growthDays: '110-130 ngày',
+                    density: '100',
+                    densityUnit: 'cây/ha',
+                    yield: '80-120',
+                    yieldUnit: 'kg/cây',
+                    ph: '5.5-6.5',
+                    temp: '26-30°C',
+                    humidity: '75-85%',
+                    rainfall: '1800-2500mm',
+                    sunlight: '6-8 giờ',
+                    altitude: '0-600m'
+                },
+                'coffee-robusta': {
+                    growthVariety: 'Cà phê Robusta',
+                    harvestAge: '3-4 năm',
+                    stableAge: '6-8 năm',
+                    seasons: '1',
+                    growthDays: '240-270 ngày',
+                    density: '1600',
+                    densityUnit: 'cây/ha',
+                    yield: '2.5-4',
+                    yieldUnit: 'kg/cây',
+                    ph: '5.0-6.0',
+                    temp: '22-28°C',
+                    humidity: '60-80%',
+                    rainfall: '1500-2000mm',
+                    sunlight: '4-6 giờ',
+                    altitude: '200-800m'
+                },
+                'passion-fruit': {
+                    growthVariety: 'Chanh leo',
+                    harvestAge: '8-12 tháng',
+                    stableAge: '2-3 năm',
+                    seasons: '2',
+                    growthDays: '60-80 ngày',
+                    density: '400',
+                    densityUnit: 'cây/ha',
+                    yield: '20-30',
+                    yieldUnit: 'kg/cây',
+                    ph: '6.0-7.0',
+                    temp: '23-28°C',
+                    humidity: '70-80%',
+                    rainfall: '1200-1800mm',
+                    sunlight: '6-8 giờ',
+                    altitude: '0-1000m'
+                },
+                'cacao': {
+                    growthVariety: 'Cacao Trinitario',
+                    harvestAge: '3-5 năm',
+                    stableAge: '8-10 năm',
+                    seasons: '2',
+                    growthDays: '150-180 ngày',
+                    density: '1000',
+                    densityUnit: 'cây/ha',
+                    yield: '1-2',
+                    yieldUnit: 'kg/cây',
+                    ph: '6.0-7.0',
+                    temp: '24-28°C',
+                    humidity: '75-85%',
+                    rainfall: '1500-2000mm',
+                    sunlight: '3-5 giờ',
+                    altitude: '0-300m'
+                }
+            };
+            
+            const param = params[variety];
+            if (!param) return;
+            
+            if (confirm(`Áp dụng tham số cho ${param.growthVariety}?\nSẽ ghi đè các giá trị hiện tại.`)) {
+                // Fill growth parameters
+                document.getElementById('growth-variety').value = param.growthVariety;
+                document.getElementById('harvest-age').value = param.harvestAge;
+                document.getElementById('stable-age').value = param.stableAge;
+                document.getElementById('seasons-per-year').value = param.seasons;
+                document.getElementById('growth-days').value = param.growthDays;
+                document.getElementById('density').value = param.density;
+                document.getElementById('density').nextElementSibling.value = param.densityUnit;
+                document.getElementById('yield').value = param.yield;
+                document.getElementById('yield').nextElementSibling.value = param.yieldUnit;
+                
+                // Fill environment parameters
+                document.getElementById('soil-ph').value = param.ph;
+                document.getElementById('temperature').value = param.temp;
+                document.getElementById('humidity').value = param.humidity;
+                document.getElementById('rainfall').value = param.rainfall;
+                document.getElementById('sunlight').value = param.sunlight;
+                document.getElementById('altitude').value = param.altitude;
+                
+                updateStats();
+                alert('✅ Đã áp dụng tham số thành công!');
+            }
+        }
+
+        function saveProcess() {
+            const requiredFields = ['organization', 'project', 'author', 'production-type', 'specific-object'];
+            const missingFields = [];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field.value.trim()) {
+                    missingFields.push(field.previousElementSibling.textContent.replace(' *', ''));
+                }
+            });
+            
+            if (missingFields.length > 0) {
+                alert(`⚠️ Vui lòng điền đầy đủ các trường bắt buộc:\n- ${missingFields.join('\n- ')}`);
+                return;
+            }
+            
+            if (stageCounter === 0) {
+                alert('⚠️ Vui lòng thêm ít nhất một giai đoạn!');
+                return;
+            }
+            
+            const workCount = document.querySelectorAll('.work-item').length;
+            if (workCount === 0) {
+                alert('⚠️ Vui lòng thêm ít nhất một công việc trong các giai đoạn!');
+                return;
+            }
+            
+            const stageCount = document.querySelectorAll('.stage-item').length;
+            const subworkCount = document.querySelectorAll('.subwork-item').length;
+            
+            alert(`✅ Quy trình đã được lưu và xuất bản thành công!\n\n📊 Thống kê quy trình:\n- Giai đoạn: ${stageCount}\n- Công việc: ${workCount}\n- Công việc con: ${subworkCount}\n\n🔗 Hệ thống sẽ tạo mã QR và link chia sẻ cho người sản xuất\n📄 File hướng dẫn sẽ được tạo tự động`);
+        }
+
+        function previewProcess() {
+            alert('🔍 Chức năng xem trước sẽ hiển thị quy trình như người sản xuất sẽ thấy');
+        }
+
+        function exportProcess() {
+            alert('📄 Đang xuất file PDF quy trình với định dạng khoa học...');
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            addStage();
+            setTimeout(() => {
+                document.getElementById('stage-name-1').value = 'Chuẩn bị và xử lý đất';
+                addWork(1);
+                setTimeout(() => {
+                    document.getElementById('work-name-1').value = 'Làm đất và bón phân cơ bản';
+                    updateStats();
+                }, 100);
+            }, 100);
+        };
+
+        // Update stats when any input changes
+        document.addEventListener('input', updateStats);
+        document.addEventListener('change', updateStats);
+    </script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân công & Quản lý Vận hành</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1f2937; }
+        ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        /* Drag and Drop styles */
+        .draggable { cursor: grab; }
+        .dragging { opacity: 0.5; background: #374151; }
+        .drop-zone { border: 2px dashed #4b5563; }
+        .drop-zone.drag-over { border-color: #3b82f6; background-color: #1f2937; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans p-6 lg:p-8">
+    <div class="max-w-screen-xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-white">Phân công & Quản lý Vận hành</h1>
+            <p class="text-gray-400 mt-1">Công cụ điều phối, cân bằng khối lượng công việc và giám sát hoạt động của đội ngũ kỹ sư.</p>
+        </div>
+
+        <!-- Main Grid Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Column 1: Engineer List -->
+            <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 flex flex-col">
+                <h2 class="text-xl font-semibold text-white mb-4">Danh sách Kỹ sư</h2>
+                <input type="text" placeholder="Tìm kiếm kỹ sư..." class="w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-sm mb-4">
+                <div class="flex-grow overflow-y-auto pr-2">
+                    <ul id="engineer-list" class="space-y-3">
+                        <!-- Engineer Item 1 -->
+                        <li data-id="NV001" data-name="Nguyễn Văn An" data-workload="3.46" class="engineer-item p-4 rounded-lg bg-gray-900/50 hover:bg-gray-700/50 cursor-pointer border border-transparent">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://i.pravatar.cc/40?u=NV001" class="w-10 h-10 rounded-full mr-4">
+                                    <div>
+                                        <p class="font-bold text-white">Nguyễn Văn An</p>
+                                        <p class="text-xs text-gray-400">Senior | 3 Vườn</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-lg font-bold text-yellow-400">3.46</p>
+                                    <p class="text-xs text-gray-500">Điểm CV</p>
+                                </div>
+                            </div>
+                        </li>
+                        <!-- Engineer Item 2 -->
+                        <li data-id="NV002" data-name="Trần Thị Bích" data-workload="2.95" class="engineer-item p-4 rounded-lg bg-gray-900/50 hover:bg-gray-700/50 cursor-pointer border border-transparent">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <img src="https://i.pravatar.cc/40?u=NV002" class="w-10 h-10 rounded-full mr-4">
+                                    <div>
+                                        <p class="font-bold text-white">Trần Thị Bích</p>
+                                        <p class="text-xs text-gray-400">Standard | 3 Vườn</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-lg font-bold text-green-400">2.95</p>
+                                    <p class="text-xs text-gray-500">Điểm CV</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Column 2: Assignment Panel -->
+            <div id="assignment-panel" class="bg-gray-800 rounded-xl border border-gray-700 p-6 flex flex-col">
+                <div id="assignment-placeholder" class="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                    <i data-lucide="mouse-pointer-square" class="w-16 h-16 mb-4"></i>
+                    <h3 class="text-lg font-semibold">Chọn một Kỹ sư để bắt đầu</h3>
+                    <p class="text-sm">Bạn có thể xem danh sách vườn hiện tại và gán thêm vườn mới cho kỹ sư đã chọn.</p>
+                </div>
+
+                <div id="assignment-content" class="hidden flex-col h-full">
+                    <h2 id="assignment-title" class="text-xl font-semibold text-white mb-4">Phân công cho: Nguyễn Văn An</h2>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="bg-gray-900 p-3 rounded-lg text-center">
+                            <p class="text-xs text-gray-400">Điểm CV Hiện tại</p>
+                            <p id="current-workload" class="text-2xl font-bold text-yellow-400">3.46</p>
+                        </div>
+                        <div class="bg-gray-900 p-3 rounded-lg text-center">
+                            <p class="text-xs text-gray-400">Điểm CV Dự kiến</p>
+                            <p id="projected-workload" class="text-2xl font-bold text-green-400">3.46</p>
+                        </div>
+                    </div>
+                    <div id="assigned-farms-list" class="flex-grow overflow-y-auto bg-gray-900/50 p-4 rounded-lg drop-zone pr-2">
+                        <!-- Assigned farms will be populated here -->
+                    </div>
+                    <button class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-md flex items-center justify-center mt-4">
+                        <i data-lucide="check-circle" class="w-5 h-5 mr-2"></i> Xác nhận Phân công
+                    </button>
+                </div>
+            </div>
+
+            <!-- Column 3: Unassigned Farms List -->
+            <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 flex flex-col">
+                <h2 class="text-xl font-semibold text-white mb-4">Vườn chưa được phân công</h2>
+                <input type="text" placeholder="Tìm kiếm vườn..." class="w-full bg-gray-900 border-gray-600 rounded-md py-2 px-3 text-sm mb-4">
+                <div class="flex-grow overflow-y-auto pr-2">
+                    <ul id="unassigned-list" class="space-y-3">
+                        <!-- Unassigned Farm Item 1 -->
+                        <li data-id="FARM_DL_026" data-complexity="1.15" draggable="true" class="draggable p-4 rounded-lg bg-gray-900/50 hover:bg-gray-700/50">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-bold text-white">Vườn sầu riêng ông Tám</p>
+                                    <p class="text-xs text-gray-400">5.5 ha | Vùng khó khăn</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-lg font-bold text-yellow-400">1.15</p>
+                                    <p class="text-xs text-gray-500">HS Phức tạp</p>
+                                </div>
+                            </div>
+                        </li>
+                        <!-- Unassigned Farm Item 2 -->
+                        <li data-id="FARM_DL_027" data-complexity="0.92" draggable="true" class="draggable p-4 rounded-lg bg-gray-900/50 hover:bg-gray-700/50">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="font-bold text-white">Vườn bơ chú Sáu</p>
+                                    <p class="text-xs text-gray-400">2.1 ha | Vùng thuận lợi</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-lg font-bold text-green-400">0.92</p>
+                                    <p class="text-xs text-gray-500">HS Phức tạp</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const engineerList = document.getElementById('engineer-list');
+        const unassignedList = document.getElementById('unassigned-list');
+        const assignmentPanel = document.getElementById('assignment-panel');
+        const assignmentPlaceholder = document.getElementById('assignment-placeholder');
+        const assignmentContent = document.getElementById('assignment-content');
+        const assignmentTitle = document.getElementById('assignment-title');
+        const currentWorkloadEl = document.getElementById('current-workload');
+        const projectedWorkloadEl = document.getElementById('projected-workload');
+        const assignedFarmsList = document.getElementById('assigned-farms-list');
+
+        let selectedEngineer = null;
+        let draggedItem = null;
+
+        // Mock data for assigned farms
+        const allAssignedFarms = {
+            'NV001': [
+                { id: 'FARM_DL_001', name: 'Vườn sầu riêng ông Năm', complexity: 1.32 },
+                { id: 'FARM_DL_012', name: 'Vườn anh Bảy', complexity: 0.81 },
+                { id: 'FARM_DL_025', name: 'Trang trại GreenFarm', complexity: 1.33 }
+            ],
+            'NV002': [
+                { id: 'FARM_DL_008', name: 'Vườn chị Ba', complexity: 1.00 },
+                { id: 'FARM_DL_015', name: 'Vườn cô Tư', complexity: 0.95 },
+                { id: 'FARM_DL_018', name: 'Vườn chú Hai', complexity: 1.00 }
+            ]
+        };
+
+        function createFarmListItem(farm) {
+            const li = document.createElement('li');
+            li.dataset.id = farm.id;
+            li.dataset.complexity = farm.complexity;
+            li.draggable = true;
+            li.className = 'draggable p-4 rounded-lg bg-gray-700/50 flex items-center justify-between';
+            li.innerHTML = `
+                <div>
+                    <p class="font-bold text-white">${farm.name}</p>
+                    <p class="text-xs text-gray-400">ID: ${farm.id}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-lg font-bold ${farm.complexity >= 1.2 ? 'text-red-400' : farm.complexity >= 1.0 ? 'text-yellow-400' : 'text-green-400'}">${farm.complexity.toFixed(2)}</p>
+                    <p class="text-xs text-gray-500">HS Phức tạp</p>
+                </div>`;
+            return li;
+        }
+
+        function updateProjectedWorkload() {
+            if (!selectedEngineer) return;
+            const currentWorkload = parseFloat(selectedEngineer.dataset.workload);
+            let projectedTotal = currentWorkload;
+            
+            const newlyAssignedFarms = Array.from(assignedFarmsList.children).filter(item => !allAssignedFarms[selectedEngineer.dataset.id]?.some(f => f.id === item.dataset.id));
+            
+            newlyAssignedFarms.forEach(item => {
+                projectedTotal += parseFloat(item.dataset.complexity);
+            });
+
+            projectedWorkloadEl.textContent = projectedTotal.toFixed(2);
+             projectedWorkloadEl.className = `text-2xl font-bold ${projectedTotal > 4.0 ? 'text-red-400' : projectedTotal > 3.0 ? 'text-yellow-400' : 'text-green-400'}`;
+        }
+
+        engineerList.addEventListener('click', (e) => {
+            const engineerItem = e.target.closest('.engineer-item');
+            if (engineerItem) {
+                if (selectedEngineer) {
+                    selectedEngineer.classList.remove('border-blue-500', 'bg-gray-700/50');
+                    selectedEngineer.classList.add('bg-gray-900/50');
+                }
+                selectedEngineer = engineerItem;
+                selectedEngineer.classList.add('border-blue-500', 'bg-gray-700/50');
+                selectedEngineer.classList.remove('bg-gray-900/50');
+
+                assignmentPlaceholder.classList.add('hidden');
+                assignmentContent.classList.add('flex');
+                assignmentContent.classList.remove('hidden');
+
+                assignmentTitle.textContent = `Phân công cho: ${selectedEngineer.dataset.name}`;
+                currentWorkloadEl.textContent = selectedEngineer.dataset.workload;
+                currentWorkloadEl.className = `text-2xl font-bold ${parseFloat(selectedEngineer.dataset.workload) > 4.0 ? 'text-red-400' : parseFloat(selectedEngineer.dataset.workload) > 3.0 ? 'text-yellow-400' : 'text-green-400'}`;
+                
+                assignedFarmsList.innerHTML = '';
+                const farms = allAssignedFarms[selectedEngineer.dataset.id] || [];
+                farms.forEach(farm => {
+                    assignedFarmsList.appendChild(createFarmListItem(farm));
+                });
+                updateProjectedWorkload();
+            }
+        });
+
+        // Drag and Drop Logic
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('draggable')) {
+                draggedItem = e.target;
+                setTimeout(() => e.target.classList.add('dragging'), 0);
+            }
+        });
+
+        document.addEventListener('dragend', (e) => {
+            if (draggedItem) {
+                draggedItem.classList.remove('dragging');
+                draggedItem = null;
+            }
+        });
+
+        assignedFarmsList.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (selectedEngineer) {
+                assignedFarmsList.classList.add('drag-over');
+            }
+        });
+
+        assignedFarmsList.addEventListener('dragleave', () => {
+            assignedFarmsList.classList.remove('drag-over');
+        });
+
+        assignedFarmsList.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (draggedItem && selectedEngineer && draggedItem.parentElement.id === 'unassigned-list') {
+                draggedItem.parentElement.removeChild(draggedItem);
+                assignedFarmsList.appendChild(draggedItem);
+                updateProjectedWorkload();
+            }
+            assignedFarmsList.classList.remove('drag-over');
+        });
+
+    </script>
+</body>
+</html>

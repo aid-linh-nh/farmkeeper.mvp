@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Chọn Phương thức Áp dụng</title>
+    <!-- Google Fonts: Noto Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Ionicons for icons -->
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
+    <style>
+      /* --- General Styles --- */
+      :root {
+        --primary-color: #69bd70;
+        --primary-light: #e6f9e7;
+        --light-gray: #f4f7fa;
+        --dark-gray: #6c757d;
+        --text-color: #333;
+        --white-color: #ffffff;
+        --border-color: #dee2e6;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        background-color: var(--light-gray);
+        color: var(--text-color);
+        display: flex;
+      }
+
+      /* --- Sidebar Menu (Consistent with other screens) --- */
+      .sidebar {
+        width: 260px;
+        background-color: var(--white-color);
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+      }
+
+      .sidebar .logo {
+        padding: 24px 20px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .sidebar .logo h1 {
+        color: var(--primary-color);
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      .sidebar .menu {
+        list-style: none;
+        padding: 20px 0;
+        flex-grow: 1;
+      }
+
+      .sidebar .menu-item {
+        padding: 0 20px;
+      }
+
+      .sidebar .menu-item .menu-link {
+        display: block;
+        padding: 14px 18px;
+        color: #555;
+        text-decoration: none;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .sidebar .menu-item .menu-link:hover {
+        background-color: var(--light-gray);
+      }
+
+      .sidebar .menu-item.open > .menu-link {
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+
+      .sidebar .submenu .menu-item.active .menu-link {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+      }
+
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 25px;
+        margin-top: 5px;
+      }
+
+      .sidebar .submenu .menu-link {
+        padding: 10px 18px;
+        font-size: 14px;
+      }
+
+      /* --- Main Content --- */
+      .main-content {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        padding: 30px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .header h2 {
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      /* --- Selection Container --- */
+      .selection-container {
+        max-width: 900px;
+        margin: auto;
+        background-color: var(--white-color);
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+      }
+
+      .section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+      }
+      .section:first-child {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+      }
+
+      .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+      }
+
+      .options-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+
+      .option-card {
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+        position: relative;
+      }
+
+      .option-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .option-card.selected {
+        border-color: var(--primary-color);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        background-color: var(--primary-light);
+      }
+
+      .option-card .icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      .option-card h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .option-card p {
+        font-size: 0.9rem;
+        color: var(--dark-gray);
+        line-height: 1.5;
+      }
+
+      .option-card input[type='radio'] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        cursor: pointer;
+      }
+
+      /* --- Conditional Section --- */
+      .hidden-section {
+        display: none;
+      }
+
+      .stages-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .stage-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .stage-option:hover {
+        border-color: var(--primary-color);
+      }
+
+      .stage-option.selected {
+        border-color: var(--primary-color);
+        background-color: var(--primary-light);
+      }
+
+      .stage-number {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        background-color: var(--dark-gray);
+        flex-shrink: 0;
+        margin-top: 0.25rem;
+      }
+
+      .stage-option.selected .stage-number {
+        background-color: var(--primary-color);
+      }
+
+      .stage-details h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .stage-details p {
+        font-size: 0.85rem;
+        color: var(--dark-gray);
+        line-height: 1.4;
+      }
+
+      /* --- Action Buttons --- */
+      .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
+      }
+
+      .action-buttons button {
+        padding: 10px 24px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .btn-cancel {
+        background-color: var(--white-color);
+        color: var(--dark-gray);
+        border-color: var(--border-color);
+      }
+      .btn-cancel:hover {
+        background-color: var(--light-gray);
+      }
+
+      .btn-activate {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        border-color: var(--primary-color);
+      }
+      .btn-activate:hover {
+        background-color: #58a860;
+      }
+
+      .btn-activate:disabled {
+        background-color: #a5d6a7;
+        border-color: #a5d6a7;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar Menu -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>FARMKEEPER</h1>
+      </div>
+      <ul class="menu">
+        <li class="menu-item">
+          <a href="#" class="menu-link">Quản lý vườn</a>
+        </li>
+        <li class="menu-item open">
+          <a href="#" class="menu-link">Quy trình canh tác</a>
+          <ul class="submenu">
+            <li class="menu-item active">
+              <a href="#" class="menu-link">Kích hoạt quy trình</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <h2>Kích hoạt Quy trình Canh tác</h2>
+      </header>
+
+      <div class="selection-container">
+        <!-- Step 1: Choose Method -->
+        <div class="section">
+          <h3 class="section-title">Bước 1: Chọn phương thức áp dụng</h3>
+          <div class="options-grid">
+            <label for="new-farm" class="option-card" id="new-farm-label">
+              <input
+                type="radio"
+                name="apply_method"
+                id="new-farm"
+                value="new"
+              />
+              <div class="icon"><ion-icon name="leaf-outline"></ion-icon></div>
+              <h3>Thiết lập trồng mới</h3>
+              <p>
+                Bắt đầu từ đầu với kế hoạch trồng mới hoàn toàn. Áp dụng đầy đủ
+                từ giai đoạn chuẩn bị đất đến thu hoạch.
+              </p>
+            </label>
+            <label
+              for="existing-farm"
+              class="option-card"
+              id="existing-farm-label"
+            >
+              <input
+                type="radio"
+                name="apply_method"
+                id="existing-farm"
+                value="existing"
+              />
+              <div class="icon">
+                <ion-icon name="sync-circle-outline"></ion-icon>
+              </div>
+              <h3>Vườn/Farm đang canh tác</h3>
+              <p>
+                Áp dụng vào vườn/Farm sầu riêng đang hoạt động. Chọn giai đoạn
+                hiện tại để tùy chỉnh quy trình phù hợp.
+              </p>
+            </label>
+          </div>
+        </div>
+
+        <!-- Step 2: Choose Stage (Conditional) -->
+        <div class="section hidden-section" id="stage-selection-section">
+          <h3 class="section-title">
+            Bước 2: Chọn giai đoạn hiện tại của vườn
+          </h3>
+          <div class="stages-grid" id="stages-grid">
+            <label class="stage-option">
+              <input
+                type="radio"
+                name="current_stage"
+                value="1"
+                class="hidden-radio"
+              />
+              <div class="stage-number">1</div>
+              <div class="stage-details">
+                <h5>Thiết lập trồng mới</h5>
+                <p>Đang chuẩn bị đất, chọn giống hoặc mới trồng (0-6 tháng)</p>
+              </div>
+            </label>
+            <label class="stage-option">
+              <input
+                type="radio"
+                name="current_stage"
+                value="2"
+                class="hidden-radio"
+              />
+              <div class="stage-number">2</div>
+              <div class="stage-details">
+                <h5>Chăm sóc cây con</h5>
+                <p>Cây 6 tháng - 2 tuổi, đang phát triển thân lá</p>
+              </div>
+            </label>
+            <label class="stage-option">
+              <input
+                type="radio"
+                name="current_stage"
+                value="3"
+                class="hidden-radio"
+              />
+              <div class="stage-number">3</div>
+              <div class="stage-details">
+                <h5>Dưỡng cây chuẩn bị ra hoa</h5>
+                <p>Cây 2-4 tuổi, tích lũy dinh dưỡng chưa ra hoa</p>
+              </div>
+            </label>
+            <label class="stage-option">
+              <input
+                type="radio"
+                name="current_stage"
+                value="4"
+                class="hidden-radio"
+              />
+              <div class="stage-number">4</div>
+              <div class="stage-details">
+                <h5>Ra hoa</h5>
+                <p>Cây đang ra hoa hoặc vừa ra hoa (T12-T2)</p>
+              </div>
+            </label>
+            <label class="stage-option">
+              <input
+                type="radio"
+                name="current_stage"
+                value="5"
+                class="hidden-radio"
+              />
+              <div class="stage-number">5</div>
+              <div class="stage-details">
+                <h5>Chăm sóc trái</h5>
+                <p>Trái đang phát triển, từ đậu trái đến gần chín (T2-T5)</p>
+              </div>
+            </label>
+            <label class="stage-option">
+              <input
+                type="radio"
+                name="current_stage"
+                value="6"
+                class="hidden-radio"
+              />
+              <div class="stage-number">6</div>
+              <div class="stage-details">
+                <h5>Thu hoạch</h5>
+                <p>Chuẩn bị thu hoạch hoặc đang trong mùa thu hoạch (T5-T8)</p>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-cancel">Hủy</button>
+          <button class="btn-activate" id="activate-btn" disabled>
+            Kích hoạt
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Main options
+        const newFarmRadio = document.getElementById('new-farm');
+        const existingFarmRadio = document.getElementById('existing-farm');
+        const newFarmLabel = document.getElementById('new-farm-label');
+        const existingFarmLabel = document.getElementById(
+          'existing-farm-label'
+        );
+
+        // Conditional sections
+        const stageSelectionSection = document.getElementById(
+          'stage-selection-section'
+        );
+
+        // Stage options
+        const stageOptions = document.querySelectorAll('.stage-option');
+        const stageRadios = document.querySelectorAll(
+          'input[name="current_stage"]'
+        );
+
+        // Activate button
+        const activateBtn = document.getElementById('activate-btn');
+
+        function checkFormCompletion() {
+          const methodSelected =
+            newFarmRadio.checked || existingFarmRadio.checked;
+          if (!methodSelected) {
+            activateBtn.disabled = true;
+            return;
+          }
+
+          if (newFarmRadio.checked) {
+            activateBtn.disabled = false;
+          } else if (existingFarmRadio.checked) {
+            const stageSelected = Array.from(stageRadios).some(
+              (r) => r.checked
+            );
+            activateBtn.disabled = !stageSelected;
+          } else {
+            activateBtn.disabled = true;
+          }
+        }
+
+        function handleMethodSelection() {
+          // Update card styles
+          newFarmLabel.classList.toggle('selected', newFarmRadio.checked);
+          existingFarmLabel.classList.toggle(
+            'selected',
+            existingFarmRadio.checked
+          );
+
+          if (newFarmRadio.checked) {
+            stageSelectionSection.classList.add('hidden-section');
+          } else if (existingFarmRadio.checked) {
+            stageSelectionSection.classList.remove('hidden-section');
+          }
+          checkFormCompletion();
+        }
+
+        function handleStageSelection(event) {
+          stageOptions.forEach((label) => label.classList.remove('selected'));
+
+          let clickedLabel = event.target;
+          while (
+            clickedLabel &&
+            !clickedLabel.classList.contains('stage-option')
+          ) {
+            clickedLabel = clickedLabel.parentElement;
+          }
+
+          if (clickedLabel) {
+            clickedLabel.classList.add('selected');
+            const radio = clickedLabel.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+          }
+          checkFormCompletion();
+        }
+
+        // Event Listeners
+        newFarmRadio.addEventListener('change', handleMethodSelection);
+        existingFarmRadio.addEventListener('change', handleMethodSelection);
+        stageOptions.forEach((option) => {
+          option.addEventListener('click', handleStageSelection);
+        });
+      });
+    </script>
+  </body>
+</html>

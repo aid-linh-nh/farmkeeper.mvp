@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiết lập Chi tiết Công việc & Chi phí</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: rgba(0, 0, 0, 0.5);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .modal-container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .header-left {
+            flex: 1;
+        }
+        
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .header-left p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .stat-item {
+            text-align: center;
+            min-width: 60px;
+        }
+        
+        .stat-number {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            margin-left: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .modal-body {
+            overflow-y: auto;
+            flex: 1;
+            padding: 1.5rem;
+        }
+        
+        .section {
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #f9fafb;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-cost {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #059669;
+        }
+        
+        .section-icon {
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .section-body {
+            padding: 1rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-grid-4 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 1rem;
+        }
+
+        .form-grid-5 {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-grid-6 {
+            display: grid;
+            grid-template-columns: 1.5fr 0.8fr 1fr 0.8fr 1fr 1.2fr;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            position: relative;
+        }
+        
+        .form-group.span-full {
+            grid-column: 1 / -1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            background: #ffffff;
+        }
+
+        input[readonly] {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .btn-purple {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .btn-indigo {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .condition-item, .material-item, .tool-item, .parameter-item, .labor-item, .service-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .item-title {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+        
+        .item-badge {
+            background: #10b981;
+            color: white;
+            padding: 0.125rem 0.375rem;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .parameter-badge {
+            background: #f59e0b;
+        }
+
+        .labor-badge {
+            background: #8b5cf6;
+        }
+
+        .service-badge {
+            background: #6366f1;
+        }
+
+        .cost-badge {
+            background: #059669;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .condition-types {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .condition-type {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .condition-type:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .condition-type.selected {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+        
+        .condition-type-icon {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .condition-type-title {
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.8rem;
+            margin-bottom: 0.125rem;
+        }
+        
+        .condition-type-desc {
+            font-size: 0.7rem;
+            color: #6b7280;
+        }
+        
+        .environmental-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+        
+        .range-input {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .range-input input {
+            flex: 1;
+            min-width: 60px;
+        }
+        
+        .range-input span {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+        
+        .quantity-input {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .quantity-input input {
+            flex: 1;
+        }
+        
+        .quantity-input select {
+            width: 100px;
+        }
+        
+        .file-upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .file-upload-area:hover {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .file-upload-area.compact {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+        }
+        
+        .upload-icon {
+            font-size: 1.5rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-text {
+            color: #6b7280;
+            font-size: 0.8rem;
+        }
+        
+        .file-list {
+            margin-top: 0.75rem;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: #f3f4f6;
+            border-radius: 4px;
+            margin-bottom: 0.25rem;
+            font-size: 0.8rem;
+        }
+        
+        .safety-notes {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 6px;
+            padding: 0.75rem;
+        }
+        
+        .safety-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .calculation-result {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .cost-summary {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 1px solid #10b981;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .cost-summary-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #047857;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cost-item {
+            text-align: center;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #d1fae5;
+        }
+
+        .cost-item-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #047857;
+        }
+
+        .cost-item-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .total-cost {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .total-cost-value {
+            font-size: 1.875rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .total-cost-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .parameter-quick-templates {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .modal-footer {
+            background: #f9fafb;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .progress-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .progress-bar {
+            width: 120px;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            padding: 0.625rem 1.25rem;
+            font-weight: 600;
+        }
+        
+        .quick-templates {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .currency {
+            color: #059669;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .modal-container {
+                width: 95vw;
+                max-height: 95vh;
+            }
+            
+            .modal-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-stats {
+                justify-content: center;
+            }
+            
+            .form-grid,
+            .form-grid-3,
+            .form-grid-4,
+            .form-grid-5,
+            .form-grid-6 {
+                grid-template-columns: 1fr;
+            }
+            
+            .condition-types {
+                flex-direction: column;
+            }
+            
+            .environmental-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .cost-breakdown {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-container">
+        <div class="modal-header">
+            <div class="header-left">
+                <h1>🔧 Thiết lập Chi tiết Công việc & Chi phí</h1>
+                <p><strong>Làm đất và bón phân cơ bản</strong> - Chuẩn bị và xử lý đất</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="conditions-count">0</div>
+                    <div class="stat-label">Điều kiện</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="parameters-count">0</div>
+                    <div class="stat-label">Tham số</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="materials-count">0</div>
+                    <div class="stat-label">Vật tư</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="tools-count">0</div>
+                    <div class="stat-label">Công cụ</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="labor-count">0</div>
+                    <div class="stat-label">Nhân công</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="total-cost">0</div>
+                    <div class="stat-label">Tổng chi phí</div>
+                </div>
+            </div>
+            <button class="close-btn" onclick="closeModal()">✕</button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- Quick Templates -->
+            <div class="quick-templates">
+                <button class="btn btn-sm btn-secondary" onclick="applyTemplate('soil-preparation')">🌱 Chuẩn bị đất</button>
+                <button class="btn btn-sm btn-secondary" onclick="applyTemplate('fertilizer-application')">🧪 Bón phân</button>
+                <button class="btn btn-sm btn-secondary" onclick="applyTemplate('pest-control')">🐛 Phòng trừ sâu bệnh</button>
+                <button class="btn btn-sm btn-secondary" onclick="applyTemplate('irrigation')">💧 Tưới nước</button>
+            </div>
+
+            <!-- Tổng quan chi phí -->
+            <div class="cost-summary">
+                <div class="cost-summary-title">
+                    💰 Tổng quan chi phí công việc
+                </div>
+                <div class="cost-breakdown">
+                    <div class="cost-item">
+                        <div class="cost-item-value" id="materials-total">0 VNĐ</div>
+                        <div class="cost-item-label">Vật tư</div>
+                    </div>
+                    <div class="cost-item">
+                        <div class="cost-item-value" id="labor-total">0 VNĐ</div>
+                        <div class="cost-item-label">Nhân công</div>
+                    </div>
+                    <div class="cost-item">
+                        <div class="cost-item-value" id="tools-total">0 VNĐ</div>
+                        <div class="cost-item-label">Công cụ</div>
+                    </div>
+                </div>
+                <div class="total-cost">
+                    <div class="total-cost-value" id="grand-total">0 VNĐ</div>
+                    <div class="total-cost-label">Tổng chi phí công việc</div>
+                </div>
+            </div>
+
+            <!-- Mô tả và hướng dẫn -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">📝</span>
+                        Mô tả và hướng dẫn chi tiết
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="form-group span-full">
+                        <label for="detailed-description">Mô tả chi tiết công việc</label>
+                        <textarea id="detailed-description" rows="3" placeholder="Mô tả chi tiết cách thực hiện công việc..."></textarea>
+                    </div>
+                    
+                    <div class="form-group span-full">
+                        <label for="step-by-step">Hướng dẫn từng bước</label>
+                        <textarea id="step-by-step" rows="4" placeholder="Bước 1: ...&#10;Bước 2: ...&#10;Bước 3: ..."></textarea>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="video-link">Link video hướng dẫn</label>
+                            <input type="url" id="video-link" placeholder="https://youtube.com/watch?v=...">
+                        </div>
+                        <div class="form-group">
+                            <label for="reference-link">Link tài liệu tham khảo</label>
+                            <input type="url" id="reference-link" placeholder="https://...">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group span-full">
+                        <label>Tài liệu đính kèm</label>
+                        <div class="file-upload-area" onclick="document.getElementById('file-input').click()">
+                            <div class="upload-icon">📎</div>
+                            <div class="upload-text">
+                                <strong>Chọn file</strong> hoặc kéo thả (PDF, DOC, JPG, PNG, MP4 - max 10MB)
+                            </div>
+                            <input type="file" id="file-input" multiple style="display: none;" onchange="handleFileUpload(this)">
+                        </div>
+                        <div id="file-list" class="file-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tham số kỹ thuật -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">📐</span>
+                        Tham số kỹ thuật và tính toán
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="parameter-quick-templates">
+                        <button class="btn btn-sm btn-calculate" onclick="applyParameterTemplate('planting-spacing')">🌱 Quy cách trồng</button>
+                        <button class="btn btn-sm btn-calculate" onclick="applyParameterTemplate('fertilizer-dosage')">🧪 Liều lượng phân</button>
+                        <button class="btn btn-sm btn-calculate" onclick="applyParameterTemplate('irrigation-rate')">💧 Tốc độ tưới</button>
+                        <button class="btn btn-sm btn-calculate" onclick="applyParameterTemplate('pest-concentration')">🐛 Nồng độ thuốc</button>
+                    </div>
+                    
+                    <div id="parameters-container"></div>
+                    <button type="button" class="btn btn-sm btn-calculate" onclick="addParameter()">➕ Thêm tham số</button>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="calculateAllParameters()">🧮 Tính toán tất cả</button>
+                </div>
+            </div>
+
+            <!-- Điều kiện kích hoạt -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">🔄</span>
+                        Điều kiện kích hoạt tiến hành
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="condition-types">
+                        <div class="condition-type" onclick="selectConditionType('sequential')">
+                            <div class="condition-type-icon">⏭️</div>
+                            <div class="condition-type-title">Tuần tự</div>
+                            <div class="condition-type-desc">Sau công việc khác</div>
+                        </div>
+                        <div class="condition-type" onclick="selectConditionType('environmental')">
+                            <div class="condition-type-icon">🌡️</div>
+                            <div class="condition-type-title">Môi trường</div>
+                            <div class="condition-type-desc">Thông số tự nhiên</div>
+                        </div>
+                        <div class="condition-type" onclick="selectConditionType('field-assessment')">
+                            <div class="condition-type-icon">👨‍🌾</div>
+                            <div class="condition-type-title">Thực địa</div>
+                            <div class="condition-type-desc">Quan sát KTV</div>
+                        </div>
+                    </div>
+                    
+                    <div id="conditions-container"></div>
+                    <button type="button" class="btn btn-sm" onclick="addCondition()">➕ Thêm điều kiện</button>
+                </div>
+            </div>
+
+            <!-- Vật tư sử dụng -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">🧪</span>
+                        Vật tư sử dụng
+                    </h3>
+                    <div class="section-cost" id="materials-section-cost">0 VNĐ</div>
+                </div>
+                <div class="section-body">
+                    <div id="materials-container"></div>
+                    <button type="button" class="btn btn-sm" onclick="addMaterial()">➕ Thêm vật tư</button>
+                </div>
+            </div>
+
+            <!-- Công cụ cần thiết -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">🔨</span>
+                        Công cụ cần thiết
+                    </h3>
+                    <div class="section-cost" id="tools-section-cost">0 VNĐ</div>
+                </div>
+                <div class="section-body">
+                    <div id="tools-container"></div>
+                    <button type="button" class="btn btn-sm" onclick="addTool()">➕ Thêm công cụ</button>
+                </div>
+            </div>
+
+            <!-- Nhân công -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">👥</span>
+                        Nhân công
+                    </h3>
+                    <div class="section-cost" id="labor-section-cost">0 VNĐ</div>
+                </div>
+                <div class="section-body">
+                    <div id="labor-container"></div>
+                    <button type="button" class="btn btn-sm btn-purple" onclick="addLabor()">➕ Thêm nhân công</button>
+                </div>
+            </div>
+
+            <!-- Thuê khoán dịch vụ -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">🚛</span>
+                        Thuê khoán dịch vụ
+                    </h3>
+                    <div class="section-cost" id="services-section-cost">0 VNĐ</div>
+                </div>
+                <div class="section-body">
+                    <div id="services-container"></div>
+                    <button type="button" class="btn btn-sm btn-indigo" onclick="addService()">➕ Thêm dịch vụ</button>
+                </div>
+            </div>
+
+            <!-- Ghi chú an toàn -->
+            <div class="section">
+                <div class="section-header">
+                    <h3 class="section-title">
+                        <span class="section-icon">⚠️</span>
+                        Ghi chú an toàn
+                    </h3>
+                </div>
+                <div class="section-body">
+                    <div class="safety-notes">
+                        <div class="safety-title">🛡️ Lưu ý an toàn quan trọng</div>
+                        <textarea rows="3" placeholder="Nhập các lưu ý an toàn: sử dụng đồ bảo hộ, tránh hóa chất, kiểm tra thời tiết..."></textarea>
+                    </div>
+                    
+                    <div class="form-grid" style="margin-top: 0.75rem;">
+                        <div class="form-group">
+                            <label>Thiết bị bảo hộ bắt buộc</label>
+                            <textarea rows="2" placeholder="Găng tay, khẩu trang, kính bảo hộ..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Cấm thực hiện khi</label>
+                            <textarea rows="2" placeholder="Trời mưa, gió lớn, nhiệt độ >35°C..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <div class="progress-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="completion-progress" style="width: 0%"></div>
+                </div>
+                <div class="progress-text" id="completion-text">0% hoàn thành</div>
+            </div>
+            
+            <div class="action-buttons">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">❌ Hủy</button>
+                <button type="button" class="btn btn-secondary" onclick="saveAsDraft()">💾 Lưu nháp</button>
+                <button type="button" class="btn btn-calculate" onclick="exportCostReport()">📊 Xuất báo cáo</button>
+                <button type="button" class="btn btn-primary" onclick="saveDetails()">✅ Lưu chi tiết</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conditionCounter = 0;
+        let materialCounter = 0;
+        let toolCounter = 0;
+        let parameterCounter = 0;
+        let laborCounter = 0;
+        let serviceCounter = 0;
+        let selectedConditionType = '';
+        let uploadedFiles = [];
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
+        }
+
+        function calculateTotalCosts() {
+            let materialsCost = 0;
+            let toolsCost = 0;
+            let laborCost = 0;
+            let servicesCost = 0;
+
+            // Tính tổng chi phí vật tư
+            document.querySelectorAll('.material-item').forEach(item => {
+                const totalInput = item.querySelector('input[id*="material-total-"]');
+                if (totalInput && totalInput.value) {
+                    materialsCost += parseFloat(totalInput.value.replace(/[^\d]/g, '')) || 0;
+                }
+            });
+
+            // Tính tổng chi phí công cụ
+            document.querySelectorAll('.tool-item').forEach(item => {
+                const totalInput = item.querySelector('input[id*="tool-total-"]');
+                if (totalInput && totalInput.value) {
+                    toolsCost += parseFloat(totalInput.value.replace(/[^\d]/g, '')) || 0;
+                }
+            });
+
+            // Tính tổng chi phí nhân công
+            document.querySelectorAll('.labor-item').forEach(item => {
+                const totalInput = item.querySelector('input[id*="labor-total-"]');
+                if (totalInput && totalInput.value) {
+                    laborCost += parseFloat(totalInput.value.replace(/[^\d]/g, '')) || 0;
+                }
+            });
+
+            // Tính tổng chi phí dịch vụ
+            document.querySelectorAll('.service-item').forEach(item => {
+                const totalInput = item.querySelector('input[id*="service-total-"]');
+                if (totalInput && totalInput.value) {
+                    servicesCost += parseFloat(totalInput.value.replace(/[^\d]/g, '')) || 0;
+                }
+            });
+
+            const grandTotal = materialsCost + toolsCost + laborCost + servicesCost;
+
+            // Cập nhật UI
+            document.getElementById('materials-total').textContent = formatCurrency(materialsCost);
+            document.getElementById('labor-total').textContent = formatCurrency(laborCost);
+            document.getElementById('tools-total').textContent = formatCurrency(toolsCost);
+            document.getElementById('grand-total').textContent = formatCurrency(grandTotal);
+            
+            document.getElementById('materials-section-cost').textContent = formatCurrency(materialsCost);
+            document.getElementById('tools-section-cost').textContent = formatCurrency(toolsCost);
+            document.getElementById('labor-section-cost').textContent = formatCurrency(laborCost);
+            document.getElementById('services-section-cost').textContent = formatCurrency(servicesCost);
+
+            // Cập nhật header stats
+            document.getElementById('total-cost').textContent = Math.round(grandTotal / 1000) + 'k';
+        }
+
+        function calculateItemCost(itemType, id) {
+            const item = document.getElementById(`${itemType}-${id}`);
+            if (!item) return;
+
+            const quantity = parseFloat(item.querySelector(`input[id*="${itemType}-quantity-${id}"]`)?.value) || 0;
+            const price = parseFloat(item.querySelector(`input[id*="${itemType}-price-${id}"]`)?.value) || 0;
+            
+            const total = quantity * price;
+            const totalInput = item.querySelector(`input[id*="${itemType}-total-${id}"]`);
+            if (totalInput) {
+                totalInput.value = formatCurrency(total);
+            }
+
+            calculateTotalCosts();
+        }
+
+        function selectConditionType(type) {
+            selectedConditionType = type;
+            document.querySelectorAll('.condition-type').forEach(el => el.classList.remove('selected'));
+            event.target.closest('.condition-type').classList.add('selected');
+        }
+
+        function addParameter() {
+            parameterCounter++;
+            const container = document.getElementById('parameters-container');
+            
+            const parameterHtml = `
+                <div class="parameter-item" id="parameter-${parameterCounter}">
+                    <div class="item-header">
+                        <div class="item-title">
+                            <span class="item-badge parameter-badge">Tham số ${parameterCounter}</span>
+                        </div>
+                        <div>
+                            <button class="btn btn-calculate btn-sm" onclick="calculateParameter(${parameterCounter})">🧮 Tính toán</button>
+                            <button class="btn btn-danger btn-sm" onclick="removeParameter(${parameterCounter})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="form-grid-4">
+                        <div class="form-group">
+                            <label>Tên tham số</label>
+                            <input type="text" id="param-name-${parameterCounter}" placeholder="Quy cách trồng, Liều phân...">
+                        </div>
+                        <div class="form-group">
+                            <label>Giá trị tham số</label>
+                            <input type="text" id="param-value-${parameterCounter}" placeholder="8x8, 100, 2.5...">
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn vị tính</label>
+                            <select id="param-unit-${parameterCounter}">
+                                <option value="m">m (mét)</option>
+                                <option value="kg/ha">kg/ha</option>
+                                <option value="g/m2">g/m²</option>
+                                <option value="l/ha">l/ha</option>
+                                <option value="cây/ha">cây/ha</option>
+                                <option value="ml/l">ml/l</option>
+                                <option value="%">% (phần trăm)</option>
+                                <option value="ngày">ngày</option>
+                                <option value="tuần">tuần</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Kết quả dự toán</label>
+                            <input type="text" id="param-result-${parameterCounter}" readonly placeholder="Sẽ tự động tính...">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Diện tích áp dụng (ha)</label>
+                            <input type="number" id="param-area-${parameterCounter}" placeholder="1.0" step="0.1" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Công thức tính</label>
+                            <select id="param-formula-${parameterCounter}" onchange="updateFormulaDescription(${parameterCounter})">
+                                <option value="density">Mật độ trồng (cây/ha)</option>
+                                <option value="dosage">Liều lượng (kg/ha hoặc l/ha)</option>
+                                <option value="concentration">Nồng độ pha chế (ml/l)</option>
+                                <option value="time">Thời gian (ngày/tuần)</option>
+                                <option value="custom">Tự định nghĩa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả công thức</label>
+                        <textarea id="param-description-${parameterCounter}" rows="2" placeholder="Mô tả cách tính toán..."></textarea>
+                    </div>
+                    <div id="param-calculation-${parameterCounter}" class="calculation-result" style="display: none;">
+                        <strong>Kết quả tính toán:</strong> <span id="param-calc-result-${parameterCounter}"></span>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', parameterHtml);
+            updateStats();
+        }
+
+        function updateFormulaDescription(parameterId) {
+            const formula = document.getElementById(`param-formula-${parameterId}`).value;
+            const description = document.getElementById(`param-description-${parameterId}`);
+            
+            const descriptions = {
+                'density': 'Tính số lượng cây trên hecta dựa trên khoảng cách trồng. Ví dụ: 8x8m = 10000/(8*8) = 156 cây/ha',
+                'dosage': 'Tính lượng vật tư cần thiết cho diện tích. Ví dụ: 100kg/ha * 2ha = 200kg',
+                'concentration': 'Tính nồng độ pha chế thuốc. Ví dụ: 20ml thuốc/1l nước = 2%',
+                'time': 'Tính thời gian thực hiện dựa trên chu kỳ và điều kiện',
+                'custom': 'Nhập công thức tính toán tùy chỉnh'
+            };
+            
+            description.value = descriptions[formula] || '';
+        }
+
+        function calculateParameter(parameterId) {
+            const name = document.getElementById(`param-name-${parameterId}`).value;
+            const value = document.getElementById(`param-value-${parameterId}`).value;
+            const unit = document.getElementById(`param-unit-${parameterId}`).value;
+            const area = parseFloat(document.getElementById(`param-area-${parameterId}`).value) || 1;
+            const formula = document.getElementById(`param-formula-${parameterId}`).value;
+            
+            let result = '';
+            let calculationDisplay = '';
+            
+            try {
+                if (formula === 'density' && value.includes('x')) {
+                    const [spacing1, spacing2] = value.split('x').map(v => parseFloat(v.trim()));
+                    const densityPerHa = 10000 / (spacing1 * spacing2);
+                    const totalTrees = densityPerHa * area;
+                    result = `${Math.round(totalTrees)} cây`;
+                    calculationDisplay = `${Math.round(densityPerHa)} cây/ha × ${area}ha = ${Math.round(totalTrees)} cây`;
+                } else if (formula === 'dosage') {
+                    const dosage = parseFloat(value);
+                    const total = dosage * area;
+                    result = `${total} ${unit}`;
+                    calculationDisplay = `${dosage} ${unit} × ${area}ha = ${total} ${unit}`;
+                } else if (formula === 'concentration') {
+                    const concentration = parseFloat(value);
+                    result = `${concentration}${unit}`;
+                    calculationDisplay = `Nồng độ pha chế: ${concentration}${unit}`;
+                } else {
+                    const numValue = parseFloat(value);
+                    if (!isNaN(numValue)) {
+                        const total = numValue * area;
+                        result = `${total} ${unit}`;
+                        calculationDisplay = `${numValue} ${unit} × ${area}ha = ${total} ${unit}`;
+                    } else {
+                        result = value;
+                        calculationDisplay = `Giá trị: ${value}`;
+                    }
+                }
+            } catch (error) {
+                result = 'Lỗi tính toán';
+                calculationDisplay = 'Vui lòng kiểm tra lại dữ liệu nhập';
+            }
+            
+            document.getElementById(`param-result-${parameterId}`).value = result;
+            document.getElementById(`param-calc-result-${parameterId}`).textContent = calculationDisplay;
+            document.getElementById(`param-calculation-${parameterId}`).style.display = 'block';
+        }
+
+        function calculateAllParameters() {
+            const parameterItems = document.querySelectorAll('.parameter-item');
+            parameterItems.forEach(item => {
+                const id = item.id.split('-')[1];
+                calculateParameter(id);
+            });
+        }
+
+        function removeParameter(id) {
+            if (confirm('Xóa tham số này?')) {
+                document.getElementById(`parameter-${id}`).remove();
+                updateStats();
+            }
+        }
+
+        function applyParameterTemplate(templateType) {
+            const templates = {
+                'planting-spacing': {
+                    name: 'Quy cách trồng',
+                    value: '8x8',
+                    unit: 'cây/ha',
+                    formula: 'density',
+                    area: '1.0'
+                },
+                'fertilizer-dosage': {
+                    name: 'Liều lượng phân NPK',
+                    value: '150',
+                    unit: 'kg/ha',
+                    formula: 'dosage',
+                    area: '1.0'
+                },
+                'irrigation-rate': {
+                    name: 'Lượng nước tưới',
+                    value: '500',
+                    unit: 'l/ha',
+                    formula: 'dosage',
+                    area: '1.0'
+                },
+                'pest-concentration': {
+                    name: 'Nồng độ thuốc trừ sâu',
+                    value: '20',
+                    unit: 'ml/l',
+                    formula: 'concentration',
+                    area: '1.0'
+                }
+            };
+            
+            const template = templates[templateType];
+            if (template && confirm(`Thêm template "${template.name}"?`)) {
+                addParameter();
+                const currentId = parameterCounter;
+                
+                document.getElementById(`param-name-${currentId}`).value = template.name;
+                document.getElementById(`param-value-${currentId}`).value = template.value;
+                document.getElementById(`param-unit-${currentId}`).value = template.unit;
+                document.getElementById(`param-formula-${currentId}`).value = template.formula;
+                document.getElementById(`param-area-${currentId}`).value = template.area;
+                
+                updateFormulaDescription(currentId);
+                calculateParameter(currentId);
+            }
+        }
+
+        function addCondition() {
+            if (!selectedConditionType) {
+                alert('Vui lòng chọn loại điều kiện trước!');
+                return;
+            }
+
+            conditionCounter++;
+            const container = document.getElementById('conditions-container');
+            
+            let conditionHtml = '';
+            if (selectedConditionType === 'sequential') {
+                conditionHtml = `
+                    <div class="condition-item" id="condition-${conditionCounter}">
+                        <div class="item-header">
+                            <div class="item-title">
+                                <span class="item-badge">Tuần tự</span>
+                                Điều kiện ${conditionCounter}
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="removeCondition(${conditionCounter})">🗑️</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Công việc tiên quyết</label>
+                                <select>
+                                    <option>Phân tích đất</option>
+                                    <option>Làm đất</option>
+                                    <option>Bón vôi</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Thời gian chờ</label>
+                                <div class="quantity-input">
+                                    <input type="number" placeholder="0" min="0">
+                                    <select>
+                                        <option>giờ</option>
+                                        <option>ngày</option>
+                                        <option>tuần</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (selectedConditionType === 'environmental') {
+                conditionHtml = `
+                    <div class="condition-item" id="condition-${conditionCounter}">
+                        <div class="item-header">
+                            <div class="item-title">
+                                <span class="item-badge">Môi trường</span>
+                                Điều kiện ${conditionCounter}
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="removeCondition(${conditionCounter})">🗑️</button>
+                        </div>
+                        <div class="environmental-grid">
+                            <div class="form-group">
+                                <label>🌡️ Nhiệt độ</label>
+                                <div class="range-input">
+                                    <input type="number" placeholder="Min">
+                                    <span>-</span>
+                                    <input type="number" placeholder="Max">
+                                    <span>°C</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>💧 Độ ẩm</label>
+                                <div class="range-input">
+                                    <input type="number" placeholder="Min">
+                                    <span>-</span>
+                                    <input type="number" placeholder="Max">
+                                    <span>%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Gợi ý đánh giá</label>
+                            <textarea placeholder="Nhiệt độ ổn định 25-30°C trong 3 ngày..."></textarea>
+                        </div>
+                    </div>
+                `;
+            } else if (selectedConditionType === 'field-assessment') {
+                conditionHtml = `
+                    <div class="condition-item" id="condition-${conditionCounter}">
+                        <div class="item-header">
+                            <div class="item-title">
+                                <span class="item-badge">Thực địa</span>
+                                Điều kiện ${conditionCounter}
+                            </div>
+                            <button class="btn btn-danger btn-sm" onclick="removeCondition(${conditionCounter})">🗑️</button>
+                        </div>
+                        <div class="form-group">
+                            <label>Loại dấu hiệu</label>
+                            <select>
+                                <option>🐛 Vi sinh vật gây hại</option>
+                                <option>🍃 Dấu hiệu lá</option>
+                                <option>🌿 Dấu hiệu thân</option>
+                                <option>🌱 Dấu hiệu rễ</option>
+                            </select>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Mức độ nghiêm trọng</label>
+                                <select>
+                                    <option>Nhẹ (1-25%)</option>
+                                    <option>Trung bình (26-50%)</option>
+                                    <option>Nặng (51-75%)</option>
+                                    <option>Rất nặng (>75%)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Diện tích ảnh hưởng</label>
+                                <div class="quantity-input">
+                                    <input type="number" placeholder="0">
+                                    <select>
+                                        <option>%</option>
+                                        <option>m²</option>
+                                        <option>ha</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            container.insertAdjacentHTML('beforeend', conditionHtml);
+            updateStats();
+        }
+
+        function addMaterial() {
+            materialCounter++;
+            const container = document.getElementById('materials-container');
+            
+            const materialHtml = `
+                <div class="material-item" id="material-${materialCounter}">
+                    <div class="item-header">
+                        <div class="item-title">
+                            <span class="item-badge">Vật tư ${materialCounter}</span>
+                            <span class="cost-badge" id="material-cost-${materialCounter}">0 VNĐ</span>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="removeMaterial(${materialCounter})">🗑️</button>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Tên vật tư</label>
+                            <input type="text" id="material-name-${materialCounter}" placeholder="Phân NPK, Thuốc trừ sâu...">
+                        </div>
+                        <div class="form-group">
+                            <label>Hoạt chất (Theo danh mục cho phép)</label>
+                            <input type="text" id="material-active-${materialCounter}" placeholder="Glyphosate 480g/l">
+                        </div>
+                    </div>
+                    <div class="form-grid-6">
+                        <div class="form-group">
+                            <label>Số lượng</label>
+                            <input type="number" id="material-quantity-${materialCounter}" placeholder="0" min="0" step="0.1" 
+                                   onchange="calculateItemCost('material', ${materialCounter})">
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn vị tính</label>
+                            <select id="material-unit-${materialCounter}">
+                                <option>kg</option>
+                                <option>lít</option>
+                                <option>gram</option>
+                                <option>túi</option>
+                                <option>thùng</option>
+                                <option>chai</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn giá (VNĐ)</label>
+                            <input type="number" id="material-price-${materialCounter}" placeholder="0" min="0" 
+                                   onchange="calculateItemCost('material', ${materialCounter})">
+                        </div>
+                        <div class="form-group">
+                            <label>Nồng độ pha</label>
+                            <input type="text" id="material-concentration-${materialCounter}" placeholder="1:1000">
+                        </div>
+                        <div class="form-group">
+                            <label>Tổng tiền</label>
+                            <input type="text" id="material-total-${materialCounter}" readonly class="currency">
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn vị cung cấp</label>
+                            <input type="text" id="material-supplier-${materialCounter}" placeholder="Công ty ABC">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload hóa đơn</label>
+                        <div class="file-upload-area compact" onclick="document.getElementById('material-invoice-${materialCounter}').click()">
+                            <span class="upload-text">📎 Chọn hóa đơn (PDF, JPG, PNG)</span>
+                            <input type="file" id="material-invoice-${materialCounter}" style="display: none;" 
+                                   accept=".pdf,.jpg,.jpeg,.png" onchange="handleInvoiceUpload(this, ${materialCounter}, 'material')">
+                        </div>
+                        <div id="material-invoice-list-${materialCounter}" class="file-list"></div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', materialHtml);
+            updateStats();
+        }
+
+        function addTool() {
+            toolCounter++;
+            const container = document.getElementById('tools-container');
+            
+            const toolHtml = `
+                <div class="tool-item" id="tool-${toolCounter}">
+                    <div class="item-header">
+                        <div class="item-title">
+                            <span class="item-badge">Công cụ ${toolCounter}</span>
+                            <span class="cost-badge" id="tool-cost-${toolCounter}">0 VNĐ</span>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="removeTool(${toolCounter})">🗑️</button>
+                    </div>
+                    <div class="form-grid-5">
+                        <div class="form-group">
+                            <label>Tên công cụ</label>
+                            <input type="text" id="tool-name-${toolCounter}" placeholder="Máy phun, Cuốc, Xẻng...">
+                        </div>
+                        <div class="form-group">
+                            <label>Số lượng</label>
+                            <input type="number" id="tool-quantity-${toolCounter}" placeholder="1" min="1" 
+                                   onchange="calculateItemCost('tool', ${toolCounter})">
+                        </div>
+                        <div class="form-group">
+                            <label>Thông số</label>
+                            <input type="text" id="tool-specs-${toolCounter}" placeholder="20L, 2HP...">
+                        </div>
+                        <div class="form-group">
+                            <label>Chi phí/Khấu hao (VNĐ)</label>
+                            <input type="number" id="tool-price-${toolCounter}" placeholder="0" min="0" 
+                                   onchange="calculateItemCost('tool', ${toolCounter})">
+                        </div>
+                        <div class="form-group">
+                            <label>Tổng tiền</label>
+                            <input type="text" id="tool-total-${toolCounter}" readonly class="currency">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="tool-notes-${toolCounter}" rows="2" placeholder="Ghi chú về công cụ, cách sử dụng..."></textarea>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', toolHtml);
+            updateStats();
+        }
+
+        function addLabor() {
+            laborCounter++;
+            const container = document.getElementById('labor-container');
+            
+            const laborHtml = `
+                <div class="labor-item" id="labor-${laborCounter}">
+                    <div class="item-header">
+                        <div class="item-title">
+                            <span class="item-badge labor-badge">Nhân công ${laborCounter}</span>
+                            <span class="cost-badge" id="labor-cost-${laborCounter}">0 VNĐ</span>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="removeLabor(${laborCounter})">🗑️</button>
+                    </div>
+                    <div class="form-grid-5">
+                        <div class="form-group">
+                            <label>Loại công việc</label>
+                            <input type="text" id="labor-type-${laborCounter}" placeholder="Làm đất, Bón phân, Thu hoạch...">
+                        </div>
+                        <div class="form-group">
+                            <label>Số lượng</label>
+                            <input type="number" id="labor-quantity-${laborCounter}" placeholder="1" min="1" 
+                                   onchange="calculateItemCost('labor', ${laborCounter})">
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn vị tính</label>
+                            <select id="labor-unit-${laborCounter}">
+                                <option>Ngày công</option>
+                                <option>Giờ</option>
+                                <option>Theo diện tích (ha)</option>
+                                <option>Theo sản lượng (tấn)</option>
+                                <option>Khoán trọn</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Thù lao (VNĐ)</label>
+                            <input type="number" id="labor-price-${laborCounter}" placeholder="0" min="0" 
+                                   onchange="calculateItemCost('labor', ${laborCounter})">
+                        </div>
+                        <div class="form-group">
+                            <label>Tổng chi phí</label>
+                            <input type="text" id="labor-total-${laborCounter}" readonly class="currency">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Tên người lao động</label>
+                            <input type="text" id="labor-name-${laborCounter}" placeholder="Họ và tên...">
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="tel" id="labor-phone-${laborCounter}" placeholder="0901234567">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="labor-notes-${laborCounter}" rows="2" placeholder="Kinh nghiệm, kỹ năng đặc biệt..."></textarea>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', laborHtml);
+            updateStats();
+        }
+
+        function addService() {
+            serviceCounter++;
+            const container = document.getElementById('services-container');
+            
+            const serviceHtml = `
+                <div class="service-item" id="service-${serviceCounter}">
+                    <div class="item-header">
+                        <div class="item-title">
+                            <span class="item-badge service-badge">Dịch vụ ${serviceCounter}</span>
+                            <span class="cost-badge" id="service-cost-${serviceCounter}">0 VNĐ</span>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="removeService(${serviceCounter})">🗑️</button>
+                    </div>
+                    <div class="form-grid-5">
+                        <div class="form-group">
+                            <label>Loại dịch vụ</label>
+                            <input type="text" id="service-type-${serviceCounter}" placeholder="Cày bừa, Phun thuốc, Vận chuyển...">
+                        </div>
+                        <div class="form-group">
+                            <label>Số lượng</label>
+                            <input type="number" id="service-quantity-${serviceCounter}" placeholder="1" min="1" 
+                                   onchange="calculateItemCost('service', ${serviceCounter})">
+                        </div>
+                        <div class="form-group">
+                            <label>Đơn vị tính</label>
+                            <select id="service-unit-${serviceCounter}">
+                                <option>Theo diện tích (ha)</option>
+                                <option>Theo ngày</option>
+                                <option>Theo giờ</option>
+                                <option>Theo chuyến</option>
+                                <option>Khoán trọn</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Thù lao (VNĐ)</label>
+                            <input type="number" id="service-price-${serviceCounter}" placeholder="0" min="0" 
+                                   onchange="calculateItemCost('service', ${serviceCounter})">
+                        </div>
+                        <div class="form-group">
+                            <label>Tổng chi phí</label>
+                            <input type="text" id="service-total-${serviceCounter}" readonly class="currency">
+                        </div>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nhà cung cấp</label>
+                            <input type="text" id="service-provider-${serviceCounter}" placeholder="Công ty/Cá nhân cung cấp dịch vụ">
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="tel" id="service-phone-${serviceCounter}" placeholder="0901234567">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả dịch vụ</label>
+                        <textarea id="service-description-${serviceCounter}" rows="2" placeholder="Mô tả chi tiết dịch vụ, yêu cầu kỹ thuật..."></textarea>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', serviceHtml);
+            updateStats();
+        }
+
+        function removeCondition(id) {
+            if (confirm('Xóa điều kiện này?')) {
+                document.getElementById(`condition-${id}`).remove();
+                updateStats();
+            }
+        }
+
+        function removeMaterial(id) {
+            if (confirm('Xóa vật tư này?')) {
+                document.getElementById(`material-${id}`).remove();
+                updateStats();
+                calculateTotalCosts();
+            }
+        }
+
+        function removeTool(id) {
+            if (confirm('Xóa công cụ này?')) {
+                document.getElementById(`tool-${id}`).remove();
+                updateStats();
+                calculateTotalCosts();
+            }
+        }
+
+        function removeLabor(id) {
+            if (confirm('Xóa nhân công này?')) {
+                document.getElementById(`labor-${id}`).remove();
+                updateStats();
+                calculateTotalCosts();
+            }
+        }
+
+        function removeService(id) {
+            if (confirm('Xóa dịch vụ này?')) {
+                document.getElementById(`service-${id}`).remove();
+                updateStats();
+                calculateTotalCosts();
+            }
+        }
+
+        function handleFileUpload(input) {
+            const files = input.files;
+            const fileList = document.getElementById('file-list');
+            
+            for (let file of files) {
+                if (file.size > 10 * 1024 * 1024) {
+                    alert(`File ${file.name} quá lớn (>10MB)`);
+                    continue;
+                }
+                
+                uploadedFiles.push(file);
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>📎 ${file.name}</span>
+                    <button class="btn btn-danger btn-sm" onclick="removeFile('${file.name}', this)">🗑️</button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+            
+            updateStats();
+        }
+
+        function handleInvoiceUpload(input, itemId, itemType) {
+            const files = input.files;
+            const fileList = document.getElementById(`${itemType}-invoice-list-${itemId}`);
+            
+            for (let file of files) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`File ${file.name} quá lớn (>5MB)`);
+                    continue;
+                }
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <span>📎 ${file.name}</span>
+                    <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">🗑️</button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+        }
+
+        function removeFile(fileName, button) {
+            uploadedFiles = uploadedFiles.filter(f => f.name !== fileName);
+            button.closest('.file-item').remove();
+            updateStats();
+        }
+
+        function updateStats() {
+            const conditionsCount = document.querySelectorAll('.condition-item').length;
+            const parametersCount = document.querySelectorAll('.parameter-item').length;
+            const materialsCount = document.querySelectorAll('.material-item').length;
+            const toolsCount = document.querySelectorAll('.tool-item').length;
+            const laborCount = document.querySelectorAll('.labor-item').length + document.querySelectorAll('.service-item').length;
+            
+            document.getElementById('conditions-count').textContent = conditionsCount;
+            document.getElementById('parameters-count').textContent = parametersCount;
+            document.getElementById('materials-count').textContent = materialsCount;
+            document.getElementById('tools-count').textContent = toolsCount;
+            document.getElementById('labor-count').textContent = laborCount;
+            
+            const totalFields = [
+                document.getElementById('detailed-description').value,
+                document.getElementById('step-by-step').value
+            ].filter(v => v.trim()).length;
+            
+            const completion = Math.min(100, Math.round(((totalFields + parametersCount + conditionsCount + materialsCount + toolsCount + laborCount) / 12) * 100));
+            
+            document.getElementById('completion-progress').style.width = completion + '%';
+            document.getElementById('completion-text').textContent = completion + '% hoàn thành';
+
+            // Update cost badges
+            document.querySelectorAll('.material-item').forEach((item, index) => {
+                const id = item.id.split('-')[1];
+                const totalInput = item.querySelector(`input[id*="material-total-${id}"]`);
+                const badge = document.getElementById(`material-cost-${id}`);
+                if (totalInput && badge) {
+                    badge.textContent = totalInput.value || '0 VNĐ';
+                }
+            });
+        }
+
+        function applyTemplate(templateType) {
+            const templates = {
+                'soil-preparation': {
+                    description: 'Chuẩn bị đất trồng, cải thiện cấu trúc và độ phì nhiêu',
+                    steps: 'Bước 1: Làm sạch cỏ dại\nBước 2: Xới đất sâu 20-30cm\nBước 3: Bón vôi cải thiện pH\nBước 4: Bón phân chuồng hoai mục'
+                },
+                'fertilizer-application': {
+                    description: 'Bón phân định kỳ bổ sung dinh dưỡng cho cây trồng',
+                    steps: 'Bước 1: Kiểm tra độ ẩm đất\nBước 2: Tính toán lượng phân\nBước 3: Pha phân theo tỷ lệ\nBước 4: Bón quanh gốc cây'
+                }
+            };
+            
+            const template = templates[templateType];
+            if (template && confirm(`Áp dụng template "${templateType}"?`)) {
+                document.getElementById('detailed-description').value = template.description;
+                document.getElementById('step-by-step').value = template.steps;
+                updateStats();
+            }
+        }
+
+        function exportCostReport() {
+            alert('📊 Đang tạo báo cáo chi phí...\n\nBáo cáo sẽ bao gồm:\n- Chi tiết từng khoản chi phí\n- Biểu đồ phân bố chi phí\n- So sánh với kế hoạch\n- Khuyến nghị tối ưu hóa');
+        }
+
+        function closeModal() {
+            if (confirm('Đóng popup? Các thay đổi chưa lưu sẽ bị mất.')) {
+                document.body.style.display = 'none';
+                alert('Quay về quy trình chính...');
+            }
+        }
+
+        function saveAsDraft() {
+            alert('💾 Đã lưu nháp thành công!');
+        }
+
+        function saveDetails() {
+            const description = document.getElementById('detailed-description').value;
+            const steps = document.getElementById('step-by-step').value;
+            
+            if (!description.trim() || !steps.trim()) {
+                alert('⚠️ Vui lòng điền mô tả và hướng dẫn chi tiết!');
+                return;
+            }
+            
+            alert('✅ Đã lưu chi tiết công việc và dự toán chi phí thành công!');
+            closeModal();
+        }
+
+        // Initialize
+        document.addEventListener('input', updateStats);
+        document.addEventListener('change', updateStats);
+        
+        // Sample data
+        setTimeout(() => {
+            selectConditionType('environmental');
+            addCondition();
+            applyParameterTemplate('planting-spacing');
+            
+            // Add sample material
+            addMaterial();
+            setTimeout(() => {
+                document.getElementById('material-name-1').value = 'Phân NPK 16-16-8';
+                document.getElementById('material-quantity-1').value = '50';
+                document.getElementById('material-price-1').value = '25000';
+                document.getElementById('material-supplier-1').value = 'Công ty TNHH Phân bón Việt Nam';
+                calculateItemCost('material', 1);
+            }, 100);
+            
+            // Add sample tool
+            addTool();
+            setTimeout(() => {
+                document.getElementById('tool-name-1').value = 'Máy cày mini';
+                document.getElementById('tool-quantity-1').value = '1';
+                document.getElementById('tool-price-1').value = '200000';
+                calculateItemCost('tool', 1);
+            }, 200);
+            
+            // Add sample labor
+            addLabor();
+            setTimeout(() => {
+                document.getElementById('labor-type-1').value = 'Làm đất và bón phân';
+                document.getElementById('labor-quantity-1').value = '2';
+                document.getElementById('labor-price-1').value = '300000';
+                calculateItemCost('labor', 1);
+            }, 300);
+            
+        }, 500);
+    </script>
+</body>
+</html>

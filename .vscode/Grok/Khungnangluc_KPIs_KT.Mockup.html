@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cấu Hình Khung Năng Lực & Mục Tiêu</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans p-6 lg:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-white">Tạo Khung Năng Lực & Mục Tiêu Mới</h1>
+            <p class="text-gray-400 mt-1">Sử dụng biểu mẫu này để "số hóa" các quyết định từ Template Chiến lược đã được phê duyệt.</p>
+        </div>
+
+        <!-- Stepper -->
+        <div class="flex items-center mb-10">
+            <div class="flex items-center text-blue-400 relative">
+                <div class="rounded-full transition duration-500 ease-in-out h-10 w-10 border-2 border-blue-400 flex items-center justify-center">
+                    <span class="font-bold">1</span>
+                </div>
+                <div class="absolute top-0 -ml-10 text-center mt-12 w-32 text-xs font-medium uppercase text-blue-400">Thông Tin Chung</div>
+            </div>
+            <div class="flex-auto border-t-2 transition duration-500 ease-in-out border-gray-700"></div>
+            <div class="flex items-center text-gray-500 relative">
+                <div class="rounded-full transition duration-500 ease-in-out h-10 w-10 border-2 border-gray-700 flex items-center justify-center">
+                    <span class="font-bold">2</span>
+                </div>
+                <div class="absolute top-0 -ml-10 text-center mt-12 w-32 text-xs font-medium uppercase text-gray-500">Thiết Lập KPI</div>
+            </div>
+            <div class="flex-auto border-t-2 transition duration-500 ease-in-out border-gray-700"></div>
+            <div class="flex items-center text-gray-500 relative">
+                <div class="rounded-full transition duration-500 ease-in-out h-10 w-10 border-2 border-gray-700 flex items-center justify-center">
+                    <span class="font-bold">3</span>
+                </div>
+                <div class="absolute top-0 -ml-10 text-center mt-12 w-32 text-xs font-medium uppercase text-gray-500">Áp Dụng</div>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="bg-gray-800 p-8 rounded-xl border border-gray-700">
+            
+            <!-- ====== BƯỚC 1: THÔNG TIN CHUNG ====== -->
+            <div id="step-1">
+                <h2 class="text-xl font-bold text-white mb-6">Bước 1: Thông Tin Chung Về Bộ Khung Năng Lực</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="framework_name" class="block text-sm font-medium text-gray-300 mb-2">Tên Bộ Khung Năng Lực</label>
+                        <input type="text" id="framework_name" value="Khung Năng lực Kỹ sư - Q4/2025 - Doanh số & Năng suất" class="w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="framework_id" class="block text-sm font-medium text-gray-300 mb-2">Mã định danh (ID Hệ thống)</label>
+                        <input type="text" id="framework_id" value="KPI_SET_2025_Q4_SALES_YIELD" class="w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="period" class="block text-sm font-medium text-gray-300 mb-2">Kỳ Áp Dụng</label>
+                        <select id="period" class="w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option>Q3/2025</option>
+                            <option selected>Q4/2025</option>
+                            <option>Q1/2026</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="target_audience" class="block text-sm font-medium text-gray-300 mb-2">Đối tượng Áp dụng</label>
+                        <input type="text" id="target_audience" value="Toàn bộ Kỹ sư Nông nghiệp - Dự án Sầu riêng Đắk Lắk" class="w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 my-8"></div>
+
+            <!-- ====== BƯỚC 2: THIẾT LẬP KPI, TRỌNG SỐ & NGƯỠNG ====== -->
+            <div id="step-2">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-white">Bước 2: Thiết Lập KPI, Trọng Số & Ngưỡng Thưởng</h2>
+                    <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md flex items-center">
+                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i> Thêm KPI từ Thư viện
+                    </button>
+                </div>
+                
+                <!-- KPI Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-400">
+                        <thead class="text-xs text-gray-300 uppercase bg-gray-700">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 w-1/3">Tên KPI</th>
+                                <th scope="col" class="px-6 py-3 text-center">Trọng số (%)</th>
+                                <th scope="col" class="px-6 py-3">Mục Tiêu (Mức 100%)</th>
+                                <th scope="col" class="px-6 py-3">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- KPI 1: Doanh số -->
+                            <tr class="bg-gray-800 border-b border-gray-700">
+                                <td class="px-6 py-4 font-medium text-white">Doanh số Vật tư</td>
+                                <td class="px-6 py-4"><input type="number" value="30" class="w-24 text-center bg-gray-900 border-gray-600 rounded-md py-1"></td>
+                                <td class="px-6 py-4"><input type="text" value="300 triệu / kỹ sư" class="w-full bg-gray-900 border-gray-600 rounded-md py-1 px-2"></td>
+                                <td class="px-6 py-4"><button class="text-red-500 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <!-- KPI 2: Năng suất -->
+                            <tr class="bg-gray-800 border-b border-gray-700">
+                                <td class="px-6 py-4 font-medium text-white">Năng suất Sầu riêng TB</td>
+                                <td class="px-6 py-4"><input type="number" value="25" class="w-24 text-center bg-gray-900 border-gray-600 rounded-md py-1"></td>
+                                <td class="px-6 py-4"><input type="text" value="22 tấn/ha" class="w-full bg-gray-900 border-gray-600 rounded-md py-1 px-2"></td>
+                                <td class="px-6 py-4"><button class="text-red-500 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <!-- KPI 3: Vườn mới -->
+                            <tr class="bg-gray-800 border-b border-gray-700">
+                                <td class="px-6 py-4 font-medium text-white">Số Vườn Mới Hợp Tác</td>
+                                <td class="px-6 py-4"><input type="number" value="20" class="w-24 text-center bg-gray-900 border-gray-600 rounded-md py-1"></td>
+                                <td class="px-6 py-4"><input type="text" value="4 vườn / kỹ sư" class="w-full bg-gray-900 border-gray-600 rounded-md py-1 px-2"></td>
+                                <td class="px-6 py-4"><button class="text-red-500 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <!-- KPI 4: NPS -->
+                            <tr class="bg-gray-800 border-b border-gray-700">
+                                <td class="px-6 py-4 font-medium text-white">Mức độ Hài lòng (NPS)</td>
+                                <td class="px-6 py-4"><input type="number" value="15" class="w-24 text-center bg-gray-900 border-gray-600 rounded-md py-1"></td>
+                                <td class="px-6 py-4"><input type="text" value="9.0 điểm" class="w-full bg-gray-900 border-gray-600 rounded-md py-1 px-2"></td>
+                                <td class="px-6 py-4"><button class="text-red-500 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                            </tr>
+                            <!-- KPI 5: Tuân thủ -->
+                             <tr class="bg-gray-800 border-b border-gray-700">
+                                <td class="px-6 py-4 font-medium text-white">Tuân thủ Báo cáo</td>
+                                <td class="px-6 py-4"><input type="number" value="10" class="w-24 text-center bg-gray-900 border-gray-600 rounded-md py-1"></td>
+                                <td class="px-6 py-4"><input type="text" value="95%" class="w-full bg-gray-900 border-gray-600 rounded-md py-1 px-2"></td>
+                                <td class="px-6 py-4"><button class="text-red-500 hover:text-red-400"><i data-lucide="trash-2" class="w-4 h-4"></i></button></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="font-semibold text-white">
+                                <td class="px-6 py-3 text-right">Tổng cộng</td>
+                                <td id="total-weight" class="px-6 py-3 text-center text-lg">100%</td>
+                                <td colspan="2"></td>
+                            </tr>
+</tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 my-8"></div>
+
+            <!-- ====== BƯỚC 3: ÁP DỤNG CHO NHÂN VIÊN ====== -->
+            <div id="step-3">
+                <h2 class="text-xl font-bold text-white mb-6">Bước 3: Áp Dụng Cho Nhân Viên</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left Panel: Available Employees -->
+                    <div>
+                        <h3 id="available-title" class="font-semibold mb-4">Danh sách Kỹ sư khả dụng (4)</h3>
+                        <div class="bg-gray-900 p-4 rounded-md border border-gray-700 h-96 overflow-y-auto">
+                            <div class="mb-4">
+                                <input type="text" placeholder="Tìm kiếm theo tên..." class="w-full bg-gray-700 border-gray-600 rounded-md py-1 px-2 text-sm">
+                            </div>
+                            <ul id="available-list" class="space-y-2">
+                                <li data-id="NV001" class="p-3 rounded-md hover:bg-gray-700 cursor-pointer flex justify-between items-center"><div><p class="font-medium">Nguyễn Văn An</p><p class="text-xs text-gray-400">ID: NV001</p></div><button class="add-btn text-blue-400 hover:text-blue-300"><i data-lucide="arrow-right-circle" class="w-5 h-5"></i></button></li>
+                                <li data-id="NV002" class="p-3 rounded-md hover:bg-gray-700 cursor-pointer flex justify-between items-center"><div><p class="font-medium">Trần Thị Bích</p><p class="text-xs text-gray-400">ID: NV002</p></div><button class="add-btn text-blue-400 hover:text-blue-300"><i data-lucide="arrow-right-circle" class="w-5 h-5"></i></button></li>
+                                <li data-id="NV003" class="p-3 rounded-md hover:bg-gray-700 cursor-pointer flex justify-between items-center"><div><p class="font-medium">Lê Minh Cường</p><p class="text-xs text-gray-400">ID: NV003</p></div><button class="add-btn text-blue-400 hover:text-blue-300"><i data-lucide="arrow-right-circle" class="w-5 h-5"></i></button></li>
+                                <li data-id="NV004" class="p-3 rounded-md hover:bg-gray-700 cursor-pointer flex justify-between items-center"><div><p class="font-medium">Phạm Thu Duyên</p><p class="text-xs text-gray-400">ID: NV004</p></div><button class="add-btn text-blue-400 hover:text-blue-300"><i data-lucide="arrow-right-circle" class="w-5 h-5"></i></button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- Right Panel: Applied Employees -->
+                     <div>
+                        <h3 id="applied-title" class="font-semibold mb-4">Kỹ sư sẽ được áp dụng (0)</h3>
+                        <div class="bg-gray-900 p-4 rounded-md border border-gray-700 h-96 overflow-y-auto">
+                             <ul id="applied-list" class="space-y-2"></ul>
+                             <div id="applied-empty-state" class="flex items-center justify-center h-full">
+                                <p class="text-gray-500 text-center">Chưa có kỹ sư nào được chọn.<br>Nhấn vào mũi tên để thêm.</p>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== ACTION BUTTONS ====== -->
+            <div class="mt-10 flex justify-end space-x-4">
+                <button class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-md">Lưu Nháp</button>
+                <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md">Lưu & Kích Hoạt</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- Interactive Script for Employee Assignment ---
+        document.addEventListener('DOMContentLoaded', function () {
+            const availableList = document.getElementById('available-list');
+            const appliedList = document.getElementById('applied-list');
+            const availableTitle = document.getElementById('available-title');
+            const appliedTitle = document.getElementById('applied-title');
+            const appliedEmptyState = document.getElementById('applied-empty-state');
+
+            function updateCounts() {
+                const availableCount = availableList.children.length;
+                const appliedCount = appliedList.children.length;
+                
+                availableTitle.textContent = `Danh sách Kỹ sư khả dụng (${availableCount})`;
+                appliedTitle.textContent = `Kỹ sư sẽ được áp dụng (${appliedCount})`;
+
+                if (appliedCount === 0) {
+                    appliedEmptyState.classList.remove('hidden');
+                } else {
+                    appliedEmptyState.classList.add('hidden');
+                }
+            }
+
+            function moveEmployee(employeeItem, fromList, toList, isAdding) {
+                fromList.removeChild(employeeItem);
+                toList.appendChild(employeeItem);
+
+                const button = employeeItem.querySelector('button');
+                const icon = button.querySelector('i');
+                
+                if (isAdding) {
+                    button.classList.remove('add-btn', 'text-blue-400', 'hover:text-blue-300');
+                    button.classList.add('remove-btn', 'text-red-400', 'hover:text-red-300');
+                    icon.setAttribute('data-lucide', 'arrow-left-circle');
+                    employeeItem.classList.add('bg-gray-700/50');
+                } else {
+                    button.classList.remove('remove-btn', 'text-red-400', 'hover:text-red-300');
+                    button.classList.add('add-btn', 'text-blue-400', 'hover:text-blue-300');
+                    icon.setAttribute('data-lucide', 'arrow-right-circle');
+                    employeeItem.classList.remove('bg-gray-700/50');
+                }
+                lucide.createIcons();
+                updateCounts();
+            }
+
+            document.body.addEventListener('click', function(e) {
+                const addBtn = e.target.closest('.add-btn');
+                if (addBtn) {
+                    const employeeItem = addBtn.closest('li');
+                    moveEmployee(employeeItem, availableList, appliedList, true);
+                }
+
+                const removeBtn = e.target.closest('.remove-btn');
+                if (removeBtn) {
+                    const employeeItem = removeBtn.closest('li');
+                    moveEmployee(employeeItem, appliedList, availableList, false);
+                }
+            });
+
+            // Initial setup
+            updateCounts();
+        });
+    </script>
+</body>
+</html>

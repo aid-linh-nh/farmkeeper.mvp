@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thực hiện công việc - Phun thuốc sâu phủ quả</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .mobile-container {
+            max-width: 390px;
+            margin: 0 auto;
+            background: #f8fafc;
+            min-height: 100vh;
+            position: relative;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+        }
+        
+        .task-header {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        
+        .step-line {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            z-index: -1;
+        }
+        
+        .step.completed .step-circle {
+            background: #10b981;
+            color: white;
+        }
+        
+        .step.active .step-circle {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .step.pending .step-circle {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        
+        .step.completed .step-line {
+            background: #10b981;
+        }
+        
+        .step.active .step-line {
+            background: linear-gradient(to right, #10b981 50%, #e5e7eb 50%);
+        }
+        
+        .step.pending .step-line {
+            background: #e5e7eb;
+        }
+        
+        .content-card {
+            background: white;
+            margin: 8px 16px;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .warning-card {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 4px solid #f59e0b;
+            margin: 8px 16px;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .safety-card {
+            background: linear-gradient(135deg, #fef2f2, #fecaca);
+            border-left: 4px solid #ef4444;
+            margin: 8px 16px;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .tech-advice-card {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left: 4px solid #3b82f6;
+            margin: 8px 16px;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .progress-bar {
+            background: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(to right, #10b981, #059669);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .camera-preview {
+            width: 100%;
+            height: 200px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #d1d5db;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .photo-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+        
+        .checklist-item.completed {
+            background: #ecfdf5;
+            border-color: #10b981;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            accent-color: #10b981;
+        }
+        
+        .sync-indicator {
+            position: fixed;
+            top: 50px;
+            right: 16px;
+            background: white;
+            border-radius: 20px;
+            padding: 8px 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 12px;
+            z-index: 90;
+        }
+        
+        .sync-indicator.syncing {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+        
+        .sync-indicator.synced {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+        
+        .sync-indicator.error {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        
+        .floating-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+        
+        .fab-primary {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        .fab-secondary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .location-tag {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .timer-display {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .measurement-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .measurement-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .measurement-input .unit {
+            background: #f3f4f6;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #6b7280;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .animated-icon {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .step-content {
+            padding-bottom: 100px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="mobile-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>10:35</span>
+            <span>📶 📶 📶 💾 🔋</span>
+        </div>
+        
+        <!-- Task Header -->
+        <div class="task-header">
+            <div class="flex items-center justify-between mb-3">
+                <button onclick="goBack()" class="text-white">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                </button>
+                <div class="text-center flex-1">
+                    <h1 class="text-lg font-bold">Phun thuốc sâu phủ quả</h1>
+                    <p class="text-sm opacity-90">Khu A3, B1 • 35 cây bị ảnh hưởng</p>
+                </div>
+                <button onclick="callTechnician()" class="text-white">
+                    <i class="fas fa-phone text-lg"></i>
+                </button>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="location-tag">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Khu A3
+                    </span>
+                    <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Khẩn cấp</span>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs opacity-90">Thời gian còn lại</div>
+                    <div class="font-bold text-lg" id="countdown">18:42:15</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sync Indicator -->
+        <div class="sync-indicator synced" id="syncIndicator">
+            <i class="fas fa-cloud-upload-alt mr-1"></i>
+            <span>Đã đồng bộ</span>
+        </div>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step completed">
+                <div class="step-circle">1</div>
+                <span class="text-xs font-medium">Chuẩn bị</span>
+                <div class="step-line"></div>
+            </div>
+            <div class="step active">
+                <div class="step-circle">2</div>
+                <span class="text-xs font-medium">Thực hiện</span>
+                <div class="step-line"></div>
+            </div>
+            <div class="step pending">
+                <div class="step-circle">3</div>
+                <span class="text-xs font-medium">Báo cáo</span>
+                <div class="step-line"></div>
+            </div>
+            <div class="step pending">
+                <div class="step-circle">4</div>
+                <span class="text-xs font-medium">Xác nhận</span>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="step-content">
+            <!-- Step 1: Preparation (Hidden, completed) -->
+            <div id="step1" class="hidden">
+                <!-- Preparation content would be here -->
+            </div>
+
+            <!-- Step 2: Execution (Current active step) -->
+            <div id="step2" class="slide-up">
+                <!-- Technician Advice -->
+                <div class="tech-advice-card">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user-tie text-blue-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-blue-800 mb-2">Hướng dẫn từ KS. Phạm Văn Minh</h4>
+                            <div class="bg-white rounded-lg p-3 border border-blue-200">
+                                <p class="text-sm text-gray-700 mb-2"><strong>Công thức:</strong> Imidacloprid 200SC - 1.5ml/L nước</p>
+                                <p class="text-sm text-gray-700 mb-2"><strong>Thời gian:</strong> Phun buổi chiều (15:00-17:00), tránh nắng gắt</p>
+                                <p class="text-sm text-gray-700 mb-2"><strong>Kỹ thuật:</strong> Phun đều tán lá, tập trung vào quả non</p>
+                                <p class="text-sm text-red-600"><strong>Lưu ý:</strong> Mặc đồ bảo hộ đầy đủ, không ăn uống khi phun</p>
+                            </div>
+                            <div class="flex items-center space-x-2 mt-2">
+                                <button onclick="playAudioGuide()" class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs">
+                                    <i class="fas fa-play mr-1"></i>Nghe hướng dẫn
+                                </button>
+                                <button onclick="askQuestion()" class="bg-gray-500 text-white px-3 py-1 rounded-full text-xs">
+                                    <i class="fas fa-question mr-1"></i>Hỏi thêm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Checklist -->
+                <div class="safety-card">
+                    <h4 class="font-bold text-red-800 mb-3 flex items-center">
+                        <i class="fas fa-shield-alt mr-2"></i>
+                        Kiểm tra an toàn bắt buộc
+                    </h4>
+                    <div class="space-y-3">
+                        <label class="checklist-item completed">
+                            <input type="checkbox" checked disabled>
+                            <span class="text-sm">Mặc quần áo dài tay, đồ bảo hộ</span>
+                        </label>
+                        <label class="checklist-item completed">
+                            <input type="checkbox" checked disabled>
+                            <span class="text-sm">Đeo khẩu trang, kính bảo vệ</span>
+                        </label>
+                        <label class="checklist-item completed">
+                            <input type="checkbox" checked disabled>
+                            <span class="text-sm">Kiểm tra thiết bị phun</span>
+                        </label>
+                        <label class="checklist-item completed">
+                            <input type="checkbox" checked disabled>
+                            <span class="text-sm">Chuẩn bị thuốc đúng liều lượng</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Weather Conditions -->
+                <div class="warning-card">
+                    <h4 class="font-bold text-yellow-800 mb-2 flex items-center">
+                        <i class="fas fa-cloud-sun mr-2"></i>
+                        Điều kiện thời tiết hiện tại
+                    </h4>
+                    <div class="grid grid-cols-3 gap-3 mb-3">
+                        <div class="bg-white rounded-lg p-2 text-center">
+                            <div class="text-lg font-bold text-orange-600">32°C</div>
+                            <div class="text-xs text-gray-600">Nhiệt độ</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2 text-center">
+                            <div class="text-lg font-bold text-blue-600">65%</div>
+                            <div class="text-xs text-gray-600">Độ ẩm</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-2 text-center">
+                            <div class="text-lg font-bold text-green-600">2 km/h</div>
+                            <div class="text-xs text-gray-600">Gió</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg p-2 text-center">
+                        <span class="text-sm text-green-700 font-medium">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            Điều kiện phun thuốc tốt
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Execution Progress -->
+                <div class="content-card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-tasks mr-2"></i>
+                        Tiến độ thực hiện
+                    </h4>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium">Khu A3 (18 cây)</span>
+                            <span class="text-sm text-blue-600 font-bold" id="progressA3">12/18 cây</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 67%" id="progressBarA3"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-medium">Khu B1 (17 cây)</span>
+                            <span class="text-sm text-gray-600" id="progressB1">0/17 cây</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%" id="progressBarB1"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-medium text-blue-800">Tổng tiến độ:</span>
+                            <span class="font-bold text-blue-800" id="totalProgress">34%</span>
+                        </div>
+                        <div class="text-sm text-blue-700">
+                            Thời gian đã sử dụng: <span class="font-medium" id="timeSpent">1h 25m</span>
+                        </div>
+                        <div class="text-sm text-blue-700">
+                            Thời gian còn lại dự kiến: <span class="font-medium" id="timeRemaining">2h 35m</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="content-card">
+                    <h4 class="font-bold text-gray-800 mb-3">Hành động nhanh</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="markTreeCompleted()" class="bg-green-500 text-white py-3 rounded-lg font-medium flex items-center justify-center">
+                            <i class="fas fa-check mr-2"></i>
+                            Hoàn thành cây
+                        </button>
+                        <button onclick="reportIssue()" class="bg-yellow-500 text-white py-3 rounded-lg font-medium flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Báo vấn đề
+                        </button>
+                        <button onclick="takePhoto()" class="bg-blue-500 text-white py-3 rounded-lg font-medium flex items-center justify-center">
+                            <i class="fas fa-camera mr-2"></i>
+                            Chụp ảnh
+                        </button>
+                        <button onclick="pauseWork()" class="bg-gray-500 text-white py-3 rounded-lg font-medium flex items-center justify-center">
+                            <i class="fas fa-pause mr-2"></i>
+                            Tạm dừng
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Material Usage Tracking -->
+                <div class="content-card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-flask mr-2"></i>
+                        Sử dụng vật tư
+                    </h4>
+                    
+                    <div class="space-y-3">
+                        <div class="measurement-input">
+                            <label class="text-sm font-medium text-gray-700 min-w-[120px]">Imidacloprid 200SC:</label>
+                            <input type="number" placeholder="1.5" value="18" id="pesticide-used" onchange="updateMaterialUsage()">
+                            <span class="unit">ml</span>
+                        </div>
+                        
+                        <div class="measurement-input">
+                            <label class="text-sm font-medium text-gray-700 min-w-[120px]">Nước:</label>
+                            <input type="number" placeholder="12" value="12" id="water-used" onchange="updateMaterialUsage()">
+                            <span class="unit">lít</span>
+                        </div>
+                        
+                        <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                            <h5 class="font-semibold text-yellow-800 mb-1">Dự kiến cần dùng:</h5>
+                            <p class="text-sm text-yellow-700">• Imidacloprid: 52.5ml (35 cây × 1.5ml)</p>
+                            <p class="text-sm text-yellow-700">• Nước: 35 lít (35 cây × 1L)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Reporting (Hidden) -->
+            <div id="step3" class="hidden">
+                <div class="content-card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-camera mr-2"></i>
+                        Chụp ảnh báo cáo
+                    </h4>
+                    
+                    <div class="camera-preview" onclick="openCamera()">
+                        <div class="text-center">
+                            <i class="fas fa-camera text-4xl text-gray-400 mb-2 animated-icon"></i>
+                            <p class="text-sm text-gray-600">Nhấn để chụp ảnh</p>
+                            <p class="text-xs text-gray-500">Chụp: Trước khi phun, đang phun, sau khi phun</p>
+                        </div>
+                    </div>
+                    
+                    <div class="photo-grid" id="photoGrid">
+                        <!-- Photos will be added here -->
+                    </div>
+                </div>
+
+                <!-- Report Form -->
+                <div class="content-card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-clipboard-list mr-2"></i>
+                        Báo cáo chi tiết
+                    </h4>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tình trạng sâu bệnh</label>
+                            <select class="w-full p-3 border border-gray-300 rounded-lg">
+                                <option>Nghiêm trọng - Nhiều quả bị ảnh hưởng</option>
+                                <option>Trung bình - Một số quả bị hại</option>
+                                <option>Nhẹ - Ít quả bị ảnh hưởng</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Hiệu quả phun thuốc</label>
+                            <select class="w-full p-3 border border-gray-300 rounded-lg">
+                                <option>Phun đều, đầy đủ theo hướng dẫn</option>
+                                <option>Phun tốt, một số chỗ chưa đều</option>
+                                <option>Gặp khó khăn, cần hỗ trợ thêm</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ghi chú thêm</label>
+                            <textarea rows="3" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Mô tả chi tiết quá trình thực hiện, vấn đề gặp phải (nếu có)..."></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Thời tiết khi phun</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <input type="text" placeholder="Nhiệt độ" value="32°C" class="p-2 border border-gray-300 rounded">
+                                <input type="text" placeholder="Độ ẩm" value="65%" class="p-2 border border-gray-300 rounded">
+                                <input type="text" placeholder="Gió" value="2 km/h" class="p-2 border border-gray-300 rounded">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Material Used Summary -->
+                <div class="content-card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-boxes mr-2"></i>
+                        Vật tư đã sử dụng
+                    </h4>
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">Imidacloprid 200SC</span>
+                            <span class="font-bold text-blue-600">52.5 ml</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                            <span class="font-medium">Nước</span>
+                            <span class="font-bold text-blue-600">35 lít</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg border border-green-200">
+                            <span class="font-medium text-green-800">Chi phí vật tư</span>
+                            <span class="font-bold text-green-600">126,000 VNĐ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Confirmation (Hidden) -->
+            <div id="step4" class="hidden">
+                <div class="content-card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-user-check mr-2"></i>
+                        Chờ xác nhận từ kỹ thuật viên
+                    </h4>
+                    
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-clock text-blue-600 text-2xl animated-icon"></i>
+                        </div>
+                        <h5 class="font-bold text-gray-800 mb-2">Đang gửi báo cáo...</h5>
+                        <p class="text-sm text-gray-600 mb-4">KS. Phạm Văn Minh sẽ xem xét và phản hồi trong 30 phút</p>
+                        
+                        <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                            <p class="text-sm text-blue-700 mb-2">Báo cáo đã gửi thành công!</p>
+                            <p class="text-xs text-blue-600">Bao gồm: 6 ảnh, báo cáo chi tiết, sử dụng vật tư</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timer Display (Floating) -->
+        <div class="timer-display" id="timerDisplay">
+            <div class="text-2xl font-bold" id="workTimer">01:25:32</div>
+            <div class="text-sm opacity-75">Thời gian làm việc</div>
+        </div>
+
+        <!-- Floating Action Buttons -->
+        <div class="floating-controls">
+            <button class="fab-secondary" onclick="contactTechnician()" title="Liên hệ kỹ thuật viên">
+                <i class="fas fa-headset"></i>
+            </button>
+            <button class="fab-primary" onclick="nextStep()" id="nextStepBtn">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+            <button class="fab-secondary" onclick="emergencyStop()" title="Dừng khẩn cấp">
+                <i class="fas fa-stop"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 2; // Starting at execution step
+        let workStartTime = Date.now() - (1 * 60 * 60 * 1000 + 25 * 60 * 1000 + 32 * 1000); // 1h 25m 32s ago
+        let completedTrees = 12;
+        let totalTrees = 35;
+        let photos = [];
+        let syncStatus = 'synced';
+
+        // Timer functions
+        function updateTimers() {
+            const now = Date.now();
+            const workDuration = now - workStartTime;
+            
+            // Update work timer
+            const hours = Math.floor(workDuration / (1000 * 60 * 60));
+            const minutes = Math.floor((workDuration % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((workDuration % (1000 * 60)) / 1000);
+            
+            document.getElementById('workTimer').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update countdown (24 hours from task start)
+            const deadline = workStartTime + (24 * 60 * 60 * 1000);
+            const remaining = deadline - now;
+            
+            if (remaining > 0) {
+                const rHours = Math.floor(remaining / (1000 * 60 * 60));
+                const rMinutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                const rSeconds = Math.floor((remaining % (1000 * 60)) / 1000);
+                
+                document.getElementById('countdown').textContent = 
+                    `${rHours.toString().padStart(2, '0')}:${rMinutes.toString().padStart(2, '0')}:${rSeconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Progress tracking
+        function markTreeCompleted() {
+            if (completedTrees < totalTrees) {
+                completedTrees++;
+                updateProgress();
+                syncData();
+                showNotification('Đã hoàn thành 1 cây', 'success');
+            }
+        }
+
+        function updateProgress() {
+            const progressA3 = Math.min(completedTrees, 18);
+            const progressB1 = Math.max(0, completedTrees - 18);
+            
+            // Update display
+            document.getElementById('progressA3').textContent = `${progressA3}/18 cây`;
+            document.getElementById('progressBarA3').style.width = `${(progressA3 / 18) * 100}%`;
+            
+            document.getElementById('progressB1').textContent = `${progressB1}/17 cây`;
+            document.getElementById('progressBarB1').style.width = `${(progressB1 / 17) * 100}%`;
+            
+            const totalProgress = Math.round((completedTrees / totalTrees) * 100);
+            document.getElementById('totalProgress').textContent = `${totalProgress}%`;
+            
+            // Update estimated time remaining
+            const avgTimePerTree = (Date.now() - workStartTime) / completedTrees;
+            const remainingTrees = totalTrees - completedTrees;
+            const estimatedRemaining = remainingTrees * avgTimePerTree;
+            
+            const rHours = Math.floor(estimatedRemaining / (1000 * 60 * 60));
+            const rMinutes = Math.floor((estimatedRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            
+            document.getElementById('timeRemaining').textContent = `${rHours}h ${rMinutes}m`;
+        }
+
+        // Material usage tracking
+        function updateMaterialUsage() {
+            const pesticide = document.getElementById('pesticide-used').value;
+            const water = document.getElementById('water-used').value;
+            
+            syncData();
+            showNotification('Đã cập nhật sử dụng vật tư', 'info');
+        }
+
+        // Photo management
+        function openCamera() {
+            // Simulate camera opening
+            showNotification('Mở camera...', 'info');
+            setTimeout(() => {
+                takePhotoSimulation();
+            }, 1000);
+        }
+
+        function takePhoto() {
+            openCamera();
+        }
+
+        function takePhotoSimulation() {
+            const photoTypes = ['Trước khi phun', 'Đang phun thuốc', 'Sau khi phun', 'Tình trạng sâu bệnh', 'Quả đã xử lý'];
+            const photoType = photoTypes[photos.length % photoTypes.length];
+            
+            const photo = {
+                id: Date.now(),
+                type: photoType,
+                timestamp: new Date().toLocaleString('vi-VN'),
+                url: `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="#e5e7eb"/><text x="100" y="100" text-anchor="middle" dominant-baseline="middle" fill="#6b7280" font-family="Arial" font-size="12">${photoType}</text></svg>`)}`
+            };
+            
+            photos.push(photo);
+            updatePhotoGrid();
+            syncData();
+            showNotification(`Đã chụp ảnh: ${photoType}`, 'success');
+        }
+
+        function updatePhotoGrid() {
+            const grid = document.getElementById('photoGrid');
+            grid.innerHTML = photos.map(photo => `
+                <div class="photo-item">
+                    <img src="${photo.url}" alt="${photo.type}">
+                    <button class="photo-remove" onclick="removePhoto(${photo.id})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1">
+                        ${photo.type}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removePhoto(photoId) {
+            photos = photos.filter(p => p.id !== photoId);
+            updatePhotoGrid();
+            syncData();
+        }
+
+        // Step navigation
+        function nextStep() {
+            if (currentStep < 4) {
+                currentStep++;
+                updateStepDisplay();
+                syncData();
+            }
+        }
+
+        function updateStepDisplay() {
+            // Hide all steps
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`step${i}`);
+                if (step) {
+                    step.classList.add('hidden');
+                }
+            }
+            
+            // Show current step
+            const currentStepElement = document.getElementById(`step${currentStep}`);
+            if (currentStepElement) {
+                currentStepElement.classList.remove('hidden');
+                currentStepElement.classList.add('slide-up');
+            }
+            
+            // Update step indicators
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('completed', 'active', 'pending');
+                if (index + 1 < currentStep) {
+                    step.classList.add('completed');
+                } else if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.add('pending');
+                }
+            });
+            
+            // Update next button
+            const nextBtn = document.getElementById('nextStepBtn');
+            if (currentStep === 2) {
+                nextBtn.innerHTML = '<i class="fas fa-clipboard-list"></i>';
+                nextBtn.title = 'Chuyển sang báo cáo';
+            } else if (currentStep === 3) {
+                nextBtn.innerHTML = '<i class="fas fa-check"></i>';
+                nextBtn.title = 'Hoàn thành và gửi báo cáo';
+            } else if (currentStep === 4) {
+                nextBtn.innerHTML = '<i class="fas fa-home"></i>';
+                nextBtn.title = 'Về trang chủ';
+                nextBtn.onclick = () => goBack();
+            }
+        }
+
+        // Data synchronization
+        function syncData() {
+            const syncIndicator = document.getElementById('syncIndicator');
+            syncIndicator.className = 'sync-indicator syncing';
+            syncIndicator.innerHTML = '<i class="fas fa-sync-alt fa-spin mr-1"></i><span>Đang đồng bộ...</span>';
+            
+            // Simulate sync process
+            setTimeout(() => {
+                syncIndicator.className = 'sync-indicator synced';
+                syncIndicator.innerHTML = '<i class="fas fa-cloud-upload-alt mr-1"></i><span>Đã đồng bộ</span>';
+            }, 1500);
+        }
+
+        // Communication functions
+        function callTechnician() {
+            showNotification('Đang gọi KS. Phạm Văn Minh...', 'info');
+        }
+
+        function contactTechnician() {
+            showNotification('Mở chat với kỹ thuật viên...', 'info');
+        }
+
+        function askQuestion() {
+            showNotification('Mở form hỏi đáp với kỹ thuật viên...', 'info');
+        }
+
+        function playAudioGuide() {
+            showNotification('Phát hướng dẫn bằng giọng nói...', 'info');
+        }
+
+        // Issue reporting
+        function reportIssue() {
+            const issues = [
+                'Thiết bị phun bị tắc',
+                'Thuốc không đủ',
+                'Thời tiết thay đổi',
+                'Cây có vấn đề khác',
+                'Cần hỗ trợ kỹ thuật'
+            ];
+            
+            const issue = prompt('Chọn vấn đề:\n' + issues.map((item, i) => `${i + 1}. ${item}`).join('\n'));
+            if (issue) {
+                showNotification(`Đã báo cáo: ${issues[parseInt(issue) - 1] || 'Vấn đề khác'}`, 'warning');
+                syncData();
+            }
+        }
+
+        // Work control
+        function pauseWork() {
+            showNotification('Đã tạm dừng công việc', 'info');
+        }
+
+        function emergencyStop() {
+            if (confirm('Bạn có chắc muốn dừng khẩn cấp công việc này?')) {
+                showNotification('Đã dừng khẩn cấp - Thông báo kỹ thuật viên', 'error');
+            }
+        }
+
+        function goBack() {
+            if (confirm('Bạn có muốn thoát? Tiến độ sẽ được lưu tự động.')) {
+                showNotification('Đang lưu và thoát...', 'info');
+                setTimeout(() => {
+                    window.history.back();
+                }, 1000);
+            }
+        }
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const colors = {
+                'info': 'bg-blue-500',
+                'success': 'bg-green-500',
+                'warning': 'bg-yellow-500',
+                'error': 'bg-red-500'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 left-1/2 transform -translate-x-1/2 ${colors[type]} text-white px-4 py-2 rounded-lg text-sm z-50 shadow-lg`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Task Execution App initialized');
+            
+            // Update timers every second
+            setInterval(updateTimers, 1000);
+            updateTimers();
+            
+            // Update progress display
+            updateProgress();
+            
+            // Update step display
+            updateStepDisplay();
+            
+            // Simulate automatic sync every 30 seconds
+            setInterval(() => {
+                if (Math.random() > 0.8) { // 20% chance
+                    syncData();
+                }
+            }, 30000);
+            
+            // Initial sync
+            setTimeout(() => {
+                syncData();
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Tạo Hồ Sơ Nhân Sự Kỹ Thuật</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Noto Sans', 'sans-serif'],
+            },
+            colors: {
+              farmkeeper: {
+                DEFAULT: '#69BD70',
+                50: '#F2F9F3',
+                100: '#E2F1E4',
+                200: '#C6E3C9',
+                300: '#A9D5AF',
+                400: '#8DC894',
+                500: '#69BD70',
+                600: '#53A85B',
+                700: '#3E8E46',
+                800: '#2A7332',
+                900: '#16591D',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scroll::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 3px;
+      }
+      .custom-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+      .custom-scroll::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      .sidebar-menu-item.active {
+        background-color: #f2f9f3;
+        color: #3e8e46;
+        font-weight: 600;
+      }
+
+      .sidebar-menu-item.active::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: #69bd70;
+        border-top-right-radius: 4px;
+        border-bottom-right-radius: 4px;
+      }
+
+      .card-modern {
+        background: white;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+        border-radius: 1rem;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #cbd5e0;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-input:focus {
+        outline: none;
+        border-color: #69bd70;
+        box-shadow: 0 0 0 3px rgba(105, 189, 112, 0.2);
+      }
+
+      .form-label.required::after {
+        content: ' *';
+        color: #ef4444;
+      }
+
+      .btn-enhanced {
+        transition: all 0.2s ease-in-out;
+      }
+      .btn-enhanced:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .step-indicator {
+        transition: all 0.3s ease;
+      }
+      .step-indicator.active {
+        background-color: #69bd70;
+        color: white;
+        box-shadow: 0 0 0 4px rgba(105, 189, 112, 0.2);
+      }
+      .step-indicator.completed {
+        background-color: #3e8e46;
+        color: white;
+      }
+      .step-indicator.pending {
+        background-color: #e5e7eb;
+        color: #6b7280;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-gray-800">
+    <div class="flex h-screen bg-white">
+      <!-- Sidebar -->
+      <aside class="w-64 flex-shrink-0 border-r border-gray-200 flex flex-col">
+        <div
+          class="h-16 flex items-center justify-center px-4 border-b border-gray-200"
+        >
+          <a href="#" class="flex items-center space-x-2">
+            <i class="fas fa-seedling text-3xl" style="color: #69bd70"></i>
+            <span class="text-xl font-bold tracking-wider text-gray-800"
+              >FARM<span style="color: #69bd70">KEEPER</span></span
+            >
+          </a>
+        </div>
+        <nav class="flex-1 py-4 px-3 custom-scroll overflow-y-auto">
+          <ul class="space-y-1">
+            <li>
+              <a
+                href="#"
+                class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 relative"
+                ><i class="fas fa-tachometer-alt w-6 text-center mr-3"></i>Bảng
+                điều khiển</a
+              >
+            </li>
+            <li>
+              <a
+                href="#"
+                class="sidebar-menu-item flex items-center p-3 rounded-lg text-gray-600 hover:bg-gray-100 relative"
+                ><i class="fas fa-tree w-6 text-center mr-3"></i>Quản lý vườn</a
+              >
+            </li>
+            <li>
+              <div class="p-3 rounded-lg bg-farmkeeper-50">
+                <h3
+                  class="text-sm font-semibold text-farmkeeper-700 flex items-center"
+                >
+                  <i class="fas fa-users w-6 text-center mr-3"></i>Quản lý nhân
+                  sự
+                </h3>
+                <ul
+                  class="mt-2 space-y-1 pl-5 border-l-2 border-farmkeeper-200 ml-4"
+                >
+                  <li>
+                    <a
+                      href="#"
+                      class="sidebar-menu-item active flex items-center py-2 px-3 rounded-md text-sm relative"
+                      >Kỹ thuật viên</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="sidebar-menu-item flex items-center py-2 px-3 rounded-md text-sm text-gray-600 hover:bg-gray-100 relative"
+                      >Nông dân</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="sidebar-menu-item flex items-center py-2 px-3 rounded-md text-sm text-gray-600 hover:bg-gray-100 relative"
+                      >Quản lý</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <div class="p-4 border-t border-gray-200">
+          <div class="flex items-center space-x-3">
+            <img
+              class="h-10 w-10 rounded-full object-cover"
+              src="https://placehold.co/100x100/69BD70/FFFFFF?text=A"
+              alt="Admin avatar"
+            />
+            <div>
+              <p class="font-semibold text-gray-800">Admin</p>
+              <a
+                href="#"
+                class="text-xs text-gray-500 hover:text-farmkeeper-600"
+                >Đăng xuất <i class="fas fa-sign-out-alt ml-1"></i
+              ></a>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <div class="flex-1 flex flex-col bg-slate-50">
+        <!-- Top Bar -->
+        <header
+          class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0"
+        >
+          <div>
+            <nav class="text-sm text-gray-500" aria-label="Breadcrumb">
+              <ol class="list-none p-0 inline-flex">
+                <li class="flex items-center">
+                  <a href="#" class="hover:text-farmkeeper-600"
+                    >Quản lý nhân sự</a
+                  ><i class="fas fa-chevron-right mx-2 text-xs"></i>
+                </li>
+                <li class="flex items-center">
+                  <a href="#" class="hover:text-farmkeeper-600"
+                    >Nhân sự kỹ thuật</a
+                  ><i class="fas fa-chevron-right mx-2 text-xs"></i>
+                </li>
+                <li><span class="text-gray-800 font-medium">Tạo mới</span></li>
+              </ol>
+            </nav>
+          </div>
+        </header>
+
+        <!-- Main form area -->
+        <main class="flex-1 overflow-y-auto custom-scroll p-6">
+          <div class="flex items-start justify-between mb-6">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-user-plus text-farmkeeper mr-3"></i>Tạo mới Hồ
+                sơ Nhân sự Kỹ thuật
+              </h1>
+              <p id="pageSubtitle" class="text-sm text-gray-600">
+                Chọn loại nhân sự và điền thông tin chi tiết.
+              </p>
+            </div>
+          </div>
+
+          <!-- Role Selector -->
+          <div class="max-w-md mb-8">
+            <label
+              class="form-label required font-semibold text-gray-700 mb-1 block"
+              >Loại nhân sự</label
+            >
+            <select id="roleSelector" class="form-input">
+              <option value="technician" selected>Kỹ thuật viên</option>
+              <option value="manager">Quản lý Bộ phận Kỹ thuật</option>
+            </select>
+          </div>
+
+          <!-- Technician Workflow Container -->
+          <div id="technician-workflow">
+            <!-- Step Indicator -->
+            <div class="max-w-xl mx-auto mb-8">
+              <div class="flex items-center">
+                <div class="flex flex-col items-center text-center">
+                  <div
+                    id="step-indicator-1"
+                    class="step-indicator active w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                  >
+                    1
+                  </div>
+                  <p class="text-sm font-semibold mt-2 text-farmkeeper-700">
+                    Thông tin cơ bản
+                  </p>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200 mx-4 rounded"></div>
+                <div class="flex flex-col items-center text-center">
+                  <div
+                    id="step-indicator-2"
+                    class="step-indicator pending w-10 h-10 rounded-full flex items-center justify-center font-bold"
+                  >
+                    2
+                  </div>
+                  <p class="text-sm font-medium mt-2 text-gray-500">
+                    Thông tin công việc
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-8">
+                <div class="card-modern">
+                  <div class="p-6 md:p-8">
+                    <form id="createTechnicianForm">
+                      <!-- STEP 1: Basic Information -->
+                      <div id="step1">
+                        <div class="space-y-6">
+                          <div class="form-group text-center">
+                            <label
+                              class="form-label font-semibold text-gray-700"
+                              >Ảnh đại diện</label
+                            >
+                            <div class="flex justify-center mt-2">
+                              <div class="relative w-28 h-28">
+                                <img
+                                  id="avatarPreview"
+                                  src="https://placehold.co/128x128/E2F1E4/69BD70?text=Chọn+ảnh"
+                                  class="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+                                />
+                                <label
+                                  for="avatarInput"
+                                  class="absolute bottom-0 right-0 w-8 h-8 bg-farmkeeper-600 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-farmkeeper-700 transition"
+                                >
+                                  <i class="fas fa-camera text-sm"></i>
+                                  <input
+                                    type="file"
+                                    id="avatarInput"
+                                    class="hidden"
+                                    accept="image/*"
+                                    onchange="previewAvatar(this)"
+                                  />
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông tin cơ bản
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Họ và tên</label
+                                >
+                                <input
+                                  type="text"
+                                  class="form-input"
+                                  placeholder="Nguyễn Văn An"
+                                  id="fullName"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Ngày sinh</label
+                                >
+                                <input
+                                  type="date"
+                                  class="form-input"
+                                  id="birthDate"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div
+                              class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6"
+                            >
+                              <div>
+                                <label
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Giới tính</label
+                                >
+                                <select class="form-input" id="gender" required>
+                                  <option value="">Chọn giới tính</option>
+                                  <option value="male">Nam</option>
+                                  <option value="female">Nữ</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Số CCCD/CMND</label
+                                >
+                                <input
+                                  type="text"
+                                  class="form-input"
+                                  placeholder="001234567890"
+                                  id="idNumber"
+                                  required
+                                  maxlength="12"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông tin liên hệ
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Số điện thoại</label
+                                >
+                                <input
+                                  type="tel"
+                                  class="form-input"
+                                  placeholder="0912345678"
+                                  id="phoneNumber"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Email</label
+                                >
+                                <input
+                                  type="email"
+                                  class="form-input"
+                                  placeholder="nguyen.van.an@email.com"
+                                  id="email"
+                                  required
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Địa chỉ thường trú
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <select class="form-input" id="province" required>
+                                <option value="">Chọn Tỉnh/Thành phố</option>
+                              </select>
+                              <select class="form-input" id="district" required>
+                                <option value="">Chọn Quận/Huyện</option>
+                              </select>
+                            </div>
+                            <div
+                              class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
+                            >
+                              <select class="form-input" id="ward" required>
+                                <option value="">Chọn Phường/Xã</option>
+                              </select>
+                              <input
+                                type="text"
+                                class="form-input"
+                                placeholder="Số nhà, tên đường"
+                                id="streetAddress"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <!-- Family Information -->
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông tin gia đình
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  for="maritalStatus"
+                                  class="form-label font-semibold text-gray-700 mb-1 block"
+                                  >Tình trạng hôn nhân</label
+                                >
+                                <select id="maritalStatus" class="form-input">
+                                  <option value="">Chọn tình trạng</option>
+                                  <option value="single">Độc thân</option>
+                                  <option value="married">Đã kết hôn</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label
+                                  for="children"
+                                  class="form-label font-semibold text-gray-700 mb-1 block"
+                                  >Số con</label
+                                >
+                                <input
+                                  type="number"
+                                  id="children"
+                                  class="form-input"
+                                  placeholder="0"
+                                  min="0"
+                                />
+                              </div>
+                            </div>
+                            <div
+                              class="mt-4 bg-red-50 border border-red-200 rounded-lg p-4"
+                            >
+                              <h4 class="font-semibold text-red-800 mb-3">
+                                Người liên hệ khẩn cấp
+                              </h4>
+                              <div
+                                class="grid grid-cols-1 md:grid-cols-3 gap-4"
+                              >
+                                <input
+                                  type="text"
+                                  id="emergencyName"
+                                  class="form-input"
+                                  placeholder="Họ tên *"
+                                  required
+                                />
+                                <input
+                                  type="text"
+                                  id="emergencyRelation"
+                                  class="form-input"
+                                  placeholder="Mối quan hệ *"
+                                  required
+                                />
+                                <input
+                                  type="tel"
+                                  id="emergencyPhone"
+                                  class="form-input"
+                                  placeholder="Số điện thoại *"
+                                  required
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <!-- Bank Information -->
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông tin ngân hàng
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  for="bankName"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Ngân hàng</label
+                                >
+                                <select
+                                  id="bankName"
+                                  class="form-input"
+                                  required
+                                >
+                                  <option value="">Chọn ngân hàng</option>
+                                  <option value="vietcombank">
+                                    Vietcombank
+                                  </option>
+                                  <option value="acb">ACB</option>
+                                  <option value="techcombank">
+                                    Techcombank
+                                  </option>
+                                  <option value="mbbank">MB Bank</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label
+                                  for="bankAccount"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Số tài khoản</label
+                                >
+                                <input
+                                  type="text"
+                                  id="bankAccount"
+                                  class="form-input"
+                                  placeholder="0123456789"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div class="mt-6">
+                              <label
+                                for="accountHolder"
+                                class="form-label required font-semibold text-gray-700 mb-1 block"
+                                >Tên chủ tài khoản</label
+                              >
+                              <input
+                                type="text"
+                                id="accountHolder"
+                                class="form-input"
+                                placeholder="NGUYEN VAN AN"
+                                style="text-transform: uppercase"
+                                required
+                              />
+                            </div>
+                          </div>
+                          <!-- Additional Notes -->
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Ghi chú thêm
+                            </h3>
+                            <div>
+                              <textarea
+                                id="notes"
+                                rows="3"
+                                class="form-input"
+                                placeholder="Thông tin bổ sung về nhân viên..."
+                              ></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- STEP 2: Technical Information -->
+                      <div id="step2" class="hidden">
+                        <div class="space-y-6">
+                          <div class="pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông tin Định danh & Trạng thái
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  for="employeeId"
+                                  class="form-label font-semibold text-gray-700 mb-1 block"
+                                  >Mã nhân viên (Tự động)</label
+                                >
+                                <input
+                                  type="text"
+                                  id="employeeId"
+                                  class="form-input bg-gray-100"
+                                  readonly
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="joinDate"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Ngày vào làm</label
+                                >
+                                <input
+                                  type="date"
+                                  id="joinDate"
+                                  class="form-input"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="status"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Trạng thái</label
+                                >
+                                <select id="status" class="form-input" required>
+                                  <option value="active" selected>
+                                    Đang hoạt động
+                                  </option>
+                                  <option value="on_leave">Nghỉ phép</option>
+                                  <option value="terminated">
+                                    Đã nghỉ việc
+                                  </option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông tin Vai trò & Năng lực
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  for="jobTitle"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Chức danh</label
+                                >
+                                <input
+                                  type="text"
+                                  id="jobTitle"
+                                  value="Kỹ thuật viên"
+                                  class="form-input"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="specialty"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Chuyên môn chính</label
+                                >
+                                <input
+                                  type="text"
+                                  id="specialty"
+                                  placeholder="Sầu riêng, Cây có múi"
+                                  class="form-input"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="engineerLevel"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Cấp bậc</label
+                                >
+                                <select
+                                  id="engineerLevel"
+                                  class="form-input"
+                                  required
+                                >
+                                  <option value="0.8">Tập sự / Junior</option>
+                                  <option value="1.0" selected>
+                                    Kỹ sư chính / Standard
+                                  </option>
+                                  <option value="1.2">
+                                    Chuyên gia / Senior
+                                  </option>
+                                  <option value="1.4">Quản lý / Manager</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label
+                                  for="levelCoefficient"
+                                  class="font-semibold text-gray-700 mb-1 block"
+                                  >Hệ số Cấp bậc</label
+                                >
+                                <input
+                                  type="text"
+                                  id="levelCoefficient"
+                                  value="1.0"
+                                  class="form-input bg-gray-100"
+                                  readonly
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông tin Nhân sự & Đãi ngộ
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  for="baseSalary"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Lương cơ bản (VNĐ)</label
+                                >
+                                <input
+                                  type="number"
+                                  id="baseSalary"
+                                  placeholder="VD: 15000000"
+                                  class="form-input"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label
+                                  for="contractType"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Loại hợp đồng</label
+                                >
+                                <select
+                                  id="contractType"
+                                  class="form-input"
+                                  required
+                                >
+                                  <option value="">Chọn loại hợp đồng</option>
+                                  <option value="indefinite">
+                                    Không xác định thời hạn
+                                  </option>
+                                  <option value="definite">
+                                    Xác định thời hạn
+                                  </option>
+                                  <option value="probation">Thử việc</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- NEW SECTION: Performance Info -->
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông Tin Hiệu Suất & KPI
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  for="kpiFramework"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Bộ Khung KPI Áp Dụng</label
+                                >
+                                <select
+                                  id="kpiFramework"
+                                  class="form-input"
+                                  required
+                                >
+                                  <option value="">Chọn bộ khung</option>
+                                  <option value="framework1">
+                                    Tối ưu Đầu vào & Liên kết Đầu ra
+                                  </option>
+                                  <option value="framework2">
+                                    Phát triển Vùng trồng Mới
+                                  </option>
+                                  <option value="framework3">
+                                    Hỗ trợ Kỹ thuật Toàn diện
+                                  </option>
+                                </select>
+                              </div>
+                              <div>
+                                <label
+                                  for="firstReviewPeriod"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Kỳ đánh giá đầu tiên</label
+                                >
+                                <select
+                                  id="firstReviewPeriod"
+                                  class="form-input"
+                                  required
+                                >
+                                  <option value="">Chọn kỳ đánh giá</option>
+                                  <option value="q4_2025">Q4/2025</option>
+                                  <option value="q1_2026">Q1/2026</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Thông tin Quản lý & Phân công
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <label
+                                  for="managerId"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Người quản lý trực tiếp</label
+                                >
+                                <select
+                                  id="managerId"
+                                  class="form-input"
+                                  required
+                                >
+                                  <option value="">Chọn người quản lý</option>
+                                  <option value="manager1">
+                                    Lê Thị Minh - Trưởng phòng Kỹ thuật
+                                  </option>
+                                  <option value="manager2">
+                                    Trần Văn Hùng - Phó phòng
+                                  </option>
+                                </select>
+                              </div>
+                              <div>
+                                <label
+                                  for="regionId"
+                                  class="form-label required font-semibold text-gray-700 mb-1 block"
+                                  >Vùng/Khu vực phụ trách</label
+                                >
+                                <select
+                                  id="regionId"
+                                  class="form-input"
+                                  required
+                                >
+                                  <option value="">Chọn vùng phụ trách</option>
+                                  <option value="daklak">Đắk Lắk</option>
+                                  <option value="gialai">Gia Lai</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="border-t border-gray-200 pt-6">
+                            <h3
+                              class="text-lg font-semibold text-gray-800 mb-4"
+                            >
+                              Đào tạo & Tài liệu
+                            </h3>
+                            <div>
+                              <label
+                                for="trainingHistory"
+                                class="font-semibold text-gray-700 mb-1 block"
+                                >Kế hoạch đào tạo ban đầu</label
+                              >
+                              <textarea
+                                id="trainingHistory"
+                                rows="4"
+                                class="form-input"
+                                placeholder="- Q1/2025: Kỹ thuật xử lý ra hoa nghịch vụ..."
+                              ></textarea>
+                            </div>
+                            <div class="mt-4">
+                              <label
+                                for="documentUpload"
+                                class="font-semibold text-gray-700 mb-1 block"
+                                >Tài liệu đính kèm (HĐLĐ, Bằng cấp...)</label
+                              >
+                              <input
+                                type="file"
+                                id="documentUpload"
+                                class="form-input"
+                                multiple
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="lg:col-span-4 space-y-6">
+                <div class="card-modern sticky top-6">
+                  <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">
+                      Tiến độ hoàn thành
+                    </h3>
+                    <div class="flex items-center justify-between text-sm">
+                      <span class="text-gray-600">Thông tin bắt buộc:</span>
+                      <span
+                        class="font-bold text-gray-800"
+                        id="requiredProgress"
+                        >0/27</span
+                      >
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                      <div
+                        class="bg-farmkeeper h-2.5 rounded-full transition-all duration-500"
+                        style="width: 0%"
+                        id="progressBar"
+                      ></div>
+                    </div>
+                    <div class="mt-6">
+                      <h3 class="text-lg font-bold text-gray-800 mb-4">
+                        Hướng dẫn
+                      </h3>
+                      <ul class="space-y-3 text-sm text-gray-600">
+                        <li class="flex items-start">
+                          <i
+                            class="fas fa-check-circle text-farmkeeper mt-1 mr-2"
+                          ></i
+                          >Các trường có dấu (*) là thông tin bắt buộc.
+                        </li>
+                        <li class="flex items-start">
+                          <i
+                            class="fas fa-check-circle text-farmkeeper mt-1 mr-2"
+                          ></i
+                          >Hoàn thành tất cả các trường để tạo hồ sơ.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Action Buttons -->
+            <div
+              class="flex items-center justify-end mt-8 pt-6 border-t border-gray-200"
+            >
+              <div id="step1-nav" class="flex items-center space-x-3">
+                <button
+                  id="nextBtn"
+                  type="button"
+                  class="bg-farmkeeper text-white px-6 py-3 rounded-xl font-semibold hover:bg-farmkeeper-600 transition-all btn-enhanced disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Tiếp theo <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+              </div>
+              <div id="step2-nav" class="hidden items-center space-x-3">
+                <button
+                  id="prevBtn"
+                  type="button"
+                  class="bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-all btn-enhanced"
+                >
+                  <i class="fas fa-arrow-left mr-2"></i> Quay lại
+                </button>
+                <button
+                  id="submitBtn"
+                  type="button"
+                  class="bg-farmkeeper text-white px-6 py-3 rounded-xl font-semibold hover:bg-farmkeeper-600 transition-all btn-enhanced disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Hoàn tất & Tạo mới <i class="fas fa-check ml-2"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manager Form Placeholder -->
+          <div id="managerPlaceholder" class="hidden">
+            <div class="card-modern lg:col-span-8">
+              <div class="p-6 md:p-8 text-center py-16">
+                <div class="max-w-lg mx-auto">
+                  <i class="fas fa-tools text-5xl text-farmkeeper-400 mb-4"></i>
+                  <h2 class="text-xl font-bold text-gray-800">Đang xây dựng</h2>
+                  <p class="text-gray-600 mt-2">
+                    Giao diện tạo hồ sơ cho "Quản lý Bộ phận Kỹ thuật" sẽ được
+                    cập nhật sớm. Cảm ơn bạn!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+
+      const roleSelector = document.getElementById('roleSelector');
+      const technicianWorkflow = document.getElementById('technician-workflow');
+      const managerPlaceholder = document.getElementById('managerPlaceholder');
+
+      const step1Div = document.getElementById('step1');
+      const step2Div = document.getElementById('step2');
+      const step1Nav = document.getElementById('step1-nav');
+      const step2Nav = document.getElementById('step2-nav');
+      const nextBtn = document.getElementById('nextBtn');
+      const prevBtn = document.getElementById('prevBtn');
+      const submitBtn = document.getElementById('submitBtn');
+
+      const stepIndicator1 = document.getElementById('step-indicator-1');
+      const stepIndicator2 = document.getElementById('step-indicator-2');
+
+      const requiredFieldsStep1 = [
+        'fullName',
+        'birthDate',
+        'gender',
+        'idNumber',
+        'phoneNumber',
+        'email',
+        'province',
+        'district',
+        'ward',
+        'streetAddress',
+        'emergencyName',
+        'emergencyRelation',
+        'emergencyPhone',
+        'bankName',
+        'bankAccount',
+        'accountHolder',
+      ];
+      const requiredFieldsStep2 = [
+        'joinDate',
+        'status',
+        'jobTitle',
+        'specialty',
+        'engineerLevel',
+        'baseSalary',
+        'contractType',
+        'kpiFramework',
+        'firstReviewPeriod',
+        'managerId',
+        'regionId',
+      ];
+      const allRequiredFields = [
+        ...requiredFieldsStep1,
+        ...requiredFieldsStep2,
+      ];
+
+      roleSelector.addEventListener('change', function () {
+        if (this.value === 'technician') {
+          technicianWorkflow.classList.remove('hidden');
+          managerPlaceholder.classList.add('hidden');
+        } else {
+          technicianWorkflow.classList.add('hidden');
+          managerPlaceholder.classList.remove('hidden');
+        }
+      });
+
+      function showStep(stepNumber) {
+        currentStep = stepNumber;
+        step1Div.classList.toggle('hidden', stepNumber !== 1);
+        step2Div.classList.toggle('hidden', stepNumber !== 2);
+        step1Nav.classList.toggle('hidden', stepNumber !== 1);
+        step2Nav.classList.toggle('hidden', stepNumber !== 2);
+
+        stepIndicator1.className =
+          'step-indicator w-10 h-10 rounded-full flex items-center justify-center font-bold ' +
+          (stepNumber === 1 ? 'active' : 'completed');
+        stepIndicator2.className =
+          'step-indicator w-10 h-10 rounded-full flex items-center justify-center font-bold ' +
+          (stepNumber === 2 ? 'active' : 'pending');
+      }
+
+      nextBtn.addEventListener('click', () => {
+        if (validateStep(1)) {
+          showStep(2);
+        } else {
+          alert('Vui lòng điền đầy đủ các trường bắt buộc ở Bước 1.');
+        }
+      });
+      prevBtn.addEventListener('click', () => showStep(1));
+
+      function validateStep(stepNumber) {
+        const fieldsToValidate =
+          stepNumber === 1 ? requiredFieldsStep1 : requiredFieldsStep2;
+        return fieldsToValidate.every((fieldId) => {
+          const field = document.getElementById(fieldId);
+          return field && field.value.trim() !== '';
+        });
+      }
+
+      function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            document.getElementById('avatarPreview').src = e.target.result;
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+
+      const addressData = {
+        'Đắk Lắk': {
+          'TP. Buôn Ma Thuột': ['Phường Tân Lợi', 'Xã Ea Kao'],
+          "Huyện Cư M'gar": ['Thị trấn Quảng Phú', 'Xã Ea Pốk'],
+        },
+        'Gia Lai': {
+          'TP. Pleiku': ['Phường Diên Hồng', 'Xã Trà Đa'],
+          'Huyện Chư Păh': ['Thị trấn Phú Hòa', 'Xã Ia Ly'],
+        },
+      };
+      const provinceSelect = document.getElementById('province');
+      const districtSelect = document.getElementById('district');
+      const wardSelect = document.getElementById('ward');
+
+      Object.keys(addressData).forEach((p) =>
+        provinceSelect.add(new Option(p, p))
+      );
+
+      function loadDistricts() {
+        const selectedProvince = provinceSelect.value;
+        districtSelect.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+        if (selectedProvince && addressData[selectedProvince]) {
+          Object.keys(addressData[selectedProvince]).forEach((district) => {
+            districtSelect.add(new Option(district, district));
+          });
+        }
+        updateProgress();
+      }
+
+      function loadWards() {
+        const selectedProvince = provinceSelect.value;
+        const selectedDistrict = districtSelect.value;
+        wardSelect.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+        if (
+          selectedProvince &&
+          selectedDistrict &&
+          addressData[selectedProvince][selectedDistrict]
+        ) {
+          addressData[selectedProvince][selectedDistrict].forEach((ward) => {
+            wardSelect.add(new Option(ward, ward));
+          });
+        }
+        updateProgress();
+      }
+
+      provinceSelect.onchange = loadDistricts;
+      districtSelect.onchange = loadWards;
+      wardSelect.onchange = updateProgress;
+
+      function updateProgress() {
+        let completedFields = 0;
+        allRequiredFields.forEach((id) => {
+          const field = document.getElementById(id);
+          if (field && field.value.trim() !== '') completedFields++;
+        });
+
+        const totalFields = allRequiredFields.length;
+        const progressPercentage =
+          totalFields > 0 ? (completedFields / totalFields) * 100 : 0;
+
+        document.getElementById(
+          'progressBar'
+        ).style.width = `${progressPercentage}%`;
+        document.getElementById(
+          'requiredProgress'
+        ).textContent = `${completedFields}/${totalFields}`;
+
+        nextBtn.disabled = !validateStep(1);
+        submitBtn.disabled = !(validateStep(1) && validateStep(2));
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        // Generate Employee ID
+        const employeeIdInput = document.getElementById('employeeId');
+        if (employeeIdInput) {
+          const randomId = 'KTV' + Math.floor(1000 + Math.random() * 9000);
+          employeeIdInput.value = randomId;
+        }
+
+        // Auto-uppercase bank account holder name
+        const accountHolderInput = document.getElementById('accountHolder');
+        if (accountHolderInput) {
+          accountHolderInput.addEventListener('input', function (e) {
+            e.target.value = e.target.value.toUpperCase();
+          });
+        }
+
+        allRequiredFields.forEach((id) => {
+          const field = document.getElementById(id);
+          if (field) field.addEventListener('input', updateProgress);
+        });
+        document
+          .getElementById('engineerLevel')
+          .addEventListener('change', function () {
+            document.getElementById('levelCoefficient').value = this.value;
+          });
+        showStep(1);
+        updateProgress();
+      });
+    </script>
+  </body>
+</html>

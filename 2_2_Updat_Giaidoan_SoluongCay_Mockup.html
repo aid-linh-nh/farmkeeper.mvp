@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Phân bổ Giai đoạn Cây</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .input-base {
+            background-color: #1f2937; /* gray-800 */
+            border: 1px solid #4b5563; /* gray-600 */
+            transition: all 0.2s ease-in-out;
+        }
+        .input-base:focus {
+            --tw-ring-color: #3b82f6;
+            border-color: #3b82f6;
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto text-center">
+        <h1 class="text-3xl font-bold text-white mb-4">Trang Hồ sơ Vườn/Farm (Mô phỏng)</h1>
+        <p class="text-gray-400 mb-8">Nhấn vào nút bên dưới để mở pop-up nhập liệu chi tiết.</p>
+        <button id="open-modal-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center mx-auto">
+            <i data-lucide="edit" class="w-5 h-5 mr-2"></i> Cập nhật Phân bổ Giai đoạn Cây
+        </button>
+    </div>
+
+    <!-- Modal Pop-up -->
+    <div id="distribution-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop opacity-0">
+        <div class="bg-gray-800 rounded-xl border border-gray-700 w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-700 shrink-0">
+                <h2 class="text-2xl font-bold text-white">Chi tiết Phân bổ Giai đoạn Cây</h2>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto">
+                <form id="distribution-form">
+                    <!-- Farm-level Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 p-4 bg-gray-900/50 rounded-lg">
+                        <div>
+                            <label for="total-trees-farm" class="block text-sm font-medium text-gray-300 mb-2">Tổng số cây toàn vườn</label>
+                            <input type="number" id="total-trees-farm" value="500" class="input-base w-full text-white rounded-md px-3 py-2">
+                        </div>
+                        <div>
+                            <p class="block text-sm font-medium text-gray-300 mb-2">Tổng số cây đã phân bổ</p>
+                            <div class="flex items-center justify-between p-2 bg-gray-700 rounded-md">
+                                <span id="allocated-trees-display" class="text-lg font-bold text-white">425</span>
+                                <span id="validation-icon" class="text-red-500"><i data-lucide="alert-circle" class="w-5 h-5"></i></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plots Container -->
+                    <div id="plots-container" class="space-y-6">
+                        <!-- Plot 1 (Sample) -->
+                        <div class="p-6 rounded-lg border border-gray-700 plot-card">
+                            <div class="flex justify-between items-center mb-4">
+                                <input type="text" value="Lô 1" class="text-lg font-semibold text-white bg-transparent border-b border-gray-600 focus:outline-none">
+                                <button type="button" class="text-red-500 hover:text-red-400 remove-plot-btn">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-medium text-gray-400 mb-1">Tổng số cây / Lô</label>
+                                    <input type="number" value="300" class="input-base w-full text-white rounded-md px-3 py-2 total-plot-trees">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Kinh doanh ổn định</label>
+                                    <input type="number" value="300" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Trồng mới - Cây non</label>
+                                    <input type="number" value="0" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Cải tạo</label>
+                                    <input type="number" value="0" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                                </div>
+                                <div class="md:col-span-2 mt-2">
+                                    <p class="text-xs text-right text-red-500 plot-validation-msg hidden">Tổng số cây các giai đoạn không khớp với tổng số cây của lô.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Plot 2 (Sample) -->
+                        <div class="p-6 rounded-lg border border-gray-700 plot-card">
+                            <div class="flex justify-between items-center mb-4">
+                                <input type="text" value="Lô 2" class="text-lg font-semibold text-white bg-transparent border-b border-gray-600 focus:outline-none">
+                                <button type="button" class="text-red-500 hover:text-red-400 remove-plot-btn">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-medium text-gray-400 mb-1">Tổng số cây / Lô</label>
+                                    <input type="number" value="125" class="input-base w-full text-white rounded-md px-3 py-2 total-plot-trees">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Kinh doanh ổn định</label>
+                                    <input type="number" value="125" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Trồng mới - Cây non</label>
+                                    <input type="number" value="0" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Cải tạo</label>
+                                    <input type="number" value="0" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                                </div>
+                                <div class="md:col-span-2 mt-2">
+                                    <p class="text-xs text-right text-red-500 plot-validation-msg hidden">Tổng số cây các giai đoạn không khớp với tổng số cây của lô.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" id="add-plot-btn" class="mt-6 w-full text-sm text-blue-400 hover:text-blue-300 font-semibold flex items-center justify-center p-3 border-2 border-dashed border-gray-600 hover:border-blue-500 rounded-lg">
+                        <i data-lucide="plus" class="w-4 h-4 mr-2"></i>Thêm Lô Mới
+                    </button>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex justify-end items-center p-6 border-t border-gray-700 shrink-0">
+                <button type="button" class="bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-md mr-4">Hủy</button>
+                <button type="submit" form="distribution-form" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md">Lưu Phân bổ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const modal = document.getElementById('distribution-modal');
+        const openModalBtn = document.getElementById('open-modal-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const plotsContainer = document.getElementById('plots-container');
+        const addPlotBtn = document.getElementById('add-plot-btn');
+        const totalTreesFarmInput = document.getElementById('total-trees-farm');
+        const allocatedTreesDisplay = document.getElementById('allocated-trees-display');
+        const validationIcon = document.getElementById('validation-icon');
+        const distributionForm = document.getElementById('distribution-form');
+
+        const plotTemplate = `
+            <div class="p-6 rounded-lg border border-gray-700 plot-card">
+                <div class="flex justify-between items-center mb-4">
+                    <input type="text" placeholder="Tên Lô..." class="text-lg font-semibold text-white bg-transparent border-b border-gray-600 focus:outline-none">
+                    <button type="button" class="text-red-500 hover:text-red-400 remove-plot-btn">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Tổng số cây / Lô</label>
+                        <input type="number" value="0" class="input-base w-full text-white rounded-md px-3 py-2 total-plot-trees">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Kinh doanh ổn định</label>
+                        <input type="number" value="0" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Trồng mới - Cây non</label>
+                        <input type="number" value="0" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-400 mb-1">Giai đoạn Cải tạo</label>
+                        <input type="number" value="0" class="input-base w-full text-white rounded-md px-3 py-2 stage-trees">
+                    </div>
+                    <div class="md:col-span-2 mt-2">
+                        <p class="text-xs text-right text-red-500 plot-validation-msg hidden">Tổng số cây các giai đoạn không khớp với tổng số cây của lô.</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        function validateAll() {
+            let totalAllocated = 0;
+            const plotCards = plotsContainer.querySelectorAll('.plot-card');
+            
+            plotCards.forEach(card => {
+                const totalPlotInput = card.querySelector('.total-plot-trees');
+                const stageInputs = card.querySelectorAll('.stage-trees');
+                const validationMsg = card.querySelector('.plot-validation-msg');
+                
+                const totalPlotTrees = parseInt(totalPlotInput.value) || 0;
+                let sumStageTrees = 0;
+                stageInputs.forEach(input => {
+                    sumStageTrees += parseInt(input.value) || 0;
+                });
+
+                if (totalPlotTrees !== sumStageTrees) {
+                    validationMsg.classList.remove('hidden');
+                    totalPlotInput.classList.add('border-red-500');
+                } else {
+                    validationMsg.classList.add('hidden');
+                    totalPlotInput.classList.remove('border-red-500');
+                }
+                
+                totalAllocated += totalPlotTrees;
+            });
+            
+            allocatedTreesDisplay.textContent = totalAllocated;
+            const totalFarmTrees = parseInt(totalTreesFarmInput.value) || 0;
+
+            if (totalFarmTrees === totalAllocated) {
+                validationIcon.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5 text-green-500"></i>';
+                totalTreesFarmInput.classList.remove('border-red-500');
+            } else {
+                validationIcon.innerHTML = '<i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>';
+                totalTreesFarmInput.classList.add('border-red-500');
+            }
+            lucide.createIcons();
+        }
+
+        openModalBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            validateAll();
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        });
+
+        addPlotBtn.addEventListener('click', () => {
+            const newPlot = document.createElement('div');
+            newPlot.innerHTML = plotTemplate;
+            plotsContainer.appendChild(newPlot.firstElementChild);
+            lucide.createIcons();
+            validateAll();
+        });
+
+        plotsContainer.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-plot-btn')) {
+                e.target.closest('.plot-card').remove();
+                validateAll();
+            }
+        });
+
+        distributionForm.addEventListener('input', validateAll);
+        distributionForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Đã lưu thông tin phân bổ thành công!');
+            closeModalBtn.click();
+        });
+
+    </script>
+</body>
+</html>

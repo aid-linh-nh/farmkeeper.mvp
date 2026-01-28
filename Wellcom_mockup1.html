@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper - Ứng dụng Quản lý Sản xuất Nông nghiệp thông minh, đơn giản, hiệu quả</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .farm-green { color: #2E7D32; }
+        .keeper-black { color: #1a1a1a; }
+        .gradient-bg { background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%); }
+        .custom-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #555; }
+        
+        /* Enhanced border styles */
+        .card-green {
+            background: linear-gradient(to bottom, #F0FDF4, #DCFCE7);
+            border: 3px solid #4ADE80;
+            box-shadow: 0 4px 20px rgba(74, 222, 128, 0.15);
+        }
+        
+        .card-green:hover {
+            border-color: #22C55E;
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.25);
+            transform: translateY(-4px);
+        }
+        
+        .card-blue {
+            background: linear-gradient(to bottom, #EFF6FF, #DBEAFE);
+            border: 3px solid #60A5FA;
+            box-shadow: 0 4px 20px rgba(96, 165, 250, 0.15);
+        }
+        
+        .card-blue:hover {
+            border-color: #3B82F6;
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.25);
+            transform: translateY(-4px);
+        }
+        
+        .card-purple {
+            background: linear-gradient(to bottom, #FAF5FF, #F3E8FF);
+            border: 3px solid #C084FC;
+            box-shadow: 0 4px 20px rgba(192, 132, 252, 0.15);
+        }
+        
+        .card-purple:hover {
+            border-color: #A855F7;
+            box-shadow: 0 8px 30px rgba(168, 85, 247, 0.25);
+            transform: translateY(-4px);
+        }
+        
+        .card-orange {
+            background: linear-gradient(to bottom, #FFF7ED, #FED7AA);
+            border: 3px solid #FDBA74;
+            box-shadow: 0 4px 20px rgba(253, 186, 116, 0.15);
+        }
+        
+        .card-orange:hover {
+            border-color: #FB923C;
+            box-shadow: 0 8px 30px rgba(251, 146, 60, 0.25);
+            transform: translateY(-4px);
+        }
+        
+        .card-teal {
+            background: linear-gradient(to bottom, #F0FDFA, #CCFBF1);
+            border: 3px solid #5EEAD4;
+            box-shadow: 0 4px 20px rgba(94, 234, 212, 0.15);
+        }
+        
+        .card-teal:hover {
+            border-color: #14B8A6;
+            box-shadow: 0 8px 30px rgba(20, 184, 166, 0.25);
+            transform: translateY(-4px);
+        }
+        
+        .card-cyan {
+            background: linear-gradient(to bottom, #ECFEFF, #CFFAFE);
+            border: 3px solid #67E8F9;
+            box-shadow: 0 4px 20px rgba(103, 232, 249, 0.15);
+        }
+        
+        .card-cyan:hover {
+            border-color: #06B6D4;
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.25);
+            transform: translateY(-4px);
+        }
+        
+        /* Gradient borders */
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(white, white) padding-box,
+                      linear-gradient(135deg, #4ADE80 0%, #3B82F6 100%) border-box;
+            border: 3px solid transparent;
+        }
+        
+        /* Animated status dots */
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .status-green {
+            background: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.6);
+        }
+        
+        .status-yellow {
+            background: #FFC107;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.6);
+        }
+        
+        .status-red {
+            background: #F44336;
+            box-shadow: 0 0 10px rgba(244, 67, 54, 0.6);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Enhanced button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
+            border: 2px solid #2E7D32;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        /* Header enhancement */
+        .header-enhanced {
+            border-bottom: 3px solid #4ADE80;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Footer enhancement */
+        .footer-enhanced {
+            border-top: 3px solid #4ADE80;
+            background: linear-gradient(to bottom, #1F2937, #111827);
+        }
+        
+        /* Card hover lift effect */
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Glow effects */
+        .glow-green { box-shadow: 0 0 20px rgba(74, 222, 128, 0.4); }
+        .glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4); }
+        .glow-purple { box-shadow: 0 0 20px rgba(168, 85, 247, 0.4); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <header class="bg-white shadow-sm sticky top-0 z-50 header-enhanced">
+        <div class="container mx-auto px-4"><div class="flex items-center justify-between py-4"><div class="flex items-center space-x-4"><h1 class="text-3xl lg:text-4xl font-bold"><span class="farm-green">FARM</span><span class="keeper-black">KEEPER</span></h1><div class="hidden md:block"><p class="text-sm text-gray-600">Ứng Dụng Quản Lý Sản Xuất Nông Nghiệp Thông Minh, Đơn Giản, Hiệu Quả</p></div></div><div class="flex items-center space-x-2"><select class="px-3 py-2 border-2 border-gray-300 rounded-lg text-sm bg-white hover:border-green-400 transition-all focus:border-green-500 focus:outline-none"><option>🏢 Doanh Nghiệp</option><option>🤝 Hợp tác xã</option><option>👨‍🌾 Nông hộ</option></select></div></div></div>
+    </header>
+
+    <section class="gradient-bg text-white py-12 relative overflow-hidden border-b-4 border-green-600">
+        <div class="absolute inset-0 bg-gradient-to-r from-green-600/20 to-transparent"></div>
+        <div class="container mx-auto px-4 relative z-10"><div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl lg:text-4xl font-bold mb-4">Hệ thống thuộc Chương trình Nông Nghiệp Liên Kết</h2>
+            <p class="text-lg mb-8 text-green-50">DỰ ÁN KHẢO SÁT - KIỂM ĐỊNH - LIÊN KẾT XÂY DỰNG VÙNG TRỒNG SẦU RIÊNG QUY CHUẨN XUẤT KHẨU</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center"><button class="bg-white text-green-700 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"><i class="fas fa-play-circle mr-2"></i>Xem Thông Tin Dự Án</button><button class="bg-green-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-800 transition-all border-2 border-green-500 shadow-lg hover:shadow-xl transform hover:-translate-y-1"><i class="fas fa-rocket mr-2"></i>Tham Gia Ngay</button></div></div></div>
+    </section>
+
+    <main class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-4 card-green rounded-2xl p-6 transition-all duration-300 h-full hover-lift">
+                <div class="flex items-center justify-between mb-4"><div class="bg-green-100 p-3 rounded-lg border-2 border-green-300"><i class="fas fa-map-marked-alt text-2xl text-green-600"></i></div><span class="text-sm bg-green-200 text-green-800 px-3 py-1 rounded-full font-medium border border-green-400">Cốt lõi</span></div>
+                <h3 class="text-xl font-bold mb-3">Quản lý Vườn/Farm</h3>
+                <p class="text-gray-600 mb-4">Quản lý toàn bộ vườn/trang trại trên một nền tảng</p>
+                <div class="bg-white/80 rounded-lg p-4 mb-4 custom-scroll border-2 border-green-200" style="max-height: 200px; overflow-y: auto;"><div class="space-y-2"><div class="flex items-center justify-between text-sm p-2 hover:bg-green-50 rounded transition-all"><div class="flex items-center gap-2"><span class="status-dot status-green"></span><span class="font-semibold text-green-700">🌱 Vườn Anh Hiền - Cư M'Gar</span></div><span class="text-gray-500 font-medium">2.5 ha</span></div><div class="flex items-center justify-between text-sm p-2 hover:bg-green-50 rounded transition-all"><div class="flex items-center gap-2"><span class="status-dot status-green"></span><span class="font-semibold text-green-700">🌱 Vườn Anh Trung - Cư M'Gar</span></div><span class="text-gray-500 font-medium">3.2 ha</span></div><div class="flex items-center justify-between text-sm p-2 hover:bg-red-50 rounded transition-all"><div class="flex items-center gap-2"><span class="status-dot status-red"></span><span class="font-bold text-red-600">🏢 Trang trại GreenFarm - Đơn Dương</span></div><span class="text-gray-500 font-medium">150 ha</span></div><div class="flex items-center justify-between text-sm p-2 hover:bg-yellow-50 rounded transition-all"><div class="flex items-center gap-2"><span class="status-dot status-yellow"></span><span class="font-semibold text-yellow-600">🌱 Vườn Chị Hà - EaKar</span></div><span class="text-gray-500 font-medium">1.8 ha</span></div><div class="flex items-center justify-between text-sm p-2 hover:bg-green-50 rounded transition-all"><div class="flex items-center gap-2"><span class="status-dot status-green"></span><span class="font-semibold text-green-700">🤝 HTX Nông sản sạch - Cẩm Mỹ</span></div><span class="text-gray-500 font-medium">250 ha</span></div><div class="flex items-center justify-between text-sm p-2 hover:bg-red-50 rounded transition-all"><div class="flex items-center gap-2"><span class="status-dot status-red"></span><span class="font-bold text-red-600">🌱 Vườn Chú Năm - Cư M'Gar</span></div><span class="text-gray-500 font-medium">4.5 ha</span></div><div class="flex items-center justify-between text-sm p-2 hover:bg-green-50 rounded transition-all"><div class="flex items-center gap-2"><span class="status-dot status-green"></span><span class="font-semibold text-green-700">🌱 Vườn Cô Linh - Buôn Hồ</span></div><span class="text-gray-500 font-medium">3.8 ha</span></div><div class="flex items-center justify-between text-sm p-2 hover:bg-green-50 rounded transition-all"><div class="flex items-center gap-2"><span class="status-dot status-green"></span><span class="font-semibold text-green-700">🌱 Vườn Bác Tâm - EaKar</span></div><span class="text-gray-500 font-medium">2.1 ha</span></div></div></div>
+                <div class="flex items-center justify-between text-xs text-gray-600 mb-3"><div class="flex space-x-3"><div class="flex items-center"><span class="w-2 h-2 bg-green-500 rounded-full mr-1"></span><span>Bình thường</span></div><div class="flex items-center"><span class="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span><span>Có vấn đề</span></div><div class="flex items-center"><span class="w-2 h-2 bg-red-500 rounded-full mr-1"></span><span>Cảnh báo</span></div></div></div>
+                <div class="text-sm text-gray-500 mb-4"><i class="fas fa-info-circle mr-1"></i>Tổng: 136 vườn • 406.5 ha</div>
+                <button class="w-full btn-primary text-white py-2 rounded-lg font-medium transition flex items-center justify-center mb-3"><i class="fas fa-map mr-2"></i>Xem dạng bản đồ<i class="fas fa-arrow-right ml-2"></i></button>
+                <ul class="text-sm text-gray-600 space-y-1"><li>✓ Định vị GPS chính xác</li><li>✓ Theo dõi diện tích, ranh giới</li><li>✓ Lịch sử canh tác chi tiết</li></ul>
+            </div>
+
+            <div class="lg:col-span-6 card-blue rounded-2xl p-6 transition-all duration-300 h-full hover-lift">
+                <div class="flex items-center justify-between mb-4"><div class="bg-blue-100 p-3 rounded-lg border-2 border-blue-300"><i class="fas fa-tasks text-2xl text-blue-600"></i></div><span class="text-sm bg-blue-200 text-blue-800 px-3 py-1 rounded-full font-medium border border-blue-400">Quan trọng</span></div>
+                <h3 class="text-xl font-bold mb-3">Quản lý Quy trình Canh tác Tiêu chuẩn & Công việc</h3>
+                <p class="text-gray-600 mb-4">Theo dõi và nhắc nhở công việc tự động cho từng vườn</p>
+                <div class="grid md:grid-cols-2 gap-4 mb-4"><div class="bg-white/80 rounded-lg p-4 border-2 border-blue-200 hover:border-blue-300 transition-all"><h4 class="font-semibold text-sm text-gray-700 mb-2">Công việc hôm nay</h4><div class="space-y-3 custom-scroll" style="max-height: 150px; overflow-y: auto;"><p class="text-sm text-gray-400 line-through">💧 Tưới nước</p><p class="text-sm text-yellow-600 font-semibold">🧪 Bón phân lá</p><p class="text-sm text-red-600 font-bold animate-pulse">🦠 Phòng nấm bệnh (Quá hạn)</p><p class="text-sm text-gray-400 line-through">✂️ Cắt tỉa cành</p><p class="text-sm text-yellow-600 font-semibold">📸 Chụp ảnh ghi nhận (14:00)</p><p class="text-sm text-gray-400 line-through">📝 Ghi nhật ký</p></div></div><div class="bg-white/80 rounded-lg p-4 border-2 border-blue-200 hover:border-blue-300 transition-all"><h4 class="font-semibold text-sm text-gray-700 mb-2">Công việc tuần này</h4><div class="space-y-3 custom-scroll" style="max-height: 150px; overflow-y: auto;"><p class="text-sm text-gray-700">🌾 Làm cỏ (Thứ 5)</p><p class="text-sm text-gray-700">🔍 Kiểm tra sâu bệnh (Thứ 6)</p><p class="text-sm text-gray-700">💉 Tiêm phòng (Thứ 7)</p><p class="text-sm text-gray-400 line-through">📊 Báo cáo tuần</p><p class="text-sm text-gray-700">🚿 Vệ sinh thiết bị (T2 tuần sau)</p><p class="text-sm text-gray-700">📋 Kiểm kê vật tư (T3 tuần sau)</p></div></div></div>
+                <div class="flex items-center justify-between text-sm text-gray-600 mb-4"><p><i class="fas fa-bell text-yellow-500 mr-1"></i>Nhận thông báo kịp thời qua SMS/App</p><p><i class="fas fa-chart-bar text-blue-500 mr-1"></i>Tiến độ: 65% hoàn thành</p></div>
+                <div class="gradient-border rounded-lg p-4 glow-blue"><div class="flex items-start space-x-3"><div class="bg-white p-2 rounded-lg"><i class="fas fa-file-export text-blue-600 text-lg"></i></div><div class="flex-1"><h4 class="font-semibold text-blue-900 mb-1">Nhật ký Canh tác Điện tử theo tiêu chuẩn GAP</h4><p class="text-xs text-gray-600 mb-3">Tự động ghi nhận và trích xuất nhật ký sản xuất theo tiêu chuẩn quốc tế.</p><button class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-all flex items-center justify-center shadow-md hover:shadow-lg transform hover:-translate-y-1"><i class="fas fa-bookmark mr-2"></i>Lưu và Trích xuất<i class="fas fa-arrow-right ml-2"></i></button></div></div></div>
+            </div>
+            
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                <div class="card-cyan rounded-2xl p-6 transition-all duration-300 h-full hover-lift flex flex-col flex-grow">
+                    <div class="flex items-center justify-between mb-4"><div class="bg-cyan-100 p-3 rounded-lg border-2 border-cyan-300"><i class="fas fa-satellite-dish text-2xl text-cyan-600"></i></div><span class="text-sm bg-cyan-200 text-cyan-800 px-3 py-1 rounded-full font-medium border border-cyan-400">Nâng cao</span></div>
+                    <div class="flex-grow">
+                        <h3 class="text-xl font-bold mb-3">Kết nối IoT Chính xác</h3>
+                        <p class="text-gray-600 mb-4 text-sm">Thu thập dữ liệu tự động từ cảm biến để đưa ra quyết định chính xác.</p>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-center text-slate-600 mt-auto">
+                        <div class="hover:text-cyan-600 transition-all"><i class="fas fa-tint text-2xl"></i><p class="text-xs mt-1">Độ ẩm</p></div>
+                        <div class="hover:text-cyan-600 transition-all"><i class="fas fa-vial text-2xl"></i><p class="text-xs mt-1">Độ PH</p></div>
+                        <div class="hover:text-cyan-600 transition-all"><i class="fas fa-leaf text-2xl"></i><p class="text-xs mt-1">Dinh dưỡng</p></div>
+                    </div>
+                </div>
+                <div class="gradient-border rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex-shrink-0">
+                    <div class="flex items-center justify-center mb-4"><div class="bg-white p-3 rounded-lg shadow-sm"><i class="fas fa-user-circle text-2xl text-green-600"></i></div></div><h3 class="text-lg font-bold mb-2 text-center">Bắt đầu</h3><div class="space-y-2"><button class="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition-all text-sm shadow-md hover:shadow-lg"><i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập</button><button class="w-full bg-white text-green-600 py-2 rounded-lg font-semibold border-2 border-green-600 hover:bg-green-50 transition-all text-sm shadow-md hover:shadow-lg"><i class="fas fa-user-plus mr-1"></i>Đăng ký</button></div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 card-purple rounded-2xl p-6 transition-all duration-300 h-full hover-lift">
+                <div class="flex items-center justify-between mb-4"><div class="bg-purple-100 p-3 rounded-lg border-2 border-purple-300"><i class="fas fa-wallet text-2xl text-purple-600"></i></div><span class="text-sm bg-purple-200 text-purple-800 px-3 py-1 rounded-full font-medium border border-purple-400">Tài chính</span></div>
+                <h3 class="text-xl font-bold mb-3">Quản lý Tài chính</h3>
+                <p class="text-gray-600 mb-4">Theo dõi chi phí, tính toán lợi nhuận</p>
+                <div class="bg-white/80 rounded-lg p-4 mb-4 grid md:grid-cols-2 gap-4 items-center border-2 border-purple-200"><div class="relative w-40 h-40 mx-auto"><svg class="w-full h-full" viewBox="0 0 36 36"><path class="text-purple-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path><path class="text-purple-600" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="52, 48"></path><path class="text-purple-400" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="37, 63" stroke-dashoffset="-52"></path></svg><div class="absolute inset-0 flex flex-col items-center justify-center text-center"><span class="text-xs text-gray-500">Tổng chi phí</span><span class="text-xl font-bold text-purple-900">49Tr</span></div></div><div class="space-y-2 text-sm"><div class="flex items-center"><span class="w-3 h-3 bg-purple-600 rounded-full mr-2"></span><span>Vật tư: 25.5 tr</span></div><div class="flex items-center"><span class="w-3 h-3 bg-purple-400 rounded-full mr-2"></span><span>Nhân công: 18.2 tr</span></div><div class="flex items-center"><span class="w-3 h-3 bg-purple-200 rounded-full mr-2"></span><span>Khác: 5.3 tr</span></div><div class="border-t-2 border-purple-200 mt-2 pt-2"><p class="font-semibold text-green-600">Lợi nhuận: +401 tr</p></div></div></div>
+                <p class="text-sm text-gray-600"><i class="fas fa-chart-line text-green-500 mr-1"></i>Báo cáo tài chính tự động hàng tháng</p>
+            </div>
+
+            <div class="lg:col-span-4 card-orange rounded-2xl p-6 transition-all duration-300 h-full hover-lift">
+                <div class="flex items-center justify-between mb-4"><div class="bg-orange-100 p-3 rounded-lg border-2 border-orange-300"><i class="fas fa-award text-2xl text-orange-600"></i></div><span class="text-sm bg-orange-200 text-orange-800 px-3 py-1 rounded-full font-medium border border-orange-400">Giá trị</span></div>
+                <h3 class="text-xl font-bold mb-3">Quản lý Thu hoạch & Kiểm soát Chất lượng</h3>
+                <p class="text-gray-600 mb-4">Dự báo sản lượng, quản lý chất lượng</p>
+                <div class="bg-white/80 rounded-lg p-4 mb-4 grid grid-cols-2 gap-6 items-center border-2 border-orange-200"><div class="relative w-32 h-32 mx-auto"><svg class="w-full h-full" viewBox="0 0 36 36"><path class="text-orange-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4"></path><path class="text-orange-500" stroke-linecap="round" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="85, 15"></path></svg><div class="absolute inset-0 flex flex-col items-center justify-center text-center"><span class="text-2xl font-bold text-orange-800">79,5%</span><span class="text-xs text-gray-500">Loại A</span></div></div><div class="space-y-3"><div><div class="flex justify-between text-sm mb-1"><span class="font-medium">Sản lượng dự kiến</span><span class="font-bold">6.300 Tấn</span></div><div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden"><div class="bg-gradient-to-r from-green-500 to-green-600 h-2.5 rounded-full transition-all" style="width: 90%"></div></div></div><div><div class="flex justify-between text-sm mb-1"><span class="font-medium">Sản lượng trung bình</span><span class="font-bold">18,3 Tấn/ha</span></div><div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden"><div class="bg-gradient-to-r from-orange-400 to-orange-500 h-2.5 rounded-full transition-all" style="width: 80%"></div></div></div></div></div>
+                <ul class="text-sm text-gray-600 space-y-1"><li>✓ Dự báo sản lượng theo mùa</li><li>✓ Phân loại chất lượng tự động</li><li>✓ Kết nối trực tiếp thu mua</li></ul>
+            </div>
+
+            <div class="lg:col-span-4 card-teal rounded-2xl p-6 transition-all duration-300 h-full hover-lift">
+                <div class="flex items-center justify-between mb-4"><div class="bg-teal-100 p-3 rounded-lg border-2 border-teal-300"><i class="fas fa-fingerprint text-2xl text-teal-600"></i></div><span class="text-sm bg-teal-200 text-teal-800 px-3 py-1 rounded-full font-medium border border-teal-400">Đặc biệt</span></div>
+                <h3 class="text-xl font-bold mb-3">Truy xuất - Truy nguyên Nguồn gốc</h3>
+                <p class="text-gray-600 mb-4">Minh bạch từ vườn đến bàn ăn</p>
+                <div class="grid grid-cols-3 gap-3 mb-4"><div class="text-center"><div class="bg-white p-4 rounded-lg mb-2 hover:bg-teal-100 transition-all cursor-pointer border-2 border-gray-200 hover:border-teal-400"><i class="fas fa-qrcode text-2xl text-gray-700 hover:text-teal-600"></i></div><p class="text-xs">QR Code</p></div><div class="text-center"><div class="bg-white p-4 rounded-lg mb-2 hover:bg-teal-100 transition-all cursor-pointer border-2 border-gray-200 hover:border-teal-400"><i class="fas fa-barcode text-2xl text-gray-700 hover:text-teal-600"></i></div><p class="text-xs">Barcode</p></div><div class="text-center"><div class="bg-white p-4 rounded-lg mb-2 hover:bg-teal-100 transition-all cursor-pointer border-2 border-gray-200 hover:border-teal-400"><i class="fas fa-wifi text-2xl text-gray-700 hover:text-teal-600"></i></div><p class="text-xs">RFID</p></div></div>
+                <p class="text-sm text-gray-600 mb-2"><i class="fas fa-shield-alt text-green-500 mr-1"></i>Tăng giá trị và niềm tin sản phẩm</p>
+                <p class="text-sm text-gray-600"><i class="fas fa-link text-blue-500 mr-1"></i>Liên kết với sản phẩm & chất lượng</p>
+            </div>
+        </div>
+
+        <div class="mt-12 gradient-bg rounded-2xl p-8 text-white relative overflow-hidden border-4 border-green-500/30 shadow-2xl"><div class="absolute inset-0 bg-gradient-to-br from-green-600/20 to-transparent"></div><div class="max-w-4xl mx-auto relative z-10"><div class="grid md:grid-cols-2 gap-8 items-center"><div><h3 class="text-2xl font-bold mb-4"><i class="fas fa-mobile-alt mr-2"></i>Tải ứng dụng FarmKeeper</h3><p class="text-green-50 mb-6">Quản lý trang trại mọi lúc, mọi nơi. Có sẵn cho Android và iOS.</p><div class="flex flex-col sm:flex-row gap-4"><a href="#" class="inline-flex items-center bg-black hover:bg-gray-900 text-white px-6 py-3 rounded-lg transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"><i class="fab fa-google-play text-2xl mr-3"></i><div><div class="text-xs">Tải về từ</div><div class="text-lg font-semibold">Google Play</div></div></a><a href="#" class="inline-flex items-center bg-black hover:bg-gray-900 text-white px-6 py-3 rounded-lg transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"><i class="fab fa-apple text-2xl mr-3"></i><div><div class="text-xs">Tải xuống từ</div><div class="text-lg font-semibold">App Store</div></div></a></div></div><div class="text-center"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='400' viewBox='0 0 200 400'%3E%3Crect width='200' height='400' rx='20' fill='%23333'/%3E%3Crect x='10' y='10' width='180' height='380' rx='15' fill='%23fff'/%3E%3Ctext x='100' y='200' text-anchor='middle' font-family='Arial' font-size='20' fill='%23333'%3EFarmKeeper%3C/text%3E%3Ctext x='100' y='230' text-anchor='middle' font-family='Arial' font-size='12' fill='%23666'%3EMobile App%3C/text%3E%3C/svg%3E" alt="FarmKeeper Mobile App" class="inline-block hover-lift"></div></div></div></div>
+
+        <div class="mt-12 text-center"><h3 class="text-2xl font-bold mb-8">FarmKeeper đang được tin dùng bởi</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-6"><div class="bg-white rounded-lg p-6 shadow-sm border-3 border-green-200 hover:border-green-400 transition-all hover-lift"><p class="text-3xl font-bold text-green-600">1,250+</p><p class="text-gray-600">Nông dân</p></div><div class="bg-white rounded-lg p-6 shadow-sm border-3 border-blue-200 hover:border-blue-400 transition-all hover-lift"><p class="text-3xl font-bold text-blue-600">85</p><p class="text-gray-600">HTX</p></div><div class="bg-white rounded-lg p-6 shadow-sm border-3 border-orange-200 hover:border-orange-400 transition-all hover-lift"><p class="text-3xl font-bold text-orange-600">25</p><p class="text-gray-600">Doanh nghiệp</p></div><div class="bg-white rounded-lg p-6 shadow-sm border-3 border-purple-200 hover:border-purple-400 transition-all hover-lift"><p class="text-3xl font-bold text-purple-600">3,500ha</p><p class="text-gray-600">Diện tích</p></div></div></div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-16 footer-enhanced"><div class="container mx-auto px-4"><div class="text-center"><h3 class="text-2xl font-bold mb-2"><span class="text-green-400">FARM</span><span>KEEPER</span></h3><p class="text-gray-400 mb-4">Trợ lý AI thông minh cho nông dân</p><div class="flex justify-center space-x-6 text-sm"><a href="#" class="hover:text-green-400 transition-all hover:scale-110">Về chúng tôi</a><a href="#" class="hover:text-green-400 transition-all hover:scale-110">Liên hệ</a><a href="#" class="hover:text-green-400 transition-all hover:scale-110">Hỗ trợ</a><a href="#" class="hover:text-green-400 transition-all hover:scale-110">Điều khoản</a></div><p class="mt-6 text-gray-500 text-xs">© 2024 FarmKeeper. All rights reserved.</p></div></div></footer>
+</body>
+</html>

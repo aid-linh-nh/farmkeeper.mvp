@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Theo dõi quy trình canh tác</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <!-- Google Fonts: Noto Sans -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        background: linear-gradient(135deg, #e6f0fa 0%, #f4f7fa 100%);
+        color: #1f2a44;
+        overflow-x: hidden;
+      }
+      .sidebar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        transition: width 0.3s ease;
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar.collapsed {
+        width: 80px;
+      }
+      .sidebar.collapsed .menu-text,
+      .sidebar.collapsed .fa-chevron-down,
+      .sidebar.collapsed .fa-chevron-up {
+        display: none;
+      }
+      .sidebar.collapsed .menu-item {
+        justify-content: center;
+      }
+      .sidebar .menu-item {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        margin: 0 10px;
+      }
+      .sidebar .menu-item:hover {
+        background: #e6f0fa;
+        transform: scale(1.05);
+      }
+      .sidebar .menu-item.active {
+        background: linear-gradient(90deg, #69bd70 0%, #4d944f 100%);
+        color: #ffffff;
+        font-weight: 600;
+      }
+      .sidebar .menu-item.active i {
+        color: #ffffff;
+      }
+      .btn-danger {
+        background: linear-gradient(90deg, #ef4444 0%, #b91c1c 100%);
+        color: white;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(239, 68, 68, 0.2);
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+      .progress-bar {
+        height: 12px;
+        background: #e2e8f0;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #69bd70 0%, #4d944f 100%);
+        transition: width 0.5s ease;
+        border-radius: 6px;
+      }
+      /* Timeline styles */
+      .timeline {
+        position: relative;
+        padding-left: 40px;
+      }
+      .timeline::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: #e2e8f0;
+        border-radius: 2px;
+      }
+      .timeline-item {
+        position: relative;
+        margin-bottom: 2rem;
+      }
+      .timeline-item:last-child {
+        margin-bottom: 0;
+      }
+      .timeline-icon {
+        position: absolute;
+        left: -30px;
+        top: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        border: 4px solid white;
+      }
+      .timeline-icon.completed {
+        background-color: #69bd70;
+      }
+      .timeline-icon.in-progress {
+        background-color: #f59e0b;
+      }
+      .timeline-icon.upcoming {
+        background-color: #9ca3af;
+      }
+
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          height: 100%;
+          z-index: 50;
+        }
+        .sidebar.collapsed {
+          width: 0;
+          overflow: hidden;
+        }
+        .main-content {
+          margin-left: 0 !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="flex min-h-screen">
+    <!-- Sidebar Menu -->
+    <aside class="sidebar w-64 flex-shrink-0 flex flex-col transition-all">
+      <div class="p-4 border-b h-16 flex items-center justify-between">
+        <a href="#" class="flex items-center gap-3">
+          <i class="fas fa-leaf text-2xl" style="color: #69bd70"></i>
+          <h1 class="text-xl font-bold text-gray-800 menu-text">FARMKEEPER</h1>
+        </a>
+        <button id="toggle-sidebar" class="text-gray-600 hover:text-gray-800">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <nav class="flex-grow p-4">
+        <ul>
+          <li>
+            <a
+              href="#"
+              class="flex items-center gap-3 py-3 px-4 rounded-md menu-item"
+            >
+              <i class="fas fa-home-alt w-5 text-center text-gray-500"></i>
+              <span class="menu-text">Trang chủ</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-between gap-3 py-3 px-4 rounded-md menu-item"
+            >
+              <div class="flex items-center gap-3">
+                <i class="fas fa-seedling w-5 text-center text-gray-500"></i>
+                <span class="menu-text">Quy trình canh tác</span>
+              </div>
+              <i class="fas fa-chevron-up text-xs"></i>
+            </a>
+            <ul class="pl-6 mt-2 space-y-1">
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center gap-3 py-2 px-4 rounded-md menu-item"
+                >
+                  <span class="menu-text">Kích hoạt quy trình</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center gap-3 py-2 px-4 rounded-md menu-item active"
+                >
+                  <span class="menu-text">Theo dõi quy trình</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-between gap-3 py-3 px-4 rounded-md menu-item"
+            >
+              <div class="flex items-center gap-3">
+                <i class="fas fa-users w-5 text-center text-gray-500"></i>
+                <span class="menu-text">Quản lý khách hàng</span>
+              </div>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="flex-1 flex flex-col main-content transition-all">
+      <!-- Top Header -->
+      <header
+        class="h-16 bg-white flex items-center justify-between px-6 flex-shrink-0 shadow-md"
+      >
+        <div class="flex items-center gap-4">
+          <button
+            id="mobile-toggle-sidebar"
+            class="lg:hidden text-gray-600 hover:text-gray-800"
+          >
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          <h2 class="text-xl font-semibold text-gray-800">
+            Theo dõi quy trình canh tác
+          </h2>
+        </div>
+        <div class="flex items-center gap-4">
+          <a
+            href="#"
+            class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition"
+          >
+            <i class="fas fa-globe"></i>
+            <span>Tiếng Việt</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </a>
+          <button class="relative text-gray-600 hover:text-gray-800 transition">
+            <i class="fas fa-bell text-xl"></i>
+            <span
+              class="absolute top-0 right-0 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white"
+            ></span>
+          </button>
+          <img
+            src="https://placehold.co/32x32/E2E8F0/4A5568?text=A"
+            alt="User Avatar"
+            class="w-9 h-9 rounded-full border-2 border-gray-200"
+          />
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+        <div class="mb-6 text-sm text-gray-500 flex items-center">
+          <span>Quy trình canh tác</span>
+          <i class="fas fa-chevron-right mx-2 text-xs"></i>
+          <span>Theo dõi quy trình</span>
+        </div>
+
+        <div class="flex flex-col gap-6">
+          <!-- Active Process Info Card -->
+          <div class="card p-6">
+            <div class="flex flex-wrap gap-4 justify-between items-start">
+              <div>
+                <h3 class="font-bold text-gray-800 text-xl mb-1">
+                  Quy trình VietGAP cho sầu riêng Ri6 - Vụ 2025
+                </h3>
+                <div class="flex items-center gap-4 text-sm text-gray-500">
+                  <span>Bắt đầu: <strong>05/08/2025</strong></span>
+                  <span>Dự kiến kết thúc: <strong>05/12/2025</strong></span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span
+                  class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800"
+                >
+                  <i class="fas fa-circle-play mr-2"></i>Đang thực hiện
+                </span>
+                <button
+                  class="btn-danger py-2 px-4 text-sm font-semibold flex items-center gap-2"
+                >
+                  <i class="fas fa-times-circle"></i> Hủy
+                </button>
+              </div>
+            </div>
+            <div class="mt-6">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-medium text-gray-600"
+                  >Tiến độ tổng thể</span
+                >
+                <span class="text-sm font-bold text-green-600">25%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-bar-fill" style="width: 25%"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Process Timeline Card -->
+          <div class="card p-6">
+            <h3 class="font-bold text-gray-800 text-xl mb-6">
+              Dòng thời gian công việc
+            </h3>
+            <div class="timeline">
+              <!-- Timeline Item: Completed -->
+              <div class="timeline-item">
+                <div class="timeline-icon completed">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="pl-10">
+                  <h4 class="font-semibold text-lg text-gray-800">
+                    Giai đoạn 1: Chuẩn bị đất
+                  </h4>
+                  <p class="text-sm text-gray-500 mb-4">
+                    05/08/2025 - 20/08/2025 -
+                    <span class="font-semibold text-green-600"
+                      >Đã hoàn thành</span
+                    >
+                  </p>
+                  <div class="space-y-3">
+                    <label class="flex items-center text-gray-500 line-through">
+                      <input
+                        type="checkbox"
+                        checked
+                        class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mr-3"
+                        disabled
+                      />
+                      Làm cỏ, dọn dẹp vườn
+                    </label>
+                    <label class="flex items-center text-gray-500 line-through">
+                      <input
+                        type="checkbox"
+                        checked
+                        class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mr-3"
+                        disabled
+                      />
+                      Cày xới, làm tơi đất
+                    </label>
+                    <label class="flex items-center text-gray-500 line-through">
+                      <input
+                        type="checkbox"
+                        checked
+                        class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mr-3"
+                        disabled
+                      />
+                      Phân tích mẫu đất (Lần 1)
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timeline Item: In Progress -->
+              <div class="timeline-item">
+                <div class="timeline-icon in-progress">
+                  <i class="fas fa-cogs"></i>
+                </div>
+                <div class="pl-10">
+                  <h4 class="font-semibold text-lg text-gray-800">
+                    Giai đoạn 2: Bón lót
+                  </h4>
+                  <p class="text-sm text-gray-500 mb-4">
+                    21/08/2025 - 28/08/2025 -
+                    <span class="font-semibold text-amber-600"
+                      >Đang thực hiện</span
+                    >
+                  </p>
+                  <div class="space-y-3">
+                    <label class="flex items-center text-gray-500 line-through">
+                      <input
+                        type="checkbox"
+                        checked
+                        class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mr-3"
+                      />
+                      Bón vôi, xử lý pH đất
+                    </label>
+                    <label
+                      class="flex items-center text-gray-800 font-semibold"
+                    >
+                      <input
+                        type="checkbox"
+                        class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mr-3"
+                      />
+                      Bón lót phân hữu cơ
+                    </label>
+                    <label class="flex items-center text-gray-800">
+                      <input
+                        type="checkbox"
+                        class="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500 mr-3"
+                      />
+                      Tưới đẫm nước sau khi bón
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Timeline Item: Upcoming -->
+              <div class="timeline-item">
+                <div class="timeline-icon upcoming">
+                  <i class="fas fa-hourglass-start"></i>
+                </div>
+                <div class="pl-10">
+                  <h4 class="font-semibold text-lg text-gray-800">
+                    Giai đoạn 3: Trồng cây
+                  </h4>
+                  <p class="text-sm text-gray-500 mb-4">
+                    29/08/2025 - 05/09/2025 -
+                    <span class="font-semibold text-gray-600">Sắp tới</span>
+                  </p>
+                  <div class="space-y-3">
+                    <label class="flex items-center text-gray-400">
+                      <input
+                        type="checkbox"
+                        disabled
+                        class="h-5 w-5 rounded border-gray-300 mr-3"
+                      />
+                      Chuẩn bị cây giống
+                    </label>
+                    <label class="flex items-center text-gray-400">
+                      <input
+                        type="checkbox"
+                        disabled
+                        class="h-5 w-5 rounded border-gray-300 mr-3"
+                      />
+                      Trồng cây theo mật độ
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Sidebar Toggle
+        const sidebar = document.querySelector('.sidebar');
+        const toggleButton = document.getElementById('toggle-sidebar');
+        const mobileToggleButton = document.getElementById(
+          'mobile-toggle-sidebar'
+        );
+        const mainContent = document.querySelector('.main-content');
+
+        function toggleSidebar() {
+          sidebar.classList.toggle('collapsed');
+          if (window.innerWidth > 768) {
+            if (sidebar.classList.contains('collapsed')) {
+              mainContent.style.marginLeft = '80px';
+            } else {
+              mainContent.style.marginLeft = '256px';
+            }
+          }
+        }
+
+        function setupSidebar() {
+          if (window.innerWidth <= 768) {
+            sidebar.classList.add('collapsed');
+            mainContent.style.marginLeft = '0';
+          } else {
+            if (sidebar.classList.contains('collapsed')) {
+              mainContent.style.marginLeft = '80px';
+            } else {
+              mainContent.style.marginLeft = '256px';
+            }
+          }
+        }
+
+        toggleButton.addEventListener('click', toggleSidebar);
+        mobileToggleButton.addEventListener('click', () => {
+          sidebar.classList.toggle('collapsed');
+        });
+
+        window.addEventListener('resize', setupSidebar);
+        setupSidebar();
+      });
+    </script>
+  </body>
+</html>

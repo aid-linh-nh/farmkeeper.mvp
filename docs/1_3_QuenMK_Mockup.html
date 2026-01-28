@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper - Quên Mật khẩu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .farm-green { color: #2E7D32; }
+        .keeper-black { color: #1a1a1a; }
+        
+        /* Form card styles */
+        .auth-card {
+            background: linear-gradient(to bottom, #F0FDF4, #DCFCE7);
+            border: 3px solid #4ADE80;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(74, 222, 128, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .auth-card:hover {
+            border-color: #22C55E;
+            box-shadow: 0 15px 50px rgba(34, 197, 94, 0.25);
+            transform: translateY(-4px);
+        }
+        
+        /* Input styles */
+        .input-enhanced {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+        
+        .input-enhanced:focus {
+            background: white;
+            border-color: #4ADE80;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+        }
+        
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #2E7D32 0%, #43A047 100%);
+            border: 2px solid #2E7D32;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        /* Animated background */
+        .bg-pattern {
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(74, 222, 128, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 bg-pattern">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b-4 border-green-500">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between py-4">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-3xl lg:text-4xl font-bold cursor-pointer" onclick="window.location.href='/'">
+                        <span class="farm-green">FARM</span><span class="keeper-black">KEEPER</span>
+                    </h1>
+                    <div class="hidden md:block">
+                        <p class="text-sm text-gray-600">Ứng Dụng Quản Lý Sản Xuất Nông Nghiệp</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="text-gray-600 hover:text-green-600 transition hover:scale-110">
+                        <i class="fas fa-question-circle text-xl"></i>
+                    </a>
+                    <select class="px-3 py-2 border-2 border-gray-300 rounded-lg text-sm bg-white hover:border-green-400 transition-all focus:border-green-500 focus:outline-none">
+                        <option>🇻🇳 Tiếng Việt</option>
+                        <option>🇬🇧 English</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-16">
+        <div class="max-w-md mx-auto">
+            
+            <!-- Forgot Password Form -->
+            <div id="forgotPasswordForm" class="auth-card p-8">
+                <div class="text-center mb-8">
+                    <div class="bg-white inline-block p-4 rounded-full shadow-md border-3 border-green-200 mb-4">
+                        <i class="fas fa-key text-4xl text-green-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800">Quên mật khẩu?</h2>
+                    <p class="text-gray-600 mt-2">Đừng lo lắng! Hãy nhập số điện thoại đã đăng ký của bạn để nhận mã xác thực.</p>
+                </div>
+                
+                <form>
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <i class="fas fa-phone mr-1 text-green-600"></i>Số điện thoại
+                        </label>
+                        <input type="tel" class="w-full px-4 py-3 rounded-lg input-enhanced" placeholder="Nhập số điện thoại của bạn">
+                    </div>
+                    
+                    <button type="submit" class="w-full btn-primary text-white py-3 rounded-lg font-semibold text-lg mb-6">
+                        <i class="fas fa-paper-plane mr-2"></i>Gửi mã xác thực
+                    </button>
+                    
+                    <div class="text-center">
+                        <a href="#" onclick="alert('Chuyển về trang đăng nhập!')" class="text-sm text-green-600 hover:text-green-700 font-medium">
+                            <i class="fas fa-arrow-left mr-1"></i>Quay lại trang Đăng nhập
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-16 border-t-4 border-green-500">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <h3 class="text-2xl font-bold mb-2">
+                    <span class="text-green-400">FARM</span><span>KEEPER</span>
+                </h3>
+                <p class="text-gray-400 mb-4">Trợ lý AI thông minh cho nông dân</p>
+                <div class="flex justify-center space-x-6 text-sm">
+                    <a href="#" class="hover:text-green-400 transition-all hover:scale-110">Về chúng tôi</a>
+                    <a href="#" class="hover:text-green-400 transition-all hover:scale-110">Liên hệ</a>
+                    <a href="#" class="hover:text-green-400 transition-all hover:scale-110">Hỗ trợ</a>
+                    <a href="#" class="hover:text-green-400 transition-all hover:scale-110">Điều khoản</a>
+                </div>
+                <p class="mt-6 text-gray-500 text-xs">© 2024 FarmKeeper. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

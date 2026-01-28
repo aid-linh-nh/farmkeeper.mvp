@@ -1,0 +1,2304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper Mobile - Vườn Anh Hiền</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Mobile-first responsive design */
+        .mobile-container {
+            max-width: 390px;
+            margin: 0 auto;
+            background: #f8fafc;
+            min-height: 100vh;
+            position: relative;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding-bottom: 80px;
+            overflow-y: auto;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 8px 0;
+            display: flex;
+            justify-content: around;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        
+        .nav-item.active {
+            color: #10b981;
+        }
+        
+        .nav-item i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .alert-badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            animation: pulse 2s infinite;
+        }
+        
+        .zone-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 16px 0;
+        }
+        
+        .zone-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .zone-item:active {
+            transform: scale(0.95);
+        }
+        
+        .zone-healthy { background: #10b981; }
+        .zone-warning { background: #f59e0b; }
+        .zone-critical { background: #ef4444; }
+        .zone-new { background: #3b82f6; }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .task-urgent { border-left-color: #ef4444; }
+        .task-high { border-left-color: #f59e0b; }
+        .task-medium { border-left-color: #3b82f6; }
+        
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #10b981;
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+            z-index: 90;
+            transition: all 0.2s;
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .sensor-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #059669;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        
+        .status-good { background: #10b981; }
+        .status-warning { background: #f59e0b; }
+        .status-critical { background: #ef4444; }
+        
+        .quick-action {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .quick-action:active {
+            transform: scale(0.95);
+            background: #f8fafc;
+        }
+        
+        .material-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .material-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Process Tab Styles */
+        .process-nav-btn {
+            flex-shrink: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #6b7280;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .process-nav-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .process-section {
+            display: none;
+        }
+        
+        .process-section.active {
+            display: block;
+        }
+        
+        .timeline-month {
+            border-left: 3px solid #e2e8f0;
+            padding-left: 12px;
+            position: relative;
+        }
+        
+        .timeline-month::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 8px;
+            width: 9px;
+            height: 9px;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+        
+        .stage-item {
+            padding: 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .stage-item.active {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+        }
+        
+        .stage-item.completed {
+            background: #dcfce7;
+            border: 1px solid #10b981;
+        }
+        
+        .stage-item.upcoming {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .treatment-item {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #f1f5f9;
+            margin-bottom: 8px;
+        }
+        
+        .treatment-item.active {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .fertilizer-stage {
+            margin-bottom: 12px;
+        }
+        
+        .fertilizer-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .fertilizer-item:last-child {
+            border-bottom: none;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .checklist-item input[type="checkbox"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .checklist-item span {
+            flex: 1;
+            font-size: 14px;
+            color: #374151;
+        }
+        
+        .checklist-item.completed {
+            background: #dcfce7;
+            border-color: #10b981;
+        }
+        
+        .checklist-item.completed span {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+        
+        .checklist-item.critical {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .checklist-item.warning {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+        
+        /* Task filter styles */
+        .task-filter-btn {
+            flex-shrink: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #6b7280;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .task-filter-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .task-item.hidden {
+            display: none;
+        }
+        
+        /* Enhanced task interaction */
+        .task-item {
+            transition: all 0.3s ease;
+        }
+        
+        .task-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Update Status Button Style */
+        .update-status-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+        }
+        
+        .update-status-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 1px 2px rgba(139, 92, 246, 0.3);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="mobile-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>09:41</span>
+            <span>📶 📶 📶 💾 🔋</span>
+        </div>
+        
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-seedling text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold">Vườn Anh Hiền</h1>
+                        <p class="text-sm opacity-90">12.5ha • 156 cây • Cú M'Gar, DL</p>
+                    </div>
+                </div>
+                <div class="relative">
+                    <i class="fas fa-bell text-xl"></i>
+                    <div class="alert-badge">3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Home Tab -->
+            <div id="home-tab" class="tab-content active">
+                <!-- Weather & Market Info -->
+                <div class="flex space-x-2 m-4">
+                    <div class="flex-1 bg-blue-50 rounded-lg p-3 border border-blue-200">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-thermometer-half text-blue-600"></i>
+                            <span class="text-sm font-medium text-blue-800">32°C • 70%</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-chart-line text-yellow-600"></i>
+                            <span class="text-sm font-medium text-yellow-800">62,000đ/kg</span>
+                            <span class="text-xs text-green-600">+8%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Critical Alerts -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-red-800 flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                            Cảnh báo khẩn cấp
+                        </h3>
+                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">3</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-bug text-red-600"></i>
+                                <span class="font-bold text-red-800 text-sm">Sâu phủ quả</span>
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Khẩn cấp</span>
+                            </div>
+                            <p class="text-xs text-red-700 mb-2">Khu A3, B1 • 35 cây bị ảnh hưởng</p>
+                            <button class="w-full bg-red-500 text-white py-2 rounded-lg text-xs font-medium" onclick="handleEmergency()">
+                                🚨 Xử lý ngay
+                            </button>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-cloud-rain text-yellow-600"></i>
+                                    <span class="font-bold text-yellow-800 text-sm">Mưa lớn 48h tới</span>
+                                </div>
+                                <button class="bg-yellow-500 text-white px-3 py-1 rounded text-xs">Chuẩn bị</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map Section (Moved from More tab) -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-map text-blue-600 mr-2"></i>
+                            Bản đồ phân khu
+                        </h3>
+                        <button class="update-status-btn" onclick="updateZoneStatus()">
+                            <i class="fas fa-edit mr-1"></i>Cập nhật tình trạng
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-3">8 lô canh tác • Nhấn để xem chi tiết</p>
+                    
+                    <div class="zone-grid">
+                        <div class="zone-item zone-healthy" onclick="selectZone('A1')">
+                            <div class="text-center">
+                                <div class="font-bold">A1</div>
+                                <div class="text-xs">20 cây</div>
+                            </div>
+                        </div>
+                        <div class="zone-item zone-healthy" onclick="selectZone('A2')">
+                            <div class="text-center">
+                                <div class="font-bold">A2</div>
+                                <div class="text-xs">19 cây</div>
+                            </div>
+                        </div>
+                        <div class="zone-item zone-warning" onclick="selectZone('A3')">
+                            <div class="text-center">
+                                <div class="font-bold">A3</div>
+                                <div class="text-xs">18 cây</div>
+                            </div>
+                        </div>
+                        <div class="zone-item zone-healthy" onclick="selectZone('A4')">
+                            <div class="text-center">
+                                <div class="font-bold">A4</div>
+                                <div class="text-xs">21 cây</div>
+                            </div>
+                        </div>
+                        <div class="zone-item zone-warning" onclick="selectZone('B1')">
+                            <div class="text-center">
+                                <div class="font-bold">B1</div>
+                                <div class="text-xs">17 cây</div>
+                            </div>
+                        </div>
+                        <div class="zone-item zone-healthy" onclick="selectZone('B2')">
+                            <div class="text-center">
+                                <div class="font-bold">B2</div>
+                                <div class="text-xs">20 cây</div>
+                            </div>
+                        </div>
+                        <div class="zone-item zone-critical" onclick="selectZone('B3')">
+                            <div class="text-center">
+                                <div class="font-bold">B3</div>
+                                <div class="text-xs">16 cây</div>
+                            </div>
+                        </div>
+                        <div class="zone-item zone-new" onclick="selectZone('B4')">
+                            <div class="text-center">
+                                <div class="font-bold">B4</div>
+                                <div class="text-xs">19 cây</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="metric-card">
+                            <div class="text-xl font-bold text-green-700">4</div>
+                            <div class="text-xs text-gray-600">Lô khỏe mạnh</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-xl font-bold text-yellow-700">2</div>
+                            <div class="text-xs text-gray-600">Cần theo dõi</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-xl font-bold text-red-700">1</div>
+                            <div class="text-xs text-gray-600">Khẩn cấp</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-xl font-bold text-blue-700">1</div>
+                            <div class="text-xs text-gray-600">Cây non</div>
+                        </div>
+                    </div>
+
+                    <!-- Status Update Hint -->
+                    <div class="bg-purple-50 rounded-lg p-3 border border-purple-200 mt-3">
+                        <div class="flex items-center space-x-2 mb-1">
+                            <i class="fas fa-info-circle text-purple-600"></i>
+                            <span class="font-medium text-purple-800 text-sm">Cập nhật định kỳ</span>
+                        </div>
+                        <p class="text-xs text-purple-700">Báo cáo thay đổi: cây chết, bệnh nặng, số lượng quả, năng suất ước tính</p>
+                    </div>
+                </div>
+
+                <!-- Production Overview -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-chart-line text-green-600 mr-2"></i>
+                        Tổng quan sản xuất
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="metric-card">
+                            <div class="text-2xl font-bold text-green-700">156</div>
+                            <div class="text-sm text-gray-600">Tổng số cây</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-2xl font-bold text-orange-700">4,680</div>
+                            <div class="text-sm text-gray-600">Quả đang phát triển</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-2xl font-bold text-purple-700">92%</div>
+                            <div class="text-sm text-gray-600">Tỷ lệ đậu quả</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-2xl font-bold text-blue-700">160</div>
+                            <div class="text-sm text-gray-600">Tấn dự kiến</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 border border-green-200">
+                        <div class="text-center">
+                            <div class="text-xl font-bold text-green-700">T8-T9 2025</div>
+                            <div class="text-sm text-gray-600">Thời gian thu hoạch dự kiến</div>
+                            <div class="text-lg font-bold text-blue-800 mt-1">9.92 tỷ VNĐ</div>
+                            <div class="text-xs text-green-600">+15% so với năm trước</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Hành động nhanh</h3>
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="quick-action" onclick="quickLog()">
+                            <i class="fas fa-book text-green-600 text-xl mb-2"></i>
+                            <div class="text-xs font-medium">Nhật ký</div>
+                        </div>
+                        <div class="quick-action" onclick="quickMaterial()">
+                            <i class="fas fa-boxes text-orange-600 text-xl mb-2"></i>
+                            <div class="text-xs font-medium">Vật tư</div>
+                        </div>
+                        <div class="quick-action" onclick="quickPest()">
+                            <i class="fas fa-bug text-red-600 text-xl mb-2"></i>
+                            <div class="text-xs font-medium">Sâu bệnh</div>
+                        </div>
+                        <div class="quick-action" onclick="quickWeather()">
+                            <i class="fas fa-cloud-sun text-blue-600 text-xl mb-2"></i>
+                            <div class="text-xs font-medium">Thời tiết</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Tab -->
+            <div id="support-tab" class="tab-content">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-user-tie text-green-600 mr-2"></i>
+                            Kỹ thuật viên chuyên trách
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-sm text-green-600 font-medium">Đang online</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technician Profile -->
+                <div class="card">
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center relative">
+                                <i class="fas fa-user-tie text-green-600 text-xl"></i>
+                                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check text-white text-xs"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-lg font-bold text-gray-800">KS. Phạm Văn Minh</h4>
+                                <p class="text-sm text-gray-600">Kỹ sư Nông nghiệp</p>
+                                <p class="text-sm text-green-600 font-medium">8 năm kinh nghiệm • Chuyên sầu riêng</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div class="bg-white p-3 rounded-lg border border-gray-200 text-center">
+                                <div class="text-lg font-bold text-green-700">156</div>
+                                <div class="text-xs text-gray-600">Vườn phụ trách</div>
+                            </div>
+                            <div class="bg-white p-3 rounded-lg border border-gray-200 text-center">
+                                <div class="text-lg font-bold text-blue-700">4.8/5</div>
+                                <div class="text-xs text-gray-600">Đánh giá</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-3 border border-gray-200">
+                            <h5 class="font-semibold text-gray-800 mb-2 text-sm">Chuyên môn:</h5>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Sầu riêng</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Phòng trừ sâu bệnh</span>
+                                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs">Dinh dưỡng cây</span>
+                                <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs">VietGAP</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Contact -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3">🚀 Liên hệ nhanh</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="bg-green-500 text-white py-3 rounded-lg font-medium active:bg-green-600" onclick="callTechnician()">
+                            <i class="fas fa-phone text-lg mb-1"></i>
+                            <div class="text-sm">Gọi điện</div>
+                        </button>
+                        <button class="bg-blue-500 text-white py-3 rounded-lg font-medium active:bg-blue-600 relative" onclick="openChat()">
+                            <i class="fas fa-comments text-lg mb-1"></i>
+                            <div class="text-sm">Chat</div>
+                            <div class="alert-badge">2</div>
+                        </button>
+                        <button class="bg-purple-500 text-white py-3 rounded-lg font-medium active:bg-purple-600" onclick="videoCall()">
+                            <i class="fas fa-video text-lg mb-1"></i>
+                            <div class="text-sm">Video call</div>
+                        </button>
+                        <button class="bg-orange-500 text-white py-3 rounded-lg font-medium active:bg-orange-600" onclick="sendPhoto()">
+                            <i class="fas fa-camera text-lg mb-1"></i>
+                            <div class="text-sm">Gửi ảnh</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Consultations -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3">💬 Cuộc hội thoại gần đây</h4>
+                    <div class="space-y-3">
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-blue-800 text-sm">Sâu phủ quả khu A3</span>
+                                <span class="text-xs text-gray-500">2 giờ trước</span>
+                            </div>
+                            <p class="text-sm text-blue-700 mb-2">"Sử dụng Imidacloprid 200SC, 1.5ml/L nước. Phun buổi chiều, tránh nắng gắt..."</p>
+                            <div class="flex items-center space-x-2">
+                                <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="continueChat('pest-a3')">
+                                    Tiếp tục chat
+                                </button>
+                                <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="markAsCompleted('pest-a3')">
+                                    Đã xong
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-yellow-800 text-sm">Liều lượng phân NPK</span>
+                                <span class="text-xs text-gray-500">1 ngày trước</span>
+                            </div>
+                            <p class="text-sm text-yellow-700 mb-2">"Giai đoạn ra quả cần 2kg NPK/cây/tháng. Bón 2 lần, cách gốc 1.5m..."</p>
+                            <div class="flex items-center space-x-2">
+                                <button class="bg-yellow-500 text-white px-3 py-1 rounded text-xs" onclick="continueChat('npk-dosage')">
+                                    Tiếp tục chat
+                                </button>
+                                <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="markAsCompleted('npk-dosage')">
+                                    Đã áp dụng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schedule & Visit -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3">📅 Lịch thăm vườn</h4>
+                    <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <div>
+                                <h5 class="font-bold text-purple-800">Thăm vườn định kỳ</h5>
+                                <p class="text-sm text-purple-700">Thứ 6, 13/12/2024</p>
+                                <p class="text-sm text-gray-600">8:00 AM - 11:00 AM</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-calendar-check text-purple-600"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <h6 class="font-medium text-purple-800 text-sm">Kế hoạch kiểm tra:</h6>
+                            <ul class="text-sm text-purple-700 space-y-1">
+                                <li>• Đánh giá tình hình sâu phủ quả</li>
+                                <li>• Kiểm tra hiệu quả phun thuốc</li>
+                                <li>• Hướng dẫn bón phân giai đoạn mới</li>
+                                <li>• Chuẩn bị cho mùa mưa</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2 mt-3">
+                            <button class="bg-purple-500 text-white py-2 rounded text-sm" onclick="rescheduleVisit()">
+                                <i class="fas fa-edit mr-1"></i>Đổi lịch
+                            </button>
+                            <button class="bg-green-500 text-white py-2 rounded text-sm" onclick="confirmVisit()">
+                                <i class="fas fa-check mr-1"></i>Xác nhận
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Help -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3">🆘 Hỗ trợ khẩn cấp</h4>
+                    <div class="space-y-2">
+                        <button class="w-full bg-red-500 text-white py-3 rounded-lg font-medium text-left px-4 active:bg-red-600" onclick="emergencyCall()">
+                            <i class="fas fa-phone-volume mr-3"></i>
+                            Gọi khẩn cấp (24/7)
+                        </button>
+                        <button class="w-full bg-orange-500 text-white py-3 rounded-lg font-medium text-left px-4 active:bg-orange-600" onclick="reportProblem()">
+                            <i class="fas fa-exclamation-triangle mr-3"></i>
+                            Báo cáo sự cố
+                        </button>
+                        <button class="w-full bg-blue-500 text-white py-3 rounded-lg font-medium text-left px-4 active:bg-blue-600" onclick="requestVisit()">
+                            <i class="fas fa-calendar-plus mr-3"></i>
+                            Yêu cầu thăm vườn
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Knowledge Base -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3">📚 Tài liệu tham khảo</h4>
+                    <div class="space-y-2">
+                        <button class="w-full bg-green-50 border border-green-200 py-2 rounded-lg text-left px-3 active:bg-green-100" onclick="viewGuide('pest-control')">
+                            <i class="fas fa-bug text-green-600 mr-2"></i>
+                            <span class="text-sm font-medium">Hướng dẫn phòng trừ sâu bệnh</span>
+                        </button>
+                        <button class="w-full bg-blue-50 border border-blue-200 py-2 rounded-lg text-left px-3 active:bg-blue-100" onclick="viewGuide('fertilizer')">
+                            <i class="fas fa-seedling text-blue-600 mr-2"></i>
+                            <span class="text-sm font-medium">Kỹ thuật bón phân</span>
+                        </button>
+                        <button class="w-full bg-purple-50 border border-purple-200 py-2 rounded-lg text-left px-3 active:bg-purple-100" onclick="viewGuide('harvest')">
+                            <i class="fas fa-apple-alt text-purple-600 mr-2"></i>
+                            <span class="text-sm font-medium">Hướng dẫn thu hoạch</span>
+                        </button>
+                        <button class="w-full bg-orange-50 border border-orange-200 py-2 rounded-lg text-left px-3 active:bg-orange-100" onclick="viewGuide('vietgap')">
+                            <i class="fas fa-certificate text-orange-600 mr-2"></i>
+                            <span class="text-sm font-medium">Tiêu chuẩn VietGAP</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Tab -->
+            <div id="tasks-tab" class="tab-content">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-tasks text-blue-600 mr-2"></i>
+                            Công việc & Nhiệm vụ
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">2 khẩn cấp</span>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs" onclick="addNewTask()">
+                                <i class="fas fa-plus mr-1"></i>Thêm
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Task Filter -->
+                    <div class="flex overflow-x-auto space-x-2 mb-4 pb-2">
+                        <button id="allTasksBtn" class="task-filter-btn active" onclick="filterTasks('all')">
+                            Tất cả
+                        </button>
+                        <button id="urgentTasksBtn" class="task-filter-btn" onclick="filterTasks('urgent')">
+                            Khẩn cấp
+                        </button>
+                        <button id="todayTasksBtn" class="task-filter-btn" onclick="filterTasks('today')">
+                            Hôm nay
+                        </button>
+                        <button id="inprogressTasksBtn" class="task-filter-btn" onclick="filterTasks('inprogress')">
+                            Đang làm
+                        </button>
+                        <button id="completedTasksBtn" class="task-filter-btn" onclick="filterTasks('completed')">
+                            Hoàn thành
+                        </button>
+                    </div>
+                </div>
+
+                <div class="px-4 space-y-3">
+                    <!-- Critical Emergency Task -->
+                    <div class="task-item task-urgent urgent today">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-spray-can text-red-600"></i>
+                                    <span class="font-bold text-red-800 text-sm">Phun thuốc sâu phủ quả</span>
+                                </div>
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Khẩn cấp</span>
+                            </div>
+                            <p class="text-xs text-red-700 mb-2">Khu A3, B1 • 35 cây bị ảnh hưởng • Trong 24h</p>
+                            <div class="bg-red-50 p-2 rounded-lg mb-2">
+                                <p class="text-xs text-red-700 font-medium">Hướng dẫn từ KTV:</p>
+                                <p class="text-xs text-red-600">"Imidacloprid 200SC, 1.5ml/L, phun buổi chiều"</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-red-500 text-white px-3 py-1 rounded text-xs font-medium" onclick="startTask('pest-control')">
+                                    🚀 Bắt đầu
+                                </button>
+                                <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="askTechnicianHelp('pest-control')">
+                                    💬 Hỏi KTV
+                                </button>
+                                <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="reportWithPhoto('pest-control')">
+                                    📸 Báo cáo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- In Progress Task -->
+                    <div class="task-item task-high inprogress today">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-seedling text-yellow-600"></i>
+                                    <span class="font-bold text-yellow-800 text-sm">Bón phân NPK định kỳ</span>
+                                </div>
+                                <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">Đang làm</span>
+                            </div>
+                            <p class="text-xs text-yellow-700 mb-2">Toàn vườn • 2kg/cây + K2O 3kg/cây</p>
+                            <div class="flex items-center justify-between text-xs mb-2">
+                                <span class="text-gray-600">Tiến độ: 45/156 cây</span>
+                                <span class="text-yellow-600 font-semibold">29%</span>
+                            </div>
+                            <div class="w-full bg-yellow-100 rounded-full h-2 mb-2">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 29%"></div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-yellow-500 text-white px-3 py-1 rounded text-xs font-medium" onclick="continueTask('fertilizer')">
+                                    ⏯️ Tiếp tục
+                                </button>
+                                <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="updateProgress('fertilizer')">
+                                    📊 Cập nhật
+                                </button>
+                                <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="reportWithPhoto('fertilizer')">
+                                    📸 Báo cáo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Completed Task -->
+                    <div class="task-item task-completed completed">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-check-circle text-green-600"></i>
+                                    <span class="font-bold text-green-800 text-sm">Chuẩn bị mùa mưa</span>
+                                </div>
+                                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">Hoàn thành</span>
+                            </div>
+                            <p class="text-xs text-green-700 mb-2">Kiểm tra thoát nước, cắt cỏ dại</p>
+                            <div class="bg-green-50 p-2 rounded-lg mb-2">
+                                <p class="text-xs text-green-700">✅ Hoàn thành 100% • 2 giờ trước</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="viewTaskReport('rain-prep')">
+                                    📋 Xem báo cáo
+                                </button>
+                                <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="shareWithTechnician('rain-prep')">
+                                    💬 Chia sẻ KTV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Tasks -->
+                    <div class="task-item task-medium upcoming">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-eye text-blue-600"></i>
+                                    <span class="font-bold text-blue-800 text-sm">Kiểm tra quả non</span>
+                                </div>
+                                <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Sắp tới</span>
+                            </div>
+                            <p class="text-xs text-blue-700 mb-2">Hàng tuần • Loại bỏ quả dị tật</p>
+                            <p class="text-xs text-gray-600 mb-2">🕐 Lên lịch: Thứ 2, 16/12 • 7:00 AM</p>
+                            <div class="flex space-x-2">
+                                <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs font-medium" onclick="startEarlyTask('fruit-check')">
+                                    🚀 Làm sớm
+                                </button>
+                                <button class="bg-gray-500 text-white px-3 py-1 rounded text-xs" onclick="rescheduleTask('fruit-check')">
+                                    📅 Đổi lịch
+                                </button>
+                                <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="getTechnicianAdvice('fruit-check')">
+                                    💡 Tư vấn
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weather-related urgent task -->
+                    <div class="task-item task-urgent urgent today">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-cloud-rain text-red-600"></i>
+                                    <span class="font-bold text-red-800 text-sm">Chuẩn bị mưa lớn</span>
+                                </div>
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">48h</span>
+                            </div>
+                            <p class="text-xs text-red-700 mb-2">Dự báo mưa 40-60mm • Nguy cơ ngập úng</p>
+                            <div class="bg-yellow-50 p-2 rounded-lg mb-2">
+                                <p class="text-xs text-orange-700 font-medium">Cần làm:</p>
+                                <p class="text-xs text-orange-600">Dọn cống thoát nước, di chuyển vật tư</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button class="bg-red-500 text-white px-3 py-1 rounded text-xs font-medium" onclick="startTask('rain-prep')">
+                                    🚀 Bắt đầu
+                                </button>
+                                <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="getWeatherAdvice()">
+                                    🌧️ Tư vấn
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Process Tab -->
+            <div id="process-tab" class="tab-content">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-clipboard-list text-purple-600 mr-2"></i>
+                            Quy trình Canh tác
+                        </h3>
+                        <div class="flex items-center space-x-1">
+                            <select id="processYearSelect" class="text-xs border rounded px-2 py-1" onchange="updateProcessYear()">
+                                <option value="2024">2024</option>
+                                <option value="2025" selected>2025</option>
+                                <option value="2026">2026</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Process Navigation -->
+                    <div class="flex overflow-x-auto space-x-2 mb-4 pb-2">
+                        <button id="timelineBtn" class="process-nav-btn active" onclick="showProcessSection('timeline')">
+                            <i class="fas fa-calendar-alt mr-1"></i>Lịch năm
+                        </button>
+                        <button id="stagesBtn" class="process-nav-btn" onclick="showProcessSection('stages')">
+                            <i class="fas fa-seedling mr-1"></i>Giai đoạn
+                        </button>
+                        <button id="treatmentBtn" class="process-nav-btn" onclick="showProcessSection('treatment')">
+                            <i class="fas fa-spray-can mr-1"></i>Phòng trừ
+                        </button>
+                        <button id="fertilizeBtn" class="process-nav-btn" onclick="showProcessSection('fertilize')">
+                            <i class="fas fa-leaf mr-1"></i>Bón phân
+                        </button>
+                        <button id="checklistBtn" class="process-nav-btn" onclick="showProcessSection('checklist')">
+                            <i class="fas fa-check-square mr-1"></i>Checklist
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Timeline Section -->
+                <div id="timeline-section" class="process-section active">
+                    <div class="card">
+                        <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-calendar-year text-blue-600 mr-2"></i>
+                            Lịch canh tác năm 2025
+                        </h4>
+                        
+                        <div class="space-y-3">
+                            <!-- January -->
+                            <div class="timeline-month">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="font-bold text-blue-800">Tháng 1 - Ra hoa</h5>
+                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">Quan trọng</span>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                    <ul class="text-sm space-y-1">
+                                        <li class="flex items-center">
+                                            <i class="fas fa-flower text-pink-600 mr-2 text-xs"></i>
+                                            <span>Theo dõi ra hoa, đánh dấu thời gian</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-cut text-orange-600 mr-2 text-xs"></i>
+                                            <span>Tỉa cành, làm sạch tán lá</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-seedling text-green-600 mr-2 text-xs"></i>
+                                            <span>Bón phân lân, kali kích thích ra hoa</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-tint text-blue-600 mr-2 text-xs"></i>
+                                            <span>Kiểm tra hệ thống tưới</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- February -->
+                            <div class="timeline-month">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="font-bold text-pink-800">Tháng 2 - Nở hoa</h5>
+                                    <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded-full text-xs">Cao</span>
+                                </div>
+                                <div class="bg-pink-50 rounded-lg p-3 border border-pink-200">
+                                    <ul class="text-sm space-y-1">
+                                        <li class="flex items-center">
+                                            <i class="fas fa-eye text-purple-600 mr-2 text-xs"></i>
+                                            <span>Theo dõi nở hoa, thụ phấn tự nhiên</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-bug text-red-600 mr-2 text-xs"></i>
+                                            <span>Phòng trừ thrips gây hại hoa</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-hand-paper text-yellow-600 mr-2 text-xs"></i>
+                                            <span>Thụ phấn nhân tạo (nếu cần)</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-leaf text-green-600 mr-2 text-xs"></i>
+                                            <span>Phun acid gibberellic kích thích đậu quả</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- March -->
+                            <div class="timeline-month">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="font-bold text-green-800">Tháng 3 - Đậu quả</h5>
+                                    <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Hiện tại</span>
+                                </div>
+                                <div class="bg-green-50 rounded-lg p-3 border border-green-200">
+                                    <ul class="text-sm space-y-1">
+                                        <li class="flex items-center">
+                                            <i class="fas fa-apple-alt text-green-600 mr-2 text-xs"></i>
+                                            <span>Đếm quả non, ước tính sản lượng</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-hand-scissors text-orange-600 mr-2 text-xs"></i>
+                                            <span>Tỉa quả dị tật, quả yếu</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-seedling text-blue-600 mr-2 text-xs"></i>
+                                            <span>Bón phân NPK 16-16-8 cho quả non</span>
+                                        </li>
+                                        <li class="flex items-center">
+                                            <i class="fas fa-shield-alt text-purple-600 mr-2 text-xs"></i>
+                                            <span>Bao quả để bảo vệ</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- More months... -->
+                            <div class="text-center">
+                                <button class="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm" onclick="showAllMonths()">
+                                    <i class="fas fa-chevron-down mr-2"></i>Xem tất cả 12 tháng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Growth Stages Section -->
+                <div id="stages-section" class="process-section hidden">
+                    <div class="card">
+                        <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-seedling text-green-600 mr-2"></i>
+                            Giai đoạn phát triển
+                        </h4>
+                        
+                        <div class="space-y-4">
+                            <!-- Current Stage -->
+                            <div class="bg-green-50 rounded-lg p-4 border-2 border-green-300">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h5 class="font-bold text-green-800">Giai đoạn hiện tại: Ra quả</h5>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">75% hoàn thành</span>
+                                </div>
+                                <p class="text-sm text-green-700 mb-3">Thời gian: Tháng 3-7/2025 • Quả đang phát triển từ nhỏ đến lớn</p>
+                                <div class="w-full bg-green-100 rounded-full h-3 mb-3">
+                                    <div class="bg-green-500 h-3 rounded-full" style="width: 75%"></div>
+                                </div>
+                                <div class="space-y-2">
+                                    <h6 class="font-semibold text-green-800 text-sm">Công việc chính:</h6>
+                                    <ul class="text-sm text-green-700 space-y-1">
+                                        <li>• Theo dõi sự phát triển của quả</li>
+                                        <li>• Bón phân NPK định kỳ</li>
+                                        <li>• Phòng trừ sâu phủ quả</li>
+                                        <li>• Tưới nước đều đặn</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- All Growth Stages -->
+                            <div class="space-y-3">
+                                <div class="stage-item completed">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-check text-white text-sm"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h6 class="font-semibold text-gray-800">1. Ra hoa (T1-T2)</h6>
+                                            <p class="text-sm text-gray-600">Theo dõi ra hoa, thụ phấn</p>
+                                        </div>
+                                        <span class="text-xs text-green-600 font-medium">Hoàn thành</span>
+                                    </div>
+                                </div>
+
+                                <div class="stage-item active">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-play text-white text-sm"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h6 class="font-semibold text-gray-800">2. Ra quả (T3-T7)</h6>
+                                            <p class="text-sm text-gray-600">Quả phát triển, cần chăm sóc đặc biệt</p>
+                                        </div>
+                                        <span class="text-xs text-blue-600 font-medium">Đang thực hiện</span>
+                                    </div>
+                                </div>
+
+                                <div class="stage-item upcoming">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-clock text-white text-sm"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h6 class="font-semibold text-gray-800">3. Thu hoạch (T8-T9)</h6>
+                                            <p class="text-sm text-gray-600">Thu hái quả chín, bán ra thị trường</p>
+                                        </div>
+                                        <span class="text-xs text-gray-600 font-medium">Sắp tới</span>
+                                    </div>
+                                </div>
+
+                                <div class="stage-item upcoming">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-clock text-white text-sm"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h6 class="font-semibold text-gray-800">4. Nghỉ ngơi (T10-T12)</h6>
+                                            <p class="text-sm text-gray-600">Cây nghỉ ngơi, chuẩn bị chu kỳ mới</p>
+                                        </div>
+                                        <span class="text-xs text-gray-600 font-medium">Chưa tới</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Treatment Schedule Section -->
+                <div id="treatment-section" class="process-section hidden">
+                    <div class="card">
+                        <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-spray-can text-red-600 mr-2"></i>
+                            Lịch phòng trừ sâu bệnh
+                        </h4>
+                        
+                        <div class="space-y-3">
+                            <!-- Current Treatment Alert -->
+                            <div class="bg-red-50 rounded-lg p-3 border border-red-200">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <i class="fas fa-exclamation-triangle text-red-600"></i>
+                                    <span class="font-bold text-red-800">Cảnh báo hiện tại</span>
+                                </div>
+                                <p class="text-sm text-red-700 mb-2">Sâu phủ quả xuất hiện ở khu A3, B1</p>
+                                <button class="bg-red-500 text-white px-3 py-1 rounded text-xs" onclick="viewTreatmentGuide('fruit-borer')">
+                                    <i class="fas fa-book mr-1"></i>Xem hướng dẫn xử lý
+                                </button>
+                            </div>
+
+                            <!-- Regular Treatment Schedule -->
+                            <h5 class="font-semibold text-gray-800">Lịch phun thuốc định kỳ</h5>
+                            
+                            <div class="treatment-schedule">
+                                <div class="treatment-item active">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-3 h-3 bg-orange-500 rounded-full"></div>
+                                            <div>
+                                                <p class="font-medium text-sm">Tuần 1 - Phòng thrips</p>
+                                                <p class="text-xs text-gray-600">Imidacloprid 200SC • 1.5ml/L</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-orange-600">Hàng tháng</span>
+                                    </div>
+                                </div>
+
+                                <div class="treatment-item">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                            <div>
+                                                <p class="font-medium text-sm">Tuần 3 - Phòng nấm</p>
+                                                <p class="text-xs text-gray-600">Copper Oxychloride • 2g/L</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-blue-600">2 tuần/lần</span>
+                                    </div>
+                                </div>
+
+                                <div class="treatment-item">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                            <div>
+                                                <p class="font-medium text-sm">Tháng cuối - Vi sinh vật</p>
+                                                <p class="text-xs text-gray-600">Trichoderma • 5g/L</p>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-green-600">Hàng tháng</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Common Pests Guide -->
+                            <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                                <h6 class="font-semibold text-yellow-800 mb-2">Sâu bệnh thường gặp</h6>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <button class="text-left bg-white p-2 rounded border text-sm" onclick="viewPestInfo('fruit-borer')">
+                                        <span class="font-medium">🐛 Sâu phủ quả</span>
+                                        <span class="text-gray-600 block text-xs">Mùa mưa, gây thối quả</span>
+                                    </button>
+                                    <button class="text-left bg-white p-2 rounded border text-sm" onclick="viewPestInfo('thrips')">
+                                        <span class="font-medium">🦗 Thrips</span>
+                                        <span class="text-gray-600 block text-xs">Hại hoa, lá non</span>
+                                    </button>
+                                    <button class="text-left bg-white p-2 rounded border text-sm" onclick="viewPestInfo('anthracnose')">
+                                        <span class="font-medium">🍄 Nấm thán thư</span>
+                                        <span class="text-gray-600 block text-xs">Trên lá và quả</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fertilizer Schedule Section -->
+                <div id="fertilize-section" class="process-section hidden">
+                    <div class="card">
+                        <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-leaf text-green-600 mr-2"></i>
+                            Lịch bón phân
+                        </h4>
+                        
+                        <div class="space-y-4">
+                            <!-- Current Fertilizer Status -->
+                            <div class="bg-green-50 rounded-lg p-3 border border-green-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-green-800">Đang bón phân NPK</span>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">29% hoàn thành</span>
+                                </div>
+                                <p class="text-sm text-green-700">45/156 cây đã được bón • 2kg/cây + K2O 3kg/cây</p>
+                                <div class="w-full bg-green-100 rounded-full h-2 mt-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: 29%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Fertilizer Schedule by Growth Stage -->
+                            <h5 class="font-semibold text-gray-800">Lịch bón phân theo giai đoạn</h5>
+                            
+                            <div class="space-y-3">
+                                <!-- Current stage -->
+                                <div class="fertilizer-stage active">
+                                    <div class="bg-blue-50 rounded-lg p-3 border-l-4 border-blue-500">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h6 class="font-bold text-blue-800">Giai đoạn ra quả (T3-T7)</h6>
+                                            <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Hiện tại</span>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="fertilizer-item">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm font-medium">NPK 16-16-8</span>
+                                                    <span class="text-sm text-blue-700">2kg/cây/tháng</span>
+                                                </div>
+                                                <p class="text-xs text-gray-600">Bón 2 lần/tháng, cách gốc 1.5m</p>
+                                            </div>
+                                            <div class="fertilizer-item">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm font-medium">Potassium Sulfate</span>
+                                                    <span class="text-sm text-blue-700">3kg/cây/tháng</span>
+                                                </div>
+                                                <p class="text-xs text-gray-600">Kali giúp quả to, ngọt</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Upcoming stages -->
+                                <div class="fertilizer-stage">
+                                    <div class="bg-gray-50 rounded-lg p-3 border-l-4 border-gray-300">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h6 class="font-bold text-gray-800">Giai đoạn thu hoạch (T8-T9)</h6>
+                                            <span class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs">Sắp tới</span>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="fertilizer-item">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm font-medium">Phân hữu cơ</span>
+                                                    <span class="text-sm text-gray-700">5kg/cây</span>
+                                                </div>
+                                                <p class="text-xs text-gray-600">Cung cấp dinh dưỡng lâu dài</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="fertilizer-stage">
+                                    <div class="bg-gray-50 rounded-lg p-3 border-l-4 border-gray-300">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h6 class="font-bold text-gray-800">Giai đoạn nghỉ ngơi (T10-T12)</h6>
+                                            <span class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs">Chưa tới</span>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div class="fertilizer-item">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm font-medium">Phân lân</span>
+                                                    <span class="text-sm text-gray-700">1kg/cây</span>
+                                                </div>
+                                                <p class="text-xs text-gray-600">Chuẩn bị cho chu kỳ mới</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fertilizer Calculator -->
+                            <div class="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                                <h6 class="font-semibold text-purple-800 mb-2">🧮 Tính toán phân bón</h6>
+                                <p class="text-sm text-purple-700 mb-2">Cho 156 cây • Giai đoạn hiện tại</p>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <div class="bg-white p-2 rounded">
+                                        <span class="text-gray-600">NPK cần mua:</span>
+                                        <span class="font-bold text-purple-700 block">312 kg/tháng</span>
+                                    </div>
+                                    <div class="bg-white p-2 rounded">
+                                        <span class="text-gray-600">Kali cần mua:</span>
+                                        <span class="font-bold text-purple-700 block">468 kg/tháng</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checklist Section -->
+                <div id="checklist-section" class="process-section hidden">
+                    <div class="card">
+                        <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                            <i class="fas fa-check-square text-purple-600 mr-2"></i>
+                            Checklist chuẩn bị
+                        </h4>
+                        
+                        <div class="space-y-4">
+                            <!-- Season Preparation -->
+                            <div class="checklist-season">
+                                <h5 class="font-semibold text-gray-800 mb-3">🌧️ Chuẩn bị mùa mưa (T5-T10)</h5>
+                                <div class="space-y-2">
+                                    <label class="checklist-item completed">
+                                        <input type="checkbox" checked disabled>
+                                        <span>Kiểm tra hệ thống thoát nước</span>
+                                        <i class="fas fa-check text-green-600"></i>
+                                    </label>
+                                    <label class="checklist-item completed">
+                                        <input type="checkbox" checked disabled>
+                                        <span>Cắt cỏ dại, dọn sạch vườn</span>
+                                        <i class="fas fa-check text-green-600"></i>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Chuẩn bị thuốc phòng nấm</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Kiểm tra kho chứa vật tư</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Sửa chữa máy móc nông nghiệp</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Harvest Preparation -->
+                            <div class="checklist-season">
+                                <h5 class="font-semibold text-gray-800 mb-3">🍇 Chuẩn bị thu hoạch (T7-T8)</h5>
+                                <div class="space-y-2">
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Liên hệ đại lý thu mua</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Chuẩn bị dụng cụ thu hái</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Thuê nhân công thu hoạch</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Chuẩn bị phương tiện vận chuyển</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Kiểm tra chất lượng quả</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Materials Inventory -->
+                            <div class="checklist-season">
+                                <h5 class="font-semibold text-gray-800 mb-3">📦 Kiểm tra vật tư định kỳ</h5>
+                                <div class="space-y-2">
+                                    <label class="checklist-item critical">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>NPK 16-16-8 (Hết hàng)</span>
+                                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                                    </label>
+                                    <label class="checklist-item warning">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Imidacloprid 200SC (Sắp hết)</span>
+                                        <i class="fas fa-exclamation-circle text-yellow-600"></i>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Trichoderma vi sinh</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" onchange="updateChecklist(this)">
+                                        <span>Dụng cụ bảo hộ lao động</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Progress Summary -->
+                            <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-blue-800">Tiến độ chuẩn bị</span>
+                                    <span class="text-sm text-blue-700" id="checklistProgress">2/12 hoàn thành</span>
+                                </div>
+                                <div class="w-full bg-blue-100 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 17%" id="checklistProgressBar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- More Tab -->
+            <div id="more-tab" class="tab-content">
+                <!-- IoT Quick Status (Moved from Home tab) -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-wifi text-blue-600 mr-2"></i>
+                            Cảm biến IoT
+                        </h3>
+                        <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">24/24 online</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-orange-50 rounded-lg p-3 border border-orange-200">
+                            <div class="flex items-center justify-between mb-1">
+                                <i class="fas fa-thermometer-half text-orange-600"></i>
+                                <span class="status-dot status-good"></span>
+                            </div>
+                            <div class="sensor-value text-orange-700">32.5°C</div>
+                            <div class="text-xs text-gray-600">Nhiệt độ trung bình</div>
+                        </div>
+                        
+                        <div class="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                            <div class="flex items-center justify-between mb-1">
+                                <i class="fas fa-tint text-blue-600"></i>
+                                <span class="status-dot status-good"></span>
+                            </div>
+                            <div class="sensor-value text-blue-700">72%</div>
+                            <div class="text-xs text-gray-600">Độ ẩm không khí</div>
+                        </div>
+                        
+                        <div class="bg-green-50 rounded-lg p-3 border border-green-200">
+                            <div class="flex items-center justify-between mb-1">
+                                <i class="fas fa-vial text-green-600"></i>
+                                <span class="status-dot status-warning"></span>
+                            </div>
+                            <div class="sensor-value text-green-700">6.2</div>
+                            <div class="text-xs text-gray-600">pH đất trung bình</div>
+                        </div>
+                        
+                        <div class="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                            <div class="flex items-center justify-between mb-1">
+                                <i class="fas fa-seedling text-purple-600"></i>
+                                <span class="status-dot status-good"></span>
+                            </div>
+                            <div class="sensor-value text-purple-700">78%</div>
+                            <div class="text-xs text-gray-600">Ẩm độ đất</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Materials & Finance Section -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-boxes text-orange-600 mr-2"></i>
+                            Vật tư & Tài chính
+                        </h3>
+                        <button class="bg-orange-500 text-white px-3 py-1 rounded-lg text-xs" onclick="addMaterial()">
+                            Thêm
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Material alerts -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 text-sm">⚠️ Cảnh báo tồn kho</h4>
+                    <div class="space-y-2">
+                        <div class="material-item">
+                            <div class="flex items-center space-x-2">
+                                <span class="status-dot status-critical"></span>
+                                <div>
+                                    <div class="font-medium text-sm">NPK 16-16-8</div>
+                                    <div class="text-xs text-red-600">Hết hàng</div>
+                                </div>
+                            </div>
+                            <button class="bg-red-500 text-white px-3 py-1 rounded text-xs">Đặt hàng</button>
+                        </div>
+                        
+                        <div class="material-item">
+                            <div class="flex items-center space-x-2">
+                                <span class="status-dot status-warning"></span>
+                                <div>
+                                    <div class="font-medium text-sm">Imidacloprid 200SC</div>
+                                    <div class="text-xs text-yellow-600">2.5 lít còn lại</div>
+                                </div>
+                            </div>
+                            <button class="bg-yellow-500 text-white px-3 py-1 rounded text-xs">Kế hoạch</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial summary -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 text-sm">💰 Tài chính tháng 12</h4>
+                    <div class="grid grid-cols-3 gap-3 mb-3">
+                        <div class="metric-card">
+                            <div class="text-lg font-bold text-red-700">89.2tr</div>
+                            <div class="text-xs text-gray-600">Chi phí</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-lg font-bold text-blue-700">95.0tr</div>
+                            <div class="text-xs text-gray-600">Dự toán</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-lg font-bold text-green-700">5.8tr</div>
+                            <div class="text-xs text-gray-600">Tiết kiệm</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Vật tư (51%)</span>
+                            <span class="font-bold text-orange-700">45.6tr</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Nhân công (32%)</span>
+                            <span class="font-bold text-blue-700">28.5tr</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Thiết bị (12%)</span>
+                            <span class="font-bold text-purple-700">10.8tr</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending orders -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 text-sm">📦 Đơn đặt hàng</h4>
+                    <div class="space-y-2">
+                        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-medium text-yellow-800 text-sm">#2024-156</span>
+                                <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">Chờ duyệt</span>
+                            </div>
+                            <p class="text-sm text-gray-600">NPK 16-16-8 • 500 kg</p>
+                            <p class="text-sm font-bold text-yellow-800">9.25 triệu</p>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-medium text-blue-800 text-sm">#2024-155</span>
+                                <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Đang giao</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Imidacloprid + Trichoderma</p>
+                            <p class="text-sm font-bold text-blue-800">2.8 triệu</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technician Support -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-user-tie text-green-600 mr-2"></i>
+                        Kỹ thuật viên
+                    </h3>
+                    
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 border border-green-200">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-user-tie text-green-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-bold text-gray-800">KS. Phạm Văn Minh</span>
+                                    <span class="status-dot status-good"></span>
+                                    <span class="text-sm text-green-600">Online</span>
+                                </div>
+                                <p class="text-sm text-gray-600">8 năm kinh nghiệm • Chuyên sầu riêng</p>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <button class="bg-green-500 text-white py-2 rounded text-sm" onclick="callTechnician()">
+                                <i class="fas fa-phone mr-1"></i>Gọi
+                            </button>
+                            <button class="bg-blue-500 text-white py-2 rounded text-sm" onclick="chatTechnician()">
+                                <i class="fas fa-comments mr-1"></i>Chat
+                            </button>
+                        </div>
+                        
+                        <div class="mt-3 bg-purple-50 rounded-lg p-2 border border-purple-200">
+                            <p class="text-sm font-medium text-purple-800">Thăm vườn sắp tới:</p>
+                            <p class="text-sm text-gray-600">Thứ 6, 13/12 • 8:00-11:00 AM</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certifications -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-certificate text-yellow-600 mr-2"></i>
+                        Chứng nhận
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-green-50 p-3 rounded-lg border border-green-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-green-800">VietGAP</span>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs ml-2">Có hiệu lực</span>
+                                </div>
+                                <span class="text-sm text-gray-600">Đến 03/2027</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-blue-800">GlobalGAP</span>
+                                    <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs ml-2">Đang xử lý</span>
+                                </div>
+                                <span class="text-sm text-gray-600">65%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="font-bold text-red-800">Hữu cơ</span>
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs ml-2">Hết hạn</span>
+                                </div>
+                                <button class="bg-purple-500 text-white px-3 py-1 rounded text-xs">Gia hạn</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market & Community -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-globe text-blue-600 mr-2"></i>
+                        Thị trường & Cộng đồng
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-yellow-800">Giá hiện tại</span>
+                                <span class="font-bold text-green-600">62,000đ/kg (+8%)</span>
+                            </div>
+                            <p class="text-sm text-gray-600">Dự báo 7 ngày: 58-65k</p>
+                            <button class="w-full bg-yellow-500 text-white py-2 rounded-lg text-sm mt-2">
+                                <i class="fas fa-handshake mr-2"></i>Xem cơ hội bán
+                            </button>
+                        </div>
+                        
+                        <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-200">
+                            <span class="font-bold text-indigo-800">Cộng đồng nông dân</span>
+                            <div class="mt-2 space-y-1 text-sm">
+                                <p class="text-indigo-700">• "Cách xử lý sâu phủ quả hiệu quả"</p>
+                                <p class="text-indigo-700">• "Dự báo giá tháng 5-6"</p>
+                            </div>
+                            <button class="w-full bg-indigo-500 text-white py-2 rounded-lg text-sm mt-2">
+                                <i class="fas fa-comments mr-2"></i>Tham gia thảo luận
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- App Settings -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Cài đặt ứng dụng</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-sm text-gray-700">Thông báo push</span>
+                            <div class="w-10 h-6 bg-green-500 rounded-full p-1">
+                                <div class="w-4 h-4 bg-white rounded-full ml-auto"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-sm text-gray-700">Đồng bộ tự động</span>
+                            <div class="w-10 h-6 bg-green-500 rounded-full p-1">
+                                <div class="w-4 h-4 bg-white rounded-full ml-auto"></div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="text-sm text-gray-700">Chế độ ngoại tuyến</span>
+                            <div class="w-10 h-6 bg-gray-300 rounded-full p-1">
+                                <div class="w-4 h-4 bg-white rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button class="fab" onclick="quickActions()">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showTab('home')">
+                <i class="fas fa-home"></i>
+                <span>Trang chủ</span>
+            </div>
+            <div class="nav-item" onclick="showTab('tasks')">
+                <i class="fas fa-tasks"></i>
+                <span>Công việc</span>
+                <div class="alert-badge">2</div>
+            </div>
+            <div class="nav-item" onclick="showTab('support')">
+                <i class="fas fa-user-tie"></i>
+                <span>Kỹ thuật</span>
+                <div class="w-2 h-2 bg-green-500 rounded-full absolute top-1 right-3"></div>
+            </div>
+            <div class="nav-item" onclick="showTab('process')">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Quy trình</span>
+            </div>
+            <div class="nav-item" onclick="showTab('more')">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>Thêm</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.currentTarget.classList.add('active');
+            
+            // If opening process tab, show timeline section by default
+            if (tabName === 'process') {
+                setTimeout(() => {
+                    showProcessSection('timeline');
+                }, 100);
+            }
+        }
+
+        // Zone selection and update status function
+        function selectZone(zoneId) {
+            const zoneDetails = {
+                'A1': { trees: 20, area: '1.6ha', status: 'Khỏe mạnh', yield: '96%' },
+                'A2': { trees: 19, area: '1.5ha', status: 'Khỏe mạnh', yield: '95%' },
+                'A3': { trees: 18, area: '1.4ha', status: 'Sâu phủ quả', yield: '75%' },
+                'A4': { trees: 21, area: '1.7ha', status: 'Xuất sắc', yield: '98%' },
+                'B1': { trees: 17, area: '1.3ha', status: 'Sâu phủ quả', yield: '70%' },
+                'B2': { trees: 20, area: '1.6ha', status: 'Khỏe mạnh', yield: '94%' },
+                'B3': { trees: 16, area: '1.2ha', status: '2 cây chết', yield: '45%' },
+                'B4': { trees: 19, area: '1.5ha', status: 'Cây non năm 2', yield: 'N/A' }
+            };
+            
+            const zone = zoneDetails[zoneId];
+            showNotification(`Lô ${zoneId}: ${zone.trees} cây, ${zone.area}, ${zone.status}`, 'info');
+        }
+
+        // Update zone status function
+        function updateZoneStatus() {
+            showNotification('Mở form cập nhật tình trạng phân khu...', 'info');
+            // Simulate opening update form
+            setTimeout(() => {
+                const updateOptions = [
+                    'Báo cáo cây chết/bệnh nặng',
+                    'Cập nhật số lượng quả',
+                    'Ước tính năng suất',
+                    'Thay đổi tình trạng sức khỏe',
+                    'Ghi chú đặc biệt'
+                ];
+                
+                showNotification('Form cập nhật: ' + updateOptions.join(', '), 'success');
+            }, 1500);
+        }
+
+        // Quick actions
+        function quickActions() {
+            showNotification('Mở menu hành động nhanh...', 'info');
+        }
+
+        function quickLog() {
+            showNotification('Mở nhật ký canh tác...', 'info');
+        }
+
+        function quickMaterial() {
+            showNotification('Kiểm tra vật tư nhanh...', 'info');
+        }
+
+        function quickPest() {
+            showNotification('Báo cáo sâu bệnh...', 'info');
+        }
+
+        function quickWeather() {
+            showNotification('Xem dự báo thời tiết 7 ngày...', 'info');
+        }
+
+        // Task actions
+        function startTask(taskId) {
+            showNotification(`Bắt đầu công việc: ${taskId}`, 'success');
+        }
+
+        function continueTask(taskId) {
+            showNotification(`Tiếp tục công việc: ${taskId}`, 'info');
+        }
+
+        function scheduleTask(taskId) {
+            showNotification(`Lên lịch cho công việc: ${taskId}`, 'info');
+        }
+
+        function viewReport(taskId) {
+            showNotification(`Xem báo cáo: ${taskId}`, 'info');
+        }
+
+        // Communication
+        function callTechnician() {
+            showNotification('Đang gọi cho KS. Phạm Văn Minh...', 'info');
+        }
+
+        function chatTechnician() {
+            showNotification('Mở chat với kỹ thuật viên...', 'info');
+        }
+
+        // Enhanced technician interaction functions
+        function quickCallTechnician() {
+            showNotification('Đang gọi KS. Phạm Văn Minh...', 'info');
+            // Simulate call connection
+            setTimeout(() => {
+                showNotification('Cuộc gọi đã được kết nối', 'success');
+            }, 2000);
+        }
+        
+        function quickChatTechnician() {
+            showNotification('Mở chat với kỹ thuật viên...', 'info');
+            showTab('support');
+        }
+        
+        function openChat() {
+            showNotification('Mở cuộc trò chuyện với kỹ thuật viên...', 'info');
+        }
+        
+        function videoCall() {
+            showNotification('Bắt đầu video call với kỹ thuật viên...', 'info');
+        }
+        
+        function sendPhoto() {
+            showNotification('Mở camera để chụp ảnh gửi kỹ thuật viên...', 'info');
+        }
+        
+        function continueChat(chatId) {
+            showNotification(`Tiếp tục cuộc trò chuyện về ${chatId}...`, 'info');
+        }
+        
+        function markAsCompleted(chatId) {
+            showNotification(`Đã đánh dấu hoàn thành: ${chatId}`, 'success');
+        }
+        
+        function rescheduleVisit() {
+            showNotification('Mở lịch để đổi thời gian thăm vườn...', 'info');
+        }
+        
+        function confirmVisit() {
+            showNotification('Đã xác nhận lịch thăm vườn', 'success');
+        }
+        
+        function emergencyCall() {
+            showNotification('Gọi khẩn cấp đến kỹ thuật viên...', 'warning');
+        }
+        
+        function reportProblem() {
+            showNotification('Mở form báo cáo sự cố...', 'info');
+        }
+        
+        function requestVisit() {
+            showNotification('Gửi yêu cầu thăm vườn đột xuất...', 'info');
+        }
+        
+        function viewGuide(guideType) {
+            const guides = {
+                'pest-control': 'Mở hướng dẫn phòng trừ sâu bệnh...',
+                'fertilizer': 'Mở hướng dẫn kỹ thuật bón phân...',
+                'harvest': 'Mở hướng dẫn thu hoạch...',
+                'vietgap': 'Mở tiêu chuẩn VietGAP...'
+            };
+            showNotification(guides[guideType] || 'Mở tài liệu...', 'info');
+        }
+
+        // Enhanced task management functions
+        function startUrgentTask(taskId) {
+            showNotification(`Bắt đầu công việc khẩn cấp: ${taskId}`, 'warning');
+        }
+        
+        function askTechnicianHelp(taskId) {
+            showNotification(`Hỏi kỹ thuật viên về: ${taskId}`, 'info');
+            // Auto switch to support tab
+            setTimeout(() => {
+                showTab('support');
+            }, 1000);
+        }
+        
+        function reportTaskProgress(taskId) {
+            showNotification(`Báo cáo tiến độ: ${taskId}`, 'info');
+        }
+        
+        function reportWithPhoto(taskId) {
+            showNotification(`Chụp ảnh báo cáo: ${taskId}`, 'info');
+        }
+        
+        function updateProgress(taskId) {
+            showNotification(`Cập nhật tiến độ: ${taskId}`, 'info');
+        }
+        
+        function startEarlyTask(taskId) {
+            showNotification(`Bắt đầu công việc sớm: ${taskId}`, 'success');
+        }
+        
+        function getTechnicianAdvice(taskId) {
+            showNotification(`Xin tư vấn kỹ thuật cho: ${taskId}`, 'info');
+        }
+        
+        function shareWithTechnician(taskId) {
+            showNotification(`Chia sẻ với kỹ thuật viên: ${taskId}`, 'info');
+        }
+        
+        function getWeatherAdvice() {
+            showNotification('Tư vấn ứng phó thời tiết từ kỹ thuật viên...', 'info');
+        }
+
+        // Task filtering functions
+        function filterTasks(filter) {
+            // Remove active class from all filter buttons
+            document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            document.getElementById(filter + 'TasksBtn').classList.add('active');
+            
+            // Show/hide tasks based on filter
+            const tasks = document.querySelectorAll('.task-item');
+            tasks.forEach(task => {
+                task.classList.remove('hidden');
+                
+                switch(filter) {
+                    case 'urgent':
+                        if (!task.classList.contains('urgent')) {
+                            task.classList.add('hidden');
+                        }
+                        break;
+                    case 'today':
+                        if (!task.classList.contains('today')) {
+                            task.classList.add('hidden');
+                        }
+                        break;
+                    case 'inprogress':
+                        if (!task.classList.contains('inprogress')) {
+                            task.classList.add('hidden');
+                        }
+                        break;
+                    case 'completed':
+                        if (!task.classList.contains('completed')) {
+                            task.classList.add('hidden');
+                        }
+                        break;
+                    case 'all':
+                    default:
+                        // Show all tasks
+                        break;
+                }
+            });
+        }
+        
+        function addNewTask() {
+            showNotification('Thêm công việc mới...', 'info');
+        }
+
+        // Enhanced emergency and utility functions
+        function handleEmergency(type) {
+            const emergencyActions = {
+                'pest': 'Khởi động quy trình xử lý sâu bệnh khẩn cấp...',
+                'weather': 'Chuẩn bị ứng phó thời tiết xấu...',
+                'equipment': 'Gọi thợ sửa chữa thiết bị...'
+            };
+            showNotification(emergencyActions[type] || 'Xử lý tình huống khẩn cấp...', 'warning');
+        }
+        
+        function prepareForRain() {
+            showNotification('Chuẩn bị cho đợt mưa lớn...', 'info');
+        }
+        
+        function quickOrderMaterial(material) {
+            showNotification(`Tạo đơn đặt hàng ${material}...`, 'info');
+        }
+
+        // Material management
+        function addMaterial() {
+            showNotification('Thêm vật tư mới...', 'info');
+        }
+
+        // Process management functions
+        function showProcessSection(sectionName) {
+            // Hide all process sections
+            document.querySelectorAll('.process-section').forEach(section => {
+                section.classList.remove('active');
+                section.classList.add('hidden');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.process-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.remove('hidden');
+            }
+            
+            // Add active class to clicked button
+            const targetBtn = document.getElementById(sectionName + 'Btn');
+            if (targetBtn) {
+                targetBtn.classList.add('active');
+            }
+        }
+
+        function updateProcessYear() {
+            const year = document.getElementById('processYearSelect').value;
+            showNotification(`Chuyển sang lịch canh tác năm ${year}`, 'info');
+        }
+
+        function showAllMonths() {
+            showNotification('Hiển thị lịch canh tác đầy đủ 12 tháng...', 'info');
+        }
+
+        function viewTreatmentGuide(pestType) {
+            const guides = {
+                'fruit-borer': 'Hướng dẫn xử lý sâu phủ quả: Sử dụng Imidacloprid 200SC, 1.5ml/L nước, phun buổi chiều...',
+                'thrips': 'Hướng dẫn xử lý thrips: Sử dụng Abamectin 18EC, 2ml/L nước...',
+                'anthracnose': 'Hướng dẫn xử lý nấm thán thư: Sử dụng Copper Oxychloride, 2g/L nước...'
+            };
+            showNotification(guides[pestType] || 'Đang tải hướng dẫn...', 'info');
+        }
+
+        function viewPestInfo(pestType) {
+            const info = {
+                'fruit-borer': 'Sâu phủ quả: Xuất hiện mùa mưa, làm thối quả. Triệu chứng: lỗ nhỏ trên vỏ quả...',
+                'thrips': 'Thrips: Côn trùng nhỏ, hại hoa và lá non. Triệu chứng: lá bị đốm bạc...',
+                'anthracnose': 'Nấm thán thư: Gây đốm đen trên lá và quả. Triệu chứng: đốm tròn màu nâu...'
+            };
+            showNotification(info[pestType] || 'Đang tải thông tin...', 'info');
+        }
+
+        function updateChecklist(checkbox) {
+            const item = checkbox.closest('.checklist-item');
+            if (checkbox.checked) {
+                item.classList.add('completed');
+            } else {
+                item.classList.remove('completed');
+            }
+            
+            // Update progress
+            updateChecklistProgress();
+        }
+
+        function updateChecklistProgress() {
+            const totalItems = document.querySelectorAll('.checklist-item input[type="checkbox"]').length;
+            const completedItems = document.querySelectorAll('.checklist-item input[type="checkbox"]:checked').length;
+            const percentage = Math.round((completedItems / totalItems) * 100);
+            
+            document.getElementById('checklistProgress').textContent = `${completedItems}/${totalItems} hoàn thành`;
+            document.getElementById('checklistProgressBar').style.width = `${percentage}%`;
+        }
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            const colors = {
+                'info': 'bg-blue-500',
+                'success': 'bg-green-500',
+                'warning': 'bg-yellow-500',
+                'error': 'bg-red-500'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 left-1/2 transform -translate-x-1/2 ${colors[type]} text-white px-4 py-2 rounded-lg text-sm z-50 shadow-lg`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('FarmKeeper Mobile App initialized');
+            
+            // Initialize checklist progress
+            updateChecklistProgress();
+            
+            // Initialize task filtering
+            filterTasks('all');
+            
+            // Simulate real-time updates
+            setInterval(() => {
+                // Update sensor values occasionally
+                updateSensorValues();
+                // Update technician status
+                updateTechnicianStatus();
+            }, 30000);
+        });
+        
+        function updateTechnicianStatus() {
+            // Simulate technician status changes
+            const statusDots = document.querySelectorAll('.nav-item .w-2.h-2');
+            statusDots.forEach(dot => {
+                // Keep online status with slight animation
+                dot.classList.add('animate-pulse');
+            });
+        }
+
+        function updateSensorValues() {
+            // Simulate minor sensor value changes
+            const tempElement = document.querySelector('.sensor-value');
+            if (tempElement) {
+                const currentTemp = parseFloat(tempElement.textContent);
+                const newTemp = (currentTemp + (Math.random() - 0.5) * 0.5).toFixed(1);
+                tempElement.textContent = newTemp + '°C';
+            }
+        }
+    </script>
+</body>
+</html>

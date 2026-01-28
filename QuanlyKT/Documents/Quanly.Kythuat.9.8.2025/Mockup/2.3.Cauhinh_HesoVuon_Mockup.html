@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cấu Hình Hệ Số Phức Tạp</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans p-6 lg:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white">Cấu Hình Hệ Số Phức Tạp</h1>
+                <p class="text-gray-400 mt-1">Thiết lập các "Quy tắc" để hệ thống tự động diễn giải "Dữ liệu" và tính toán độ khó của từng Vườn/Farm.</p>
+            </div>
+             <button type="submit" class="mt-4 md:mt-0 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md flex items-center">
+                <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                Lưu Toàn Bộ Cấu Hình
+            </button>
+        </div>
+
+        <!-- Configuration Groups Container -->
+        <div id="groups-container" class="space-y-8">
+
+            <!-- Group 1: Nông học & Kỹ thuật -->
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 group-card">
+                <div class="flex justify-between items-center mb-6">
+                    <input type="text" value="1. Nhóm Hệ số Nông học & Kỹ thuật" class="text-xl font-semibold text-white bg-transparent border-b-2 border-gray-700 focus:border-blue-500 focus:outline-none w-full">
+                    <button class="ml-4 text-red-500 hover:text-red-400 p-2 remove-group-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </div>
+                <div class="space-y-4 rules-container">
+                    <!-- Rule: Tuổi cây & Giai đoạn (Categorical) -->
+                    <div class="bg-gray-900/50 p-4 rounded-lg rule-card">
+                        <div class="flex justify-between items-center mb-4">
+                            <input type="text" value="Hệ số Giai đoạn & Tuổi cây" class="font-semibold text-gray-300 bg-transparent border-b border-gray-600 focus:outline-none w-1/2">
+                            <button class="text-gray-400 hover:text-red-400 p-1 remove-rule-btn"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                        <div class="space-y-2 conditions-container">
+                            <div class="grid grid-cols-12 gap-4 items-center condition-row"><span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span><input type="text" value="Kiến thiết cơ bản" class="col-span-5 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><span class="col-span-1 text-center text-gray-400 text-sm">thì</span><span class="col-span-2 text-right text-gray-400 text-sm">Hệ số =</span><input type="number" step="0.05" value="1.2" class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button></div>
+                            <div class="grid grid-cols-12 gap-4 items-center condition-row"><span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span><input type="text" value="Kinh doanh năm đầu" class="col-span-5 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><span class="col-span-1 text-center text-gray-400 text-sm">thì</span><span class="col-span-2 text-right text-gray-400 text-sm">Hệ số =</span><input type="number" step="0.05" value="1.1" class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button></div>
+                            <div class="grid grid-cols-12 gap-4 items-center condition-row"><span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span><input type="text" value="Kinh doanh ổn định" class="col-span-5 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><span class="col-span-1 text-center text-gray-400 text-sm">thì</span><span class="col-span-2 text-right text-gray-400 text-sm">Hệ số =</span><input type="number" step="0.05" value="1.0" class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button></div>
+                            <div class="grid grid-cols-12 gap-4 items-center condition-row"><span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span><input type="text" value="Vườn già/cải tạo" class="col-span-5 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><span class="col-span-1 text-center text-gray-400 text-sm">thì</span><span class="col-span-2 text-right text-gray-400 text-sm">Hệ số =</span><input type="number" step="0.05" value="1.1" class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button></div>
+                        </div>
+                        <button class="mt-3 text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center add-condition-btn" data-type="categorical"><i data-lucide="plus" class="w-3 h-3 mr-1"></i>Thêm điều kiện</button>
+                    </div>
+                </div>
+                <button class="mt-4 text-blue-400 hover:text-blue-300 text-sm font-semibold flex items-center add-rule-btn"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Thêm Hệ số/Quy tắc</button>
+            </div>
+            
+            <!-- Group 2: Vận hành & Địa lý -->
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 group-card">
+                <div class="flex justify-between items-center mb-6">
+                    <input type="text" value="2. Nhóm Hệ số Vận hành & Địa lý" class="text-xl font-semibold text-white bg-transparent border-b-2 border-gray-700 focus:border-blue-500 focus:outline-none w-full">
+                    <button class="ml-4 text-red-500 hover:text-red-400 p-2 remove-group-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </div>
+                <div class="space-y-4 rules-container">
+                    <!-- Rule: Quy mô Diện tích -->
+                    <div class="bg-gray-900/50 p-4 rounded-lg rule-card">
+                        <div class="flex justify-between items-center mb-4"><input type="text" value="Hệ số Quy mô Diện tích" class="font-semibold text-gray-300 bg-transparent border-b border-gray-600 focus:outline-none w-1/2"><button class="text-gray-400 hover:text-red-400 p-1 remove-rule-btn"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+                        <div class="space-y-2 conditions-container">
+                            <div class="grid grid-cols-12 gap-2 items-center condition-row"><span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span><input type="number" value="10" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm text-center"><span class="col-span-1 text-center text-gray-400">&le; X</span><span class="col-span-2 text-left text-gray-400 text-sm">ha</span><span class="col-span-3 text-center text-gray-400 text-sm">thì HS =</span><input type="number" step="0.05" value="1.3" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button></div>
+                            <div class="grid grid-cols-12 gap-2 items-center condition-row"><span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span><input type="number" value="5" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm text-center"><span class="col-span-1 text-center text-gray-400">&le; X &lt;</span><input type="number" value="10" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm text-center"><span class="col-span-1 text-left text-gray-400 text-sm">ha</span><span class="col-span-3 text-center text-gray-400 text-sm">thì HS =</span><input type="number" step="0.05" value="1.2" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button></div>
+                            <div class="grid grid-cols-12 gap-2 items-center condition-row"><span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span><input type="number" value="2" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm text-center"><span class="col-span-1 text-center text-gray-400">&le; X &lt;</span><input type="number" value="5" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm text-center"><span class="col-span-1 text-left text-gray-400 text-sm">ha</span><span class="col-span-3 text-center text-gray-400 text-sm">thì HS =</span><input type="number" step="0.05" value="1.1" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button></div>
+                            <div class="grid grid-cols-12 gap-2 items-center condition-row"><span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span><span class="col-span-2 text-center text-gray-400">X &lt;</span><input type="number" value="2" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm text-center"><span class="col-span-1 text-left text-gray-400 text-sm">ha</span><span class="col-span-3 text-center text-gray-400 text-sm">thì HS =</span><input type="number" step="0.05" value="1.0" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm"><button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button></div>
+                        </div>
+                        <button class="mt-3 text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center add-condition-btn" data-type="numerical"><i data-lucide="plus" class="w-3 h-3 mr-1"></i>Thêm điều kiện</button>
+                    </div>
+                </div>
+                 <button class="mt-4 text-blue-400 hover:text-blue-300 text-sm font-semibold flex items-center add-rule-btn"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Thêm Hệ số/Quy tắc</button>
+            </div>
+
+            <!-- NEW: Complexity Thresholds -->
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+                <h2 class="text-xl font-semibold text-white mb-1">Ngưỡng Phân loại Độ phức tạp Vườn</h2>
+                <p class="text-sm text-gray-400 mb-6">Thiết lập các khoảng giá trị để hệ thống tự động gán nhãn và màu sắc cảnh báo cho các vườn.</p>
+                <div class="space-y-3 p-4 bg-gray-900/50 rounded-lg">
+                    <div class="grid grid-cols-3 gap-4 items-center">
+                        <span class="px-3 py-1.5 text-xs font-medium rounded-full bg-green-500/10 text-green-400 text-center">Thấp (Dễ)</span>
+                        <div class="col-span-2 flex items-center space-x-2 text-sm">
+                            <span>Nếu Hệ số &lt;</span>
+                            <input type="number" step="0.1" value="1.1" class="w-24 bg-gray-700 border-gray-600 rounded-md px-3 py-1 text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 items-center">
+                        <span class="px-3 py-1.5 text-xs font-medium rounded-full bg-yellow-500/10 text-yellow-400 text-center">Trung bình</span>
+                        <div class="col-span-2 flex items-center space-x-2 text-sm">
+                            <span>Nếu 1.1 &le; Hệ số &lt;</span>
+                            <input type="number" step="0.1" value="1.5" class="w-24 bg-gray-700 border-gray-600 rounded-md px-3 py-1 text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 items-center">
+                        <span class="px-3 py-1.5 text-xs font-medium rounded-full bg-red-500/10 text-red-400 text-center">Cao (Khó)</span>
+                        <div class="col-span-2 flex items-center space-x-2 text-sm">
+                            <span>Nếu Hệ số &ge; 1.5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Add Group Button -->
+        <div class="mt-8">
+            <button id="add-group-btn" class="w-full bg-gray-800 hover:bg-gray-700 border-2 border-dashed border-gray-600 text-gray-400 font-bold py-4 px-4 rounded-xl flex items-center justify-center">
+                <i data-lucide="plus" class="w-5 h-5 mr-2"></i> Thêm Nhóm Hệ số Mới
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal for choosing rule type -->
+    <div id="rule-type-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-gray-800 rounded-lg p-8 max-w-sm w-full">
+            <h3 class="text-xl font-bold text-white mb-6">Chọn Loại Quy tắc để Thêm</h3>
+            <div class="space-y-4">
+                <button id="add-numerical-rule" class="w-full text-left flex items-center p-4 bg-gray-700 hover:bg-gray-600 rounded-lg">
+                    <i data-lucide="hash" class="w-6 h-6 text-blue-400 mr-4"></i>
+                    <div>
+                        <p class="font-semibold text-white">Quy tắc theo Khoảng số</p>
+                        <p class="text-xs text-gray-400">Dùng cho các trường dữ liệu số như Diện tích, Tuổi cây, Khoảng cách...</p>
+                    </div>
+                </button>
+                <button id="add-categorical-rule" class="w-full text-left flex items-center p-4 bg-gray-700 hover:bg-gray-600 rounded-lg">
+                    <i data-lucide="list" class="w-6 h-6 text-purple-400 mr-4"></i>
+                    <div>
+                        <p class="font-semibold text-white">Quy tắc theo Danh mục</p>
+                        <p class="text-xs text-gray-400">Dùng cho các trường dữ liệu dạng lựa chọn như Giai đoạn, Mức độ đầu tư...</p>
+                    </div>
+                </button>
+            </div>
+            <button id="close-modal-btn" class="mt-6 w-full bg-gray-600 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-md">Hủy</button>
+        </div>
+    </div>
+
+
+    <script>
+        lucide.createIcons();
+
+        const groupsContainer = document.getElementById('groups-container');
+        const addGroupBtn = document.getElementById('add-group-btn');
+        const modal = document.getElementById('rule-type-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const addNumericalRuleBtn = document.getElementById('add-numerical-rule');
+        const addCategoricalRuleBtn = document.getElementById('add-categorical-rule');
+        let currentRulesContainer = null;
+
+        // --- TEMPLATES ---
+        const numericalConditionTemplate = `
+            <div class="grid grid-cols-12 gap-2 items-center condition-row">
+                <span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span>
+                <input type="number" placeholder="Từ" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm text-center">
+                <span class="col-span-1 text-center text-gray-400">&le; X &lt;</span>
+                <input type="number" placeholder="Đến" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm text-center">
+                <span class="col-span-3 text-left text-gray-400 text-sm"></span>
+                <span class="col-span-1 text-center text-gray-400 text-sm">thì HS =</span>
+                <input type="number" step="0.05" placeholder="Hệ số" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                <button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button>
+            </div>`;
+
+        const categoricalConditionTemplate = `
+            <div class="grid grid-cols-12 gap-4 items-center condition-row">
+                <span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span>
+                <input type="text" placeholder="Tên lựa chọn..." class="col-span-5 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                <span class="col-span-1 text-center text-gray-400 text-sm">thì</span>
+                <span class="col-span-2 text-right text-gray-400 text-sm">Hệ số =</span>
+                <input type="number" step="0.05" placeholder="Hệ số" class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                <button class="col-span-1 text-gray-500 hover:text-red-400 p-2 remove-condition-btn"><i data-lucide="minus-circle" class="w-4 h-4"></i></button>
+            </div>`;
+            
+        const ruleTemplate = (type) => `
+            <div class="bg-gray-900/50 p-4 rounded-lg rule-card">
+                <div class="flex justify-between items-center mb-4">
+                    <input type="text" placeholder="Tên hệ số/quy tắc..." class="font-semibold text-gray-300 bg-transparent border-b border-gray-600 focus:outline-none w-1/2">
+                    <button class="text-gray-400 hover:text-red-400 p-1 remove-rule-btn"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <div class="space-y-2 conditions-container">
+                    ${type === 'numerical' ? numericalConditionTemplate : categoricalConditionTemplate}
+                </div>
+                <button class="mt-3 text-xs text-blue-400 hover:text-blue-300 font-semibold flex items-center add-condition-btn" data-type="${type}"><i data-lucide="plus" class="w-3 h-3 mr-1"></i>Thêm điều kiện</button>
+            </div>
+        `;
+
+        const groupTemplate = `
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 group-card">
+                <div class="flex justify-between items-center mb-6">
+                    <input type="text" placeholder="Tên Nhóm Hệ số Mới..." class="text-xl font-semibold text-white bg-transparent border-b-2 border-gray-700 focus:border-blue-500 focus:outline-none w-full">
+                    <button class="ml-4 text-red-500 hover:text-red-400 p-2 remove-group-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </div>
+                <div class="space-y-4 rules-container"></div>
+                <button class="mt-4 text-blue-400 hover:text-blue-300 text-sm font-semibold flex items-center add-rule-btn"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Thêm Hệ số/Quy tắc</button>
+            </div>
+        `;
+
+        // --- EVENT LISTENERS ---
+        function openModal(rulesContainer) {
+            currentRulesContainer = rulesContainer;
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            currentRulesContainer = null;
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        function addRule(type) {
+            if (currentRulesContainer) {
+                const newRule = document.createElement('div');
+                newRule.innerHTML = ruleTemplate(type);
+                currentRulesContainer.appendChild(newRule.firstElementChild);
+                lucide.createIcons();
+                closeModal();
+            }
+        }
+        
+        addNumericalRuleBtn.addEventListener('click', () => addRule('numerical'));
+        addCategoricalRuleBtn.addEventListener('click', () => addRule('categorical'));
+
+        addGroupBtn.addEventListener('click', () => {
+            const newGroup = document.createElement('div');
+            newGroup.innerHTML = groupTemplate;
+            groupsContainer.appendChild(newGroup.firstElementChild);
+            lucide.createIcons();
+        });
+
+        groupsContainer.addEventListener('click', (e) => {
+            const addRuleBtn = e.target.closest('.add-rule-btn');
+            if (addRuleBtn) {
+                openModal(addRuleBtn.previousElementSibling);
+            }
+            
+            const addConditionBtn = e.target.closest('.add-condition-btn');
+            if (addConditionBtn) {
+                const type = addConditionBtn.dataset.type;
+                const conditionsContainer = addConditionBtn.previousElementSibling;
+                const newCondition = document.createElement('div');
+                newCondition.innerHTML = type === 'numerical' ? numericalConditionTemplate : categoricalConditionTemplate;
+                conditionsContainer.appendChild(newCondition.firstElementChild);
+                lucide.createIcons();
+            }
+
+            const removeConditionBtn = e.target.closest('.remove-condition-btn');
+            if (removeConditionBtn) {
+                removeConditionBtn.closest('.condition-row').remove();
+            }
+
+            const removeRuleBtn = e.target.closest('.remove-rule-btn');
+            if (removeRuleBtn) {
+                removeRuleBtn.closest('.rule-card').remove();
+            }
+
+            const removeGroupBtn = e.target.closest('.remove-group-btn');
+            if (removeGroupBtn) {
+                removeGroupBtn.closest('.group-card').remove();
+            }
+        });
+    </script>
+</body>
+</html>

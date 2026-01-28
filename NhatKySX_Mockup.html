@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper - Thiết lập Thông tin Vườn/Farm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; } /* slate-100 */
+        .farm-green { color: #2E7D32; }
+        .keeper-black { color: #1a1a1a; }
+        .form-input, .form-select, .form-textarea, .form-checkbox {
+            border: 1px solid #cbd5e1; /* slate-300 */
+            border-radius: 0.5rem;
+            transition: all 0.2s ease-in-out;
+            width: 100%;
+            background-color: white;
+        }
+        .form-input, .form-select, .form-textarea { padding: 0.75rem 1rem; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+        }
+        .file-input-wrapper {
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            background-color: #f8fafc; /* slate-50 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .file-input-wrapper:hover {
+            border-color: #2E7D32;
+            background-color: #f0fdf4; /* green-50 */
+        }
+        .row-item {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #0ea5e9;
+            border-radius: 0.75rem;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .tab-button.active {
+            background-color: #f0fdf4;
+            color: #166534;
+            border-color: #22c55e;
+        }
+         .tab-button:not(.active):hover {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4"><div class="flex items-center justify-between py-4"><div class="flex items-center space-x-4"><h1 class="text-3xl lg:text-4xl font-bold"><span class="farm-green">FARM</span><span class="keeper-black">KEEPER</span></h1><div class="hidden md:block"><p class="text-sm text-gray-600">Ứng Dụng Quản Lý Sản Xuất Nông Nghiệp</p></div></div><div class="flex items-center space-x-4"><span class="font-semibold text-gray-700">Chào, Anh Ba!</span><img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User Avatar" class="w-10 h-10 rounded-full"></div></div></div>
+    </header>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <nav class="flex items-center space-x-2 text-sm">
+            <a href="#" class="text-green-600 hover:text-green-800 font-medium">Dashboard</a>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+            <span class="text-gray-600">Thiết lập vườn VT-DL-001</span>
+        </nav>
+    </div>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-gray-200">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl font-bold text-green-700">HỒ SƠ THIẾT LẬP VƯỜN/FARM</h1>
+                <p class="text-gray-600 mt-2">Chủ sở hữu: <span class="font-semibold">Nguyễn Trung Hiếu</span> - Mã vườn: <span class="font-semibold font-mono">VT-DL-001</span></p>
+                <p class="text-gray-500 text-sm mt-1">Ngày khảo sát: 04/07/2025 - Người thực hiện: <span class="font-semibold">Nhân viên dự án</span></p>
+            </div>
+
+            <form action="#" method="POST" class="space-y-12">
+                <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-lg mr-3"><i class="fas fa-info-circle"></i></div>I. Thông tin chung & Năng suất</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label for="farm-name" class="block text-sm font-medium text-gray-700 mb-1">Loại Cây trồng</label><input type="text" name="farm-name" id="farm-name" class="form-input" value="Sầu riêng" readonly></div>
+                        <div><label for="total-area" class="block text-sm font-medium text-gray-700 mb-1">Tổng diện tích (ha)</label><input type="number" step="0.1" name="total-area" id="total-area" class="form-input" placeholder="VD: 2.5"></div>
+                        <div><label for="total-trees" class="block text-sm font-medium text-gray-700 mb-1">Tổng số cây</label><input type="number" name="total-trees" id="total-trees" class="form-input" placeholder="VD: 1500"></div>
+                        <div><label for="harvest-per-year" class="block text-sm font-medium text-gray-700 mb-1">Năm bắt đầu thu hoạch</label><input type="number" name="harvest-per-year" id="harvest-per-year" class="form-input" placeholder="VD: 2020"></div>
+                        <div><label for="last-year-yield" class="block text-sm font-medium text-gray-700 mb-1">Sản lượng năm trước (Tấn)</label><input type="number" step="0.1" name="last-year-yield" id="last-year-yield" class="form-input" placeholder="VD: 15.5"></div>
+                        <div><label for="forecast-yield" class="block text-sm font-medium text-gray-700 mb-1">Sản lượng dự báo (Tấn)</label><input type="number" step="0.1" name="forecast-yield" id="forecast-yield" class="form-input bg-gray-100" placeholder="Tự động tính" readonly></div>
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-lg mr-3"><i class="fas fa-seedling"></i></div>II. Thông tin Giống & Cây trồng</h2>
+                    <div id="variety-list" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 border rounded-lg bg-slate-50 items-center">
+                            <div><label class="block text-sm font-medium text-gray-700">Tên Giống</label><input type="text" class="form-input mt-1" value="Ri6"></div>
+                             <div><label class="block text-sm font-medium text-gray-700">Nguồn gốc giống</label><input type="text" class="form-input mt-1" placeholder="VD: Viện cây ăn quả Miền Nam"></div>
+                            <div><label class="block text-sm font-medium text-gray-700">Số lượng cây</label><input type="number" class="form-input mt-1" value="120"></div>
+                            <div><label class="block text-sm font-medium text-gray-700">Giai đoạn</label><select class="form-select mt-1"><option>Cây non</option><option>Phục hồi</option><option selected>Kinh doanh</option></select></div>
+                        </div>
+                        <button type="button" class="w-full border-2 border-dashed border-gray-300 text-gray-500 rounded-lg py-2 hover:border-green-500 hover:text-green-600 transition"><i class="fas fa-plus mr-2"></i>Thêm giống</button>
+                    </div>
+                </div>
+                 <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-lg mr-3"><i class="fas fa-vial"></i></div>III. Thổ nhưỡng & Môi trường</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div><label for="soil-type" class="block text-sm font-medium text-gray-700 mb-1">Loại đất</label><input type="text" name="soil-type" id="soil-type" class="form-input" placeholder="VD: Đất đỏ bazan"></div>
+                        <div><label for="water-source" class="block text-sm font-medium text-gray-700 mb-1">Nguồn nước</label><select id="water-source" class="form-select"><option>Sông/suối</option><option>Giếng khoan</option><option>Nước mưa</option><option>Hồ chứa</option></select></div>
+                        <div><label for="land-history" class="block text-sm font-medium text-gray-700 mb-1">Lịch sử sử dụng đất (2 năm trước)</label><input type="text" id="land-history" class="form-input" placeholder="VD: Trồng cà phê, đã bỏ trống 1 năm"></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Kết quả phân tích mẫu nước</label><div class="file-input-wrapper h-auto py-2"><input type="file" class="sr-only" id="water-report-upload"><label for="water-report-upload" class="cursor-pointer"><i class="fas fa-cloud-upload-alt text-gray-400 text-2xl"></i><p class="text-sm text-gray-500 mt-1">Tải file báo cáo</p></label></div></div>
+                    </div>
+                     <div class="p-4 border rounded-lg bg-slate-50 mb-6">
+                        <h3 class="font-semibold text-gray-700 mb-4">Đánh giá nguy cơ ô nhiễm từ khu vực xung quanh</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                           <label class="flex items-center"><input type="checkbox" class="form-checkbox h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">Gần khu công nghiệp</span></label>
+                           <label class="flex items-center"><input type="checkbox" class="form-checkbox h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">Gần bãi rác/nước thải</span></label>
+                           <label class="flex items-center"><input type="checkbox" class="form-checkbox h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">Gần khu chăn nuôi</span></label>
+                           <label class="flex items-center"><input type="checkbox" class="form-checkbox h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">Gần bệnh viện/nghĩa trang</span></label>
+                           <label class="flex items-center"><input type="checkbox" class="form-checkbox h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">Gần đường quốc lộ lớn</span></label>
+                           <label class="flex items-center"><input type="checkbox" class="form-checkbox h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">Không có nguy cơ</span></label>
+                        </div>
+                        <label for="risk-mitigation" class="block text-sm font-medium text-gray-700 mt-4 mb-1">Biện pháp phòng ngừa/khắc phục (nếu có)</label>
+                        <input type="text" id="risk-mitigation" class="form-input" placeholder="VD: Trồng hàng rào cây xanh cách ly, xây mương thoát nước...">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        <div><label for="soil-nutrients" class="block text-sm font-medium text-gray-700 mb-1">Kết quả phân tích đất từ phòng Lab</label><textarea id="soil-nutrients" name="soil-nutrients" rows="4" class="form-textarea" placeholder="Nhập kết quả chi tiết..."></textarea></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Hoặc tải lên file báo cáo</label><div class="file-input-wrapper"><input type="file" class="sr-only" id="soil-report-upload"><label for="soil-report-upload" class="cursor-pointer"><i class="fas fa-cloud-upload-alt text-gray-400 text-3xl"></i><p class="text-sm text-gray-500 mt-2">Tải file báo cáo Lab</p></label></div></div>
+                    </div>
+                </div>
+                 <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg mr-3"><i class="fas fa-sitemap"></i></div>IV. Sơ đồ vườn & Định vị cây</h2>
+                    <div class="mb-8">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Tải lên sơ đồ tổng thể của vườn</label><div class="file-input-wrapper"><input type="file" class="sr-only" id="farm-map-upload"><label for="farm-map-upload" class="cursor-pointer"><i class="fas fa-map-marked-alt text-gray-400 text-3xl"></i><p class="text-sm text-gray-500 mt-2">Tải file bản đồ (ảnh, PDF, KML...)</p></label></div></div>
+                    </div>
+                    <div class="mb-8">
+                        <h3 class="font-semibold text-gray-700 mb-4 flex items-center"><i class="fas fa-layer-group text-blue-600 mr-2"></i>1. Tạo Lô/Khu vực</h3>
+                        <div id="plot-list" class="space-y-4">
+                            <div class="p-4 border-2 border-blue-200 rounded-lg bg-blue-50" id="plot-1">
+                                <div class="flex items-center justify-between mb-4">
+                                    <input type="text" class="form-input font-semibold text-lg w-1/3" placeholder="Số Lô (VD: A1)" value="Lô A1">
+                                    <button type="button" class="text-red-500 hover:text-red-700 ml-4 flex-shrink-0" onclick="removePlot(this)"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Diện tích (ha)</label><input type="number" step="0.1" class="form-input" placeholder="VD: 1.2" value="1.2"></div>
+                                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Số cây</label><input type="number" class="form-input" placeholder="VD: 150" value="150"></div>
+                                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Số hàng <span class="text-gray-500">(tùy chọn)</span></label><input type="number" class="form-input" placeholder="VD: 10" onchange="toggleRowManagement(this)"></div>
+                                    <div class="flex items-end"><button type="button" class="w-full bg-blue-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-blue-700 transition" onclick="manageRows(this)"><i class="fas fa-list mr-1"></i>Quản lý hàng</button></div>
+                                </div>
+                                
+                                <div class="row-management hidden mt-4 p-4 border border-blue-300 rounded-lg bg-blue-25">
+                                    <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                                        <i class="fas fa-grip-lines text-blue-600 mr-2"></i>Quản lý Hàng trong Lô A1
+                                    </h4>
+                                    <div class="rows-container space-y-3"></div>
+                                    <button type="button" class="mt-3 w-full border-2 border-dashed border-blue-300 text-blue-600 rounded-lg py-2 hover:border-blue-500 hover:text-blue-700 transition" onclick="addRow(this)">
+                                        <i class="fas fa-plus mr-2"></i>Thêm hàng
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="add-plot-btn" class="mt-4 w-full border-2 border-dashed border-gray-300 text-gray-500 rounded-lg py-3 hover:border-blue-500 hover:text-blue-600 transition">
+                            <i class="fas fa-plus mr-2"></i>Thêm Lô mới
+                        </button>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-4 flex items-center"><i class="fas fa-crosshairs text-green-600 mr-2"></i>2. Định vị & Nhập liệu chi tiết từng cây</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="space-y-4 p-4 border-2 border-green-200 bg-green-50 rounded-xl">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Chọn Lô/Hàng để định vị</label>
+                                    <select id="select-location" class="form-select" onchange="updateTreeForm()">
+                                        <option value="">-- Chọn vị trí --</option>
+                                        <option value="plot-1">Lô A1 (Toàn bộ)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phương án định vị</label>
+                                    <select id="positioning-method" class="form-select">
+                                        <option value="manual">Ghim định vị thủ công</option>
+                                        <option value="qr">Quét mã QR</option>
+                                        <option value="rfid">Quét tem RFID</option>
+                                        <option value="drone">Nhập từ file Drone</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition flex items-center justify-center">
+                                    <i class="fas fa-crosshairs mr-2"></i>Bắt đầu định vị
+                                </button>
+                                <div class="text-sm text-gray-600 p-3 bg-white rounded-lg border">
+                                    <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                                    <strong>Hướng dẫn:</strong> Chọn Lô hoặc Hàng cụ thể, sau đó bắt đầu định vị để nhập thông tin từng cây một cách có tổ chức.
+                                </div>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-lg border-2 border-gray-200">
+                                <h4 class="font-semibold text-center mb-4 text-gray-800">
+                                    <i class="fas fa-tree text-green-600 mr-2"></i>Thông tin cây đang chọn
+                                </h4>
+                                <div class="space-y-3">
+                                    <div><label for="tree-id" class="block text-sm font-medium text-gray-700 mb-1">Mã cây</label><input type="text" id="tree-id" class="form-input" placeholder="VD: A1-001 hoặc A1-H1-001"></div>
+                                    <div><label for="tree-location-info" class="block text-sm font-medium text-gray-700 mb-1">Vị trí</label><input type="text" id="tree-location-info" class="form-input bg-gray-100" placeholder="Sẽ tự động điền" readonly></div>
+                                    <div>
+                                        <label for="tree-stage" class="block text-sm font-medium text-gray-700 mb-1">Giai đoạn</label>
+                                        <select id="tree-stage" class="form-select" onchange="toggleTreeFields()">
+                                            <option value="non">Cây non</option>
+                                            <option value="mature" selected>Trưởng thành</option>
+                                            <option value="recovery">Phục hồi</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div id="tree-age-wrapper" class="hidden">
+                                        <label for="tree-age" class="block text-sm font-medium text-gray-700 mb-1">Tuổi cây (năm)</label>
+                                        <input type="number" id="tree-age" class="form-input" placeholder="VD: 2">
+                                    </div>
+                                    
+                                    <div id="fruit-count-wrapper" class="space-y-3">
+                                        <div><label for="fruit-count" class="block text-sm font-medium text-gray-700 mb-1">Số trái (dự kiến)</label><input type="number" id="fruit-count" class="form-input" placeholder="VD: 50"></div>
+                                        <div><label for="fruit-age" class="block text-sm font-medium text-gray-700 mb-1">Ngày tuổi trái</label><input type="number" id="fruit-age" class="form-input" placeholder="VD: 65"></div>
+                                        <div><label for="fruit-weight" class="block text-sm font-medium text-gray-700 mb-1">Trọng lượng TB (Kg/Trái)</label><input type="number" step="0.1" id="fruit-weight" class="form-input" placeholder="VD: 2.5"></div>
+                                    </div>
+                                    
+                                    <div id="recovery-wrapper" class="hidden space-y-3">
+                                        <div><label for="tree-condition" class="block text-sm font-medium text-gray-700 mb-1">Tình trạng</label><textarea id="tree-condition" rows="2" class="form-textarea" placeholder="Mô tả tình trạng cây..."></textarea></div>
+                                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Chụp ảnh</label><button type="button" class="w-full text-sm py-2 border rounded-lg hover:bg-gray-100"><i class="fas fa-camera mr-2"></i>Chụp ảnh cây</button></div>
+                                        <div><label for="tree-diagnosis" class="block text-sm font-medium text-gray-700 mb-1">Chẩn đoán</label><input type="text" id="tree-diagnosis" class="form-input" placeholder="VD: Nấm, thiếu dinh dưỡng..."></div>
+                                        <div><label for="tree-treatment" class="block text-sm font-medium text-gray-700 mb-1">Phương án xử lý</label><input type="text" id="tree-treatment" class="form-input" placeholder="VD: Bón NPK, phun thuốc X..."></div>
+                                    </div>
+                                    
+                                    <div class="flex space-x-2 pt-3">
+                                        <button type="button" class="flex-1 bg-blue-600 text-white py-2 px-3 rounded text-sm hover:bg-blue-700 transition">
+                                            <i class="fas fa-save mr-1"></i>Lưu & Tiếp
+                                        </button>
+                                        <button type="button" class="flex-1 bg-gray-500 text-white py-2 px-3 rounded text-sm hover:bg-gray-600 transition">
+                                            <i class="fas fa-undo mr-1"></i>Bỏ qua
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-purple-100 text-purple-600 rounded-lg mr-3"><i class="fas fa-warehouse"></i></div>V. Cơ sở vật chất & Trang thiết bị</h2>
+                    <div class="space-y-6">
+                        <div class="p-4 border rounded-lg bg-slate-50">
+                            <h3 class="font-semibold text-gray-700 mb-4">Khu vực kho chứa vật tư</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Tình trạng kho</label><select class="form-select"><option>Có kho riêng, xây kiên cố</option><option>Có khu vực riêng trong nhà</option><option>Không có kho</option></select></div>
+                                <div><label class="block text-sm font-medium text-gray-700 mb-1">Vị trí kho</label><input type="text" class="form-input" placeholder="Mô tả vị trí..."></div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Điều kiện bảo quản:</label>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                        <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Có biển báo nguy hiểm</span></label>
+                                        <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Có tủ/khóa an toàn</span></label>
+                                        <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Phân khu riêng (Phân/Thuốc)</span></label>
+                                        <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Kệ/giá đỡ cách mặt đất</span></label>
+                                        <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Thông thoáng, không ẩm ướt</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div><label for="equipment-list" class="block text-sm font-medium text-gray-700 mb-1">Danh mục trang thiết bị sản xuất chính</label><textarea id="equipment-list" rows="3" class="form-textarea" placeholder="Liệt kê các máy móc, dụng cụ chính: máy cày, bình phun, kéo cắt cành..."></textarea></div>
+                        <div><label for="waste-management" class="block text-sm font-medium text-gray-700 mb-1">Phương án thu gom, xử lý bao bì vật tư nông nghiệp</label><select id="waste-management" class="form-select"><option>Thu gom và để tại nơi quy định của địa phương</option><option>Chôn lấp trong hố riêng có lót đáy và che đậy</option><option>Trả lại cho đại lý/công ty cung cấp</option><option>Chưa có phương án cụ thể</option></select></div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-indigo-100 text-indigo-600 rounded-lg mr-3"><i class="fas fa-users"></i></div>VI. Nhân sự & An toàn lao động</h2>
+                    <div class="space-y-6">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="labor-count" class="block text-sm font-medium text-gray-700 mb-1">Tổng số lao động thường xuyên</label><input type="number" id="labor-count" class="form-input" placeholder="VD: 5"></div>
+                            <div><label for="training-status" class="block text-sm font-medium text-gray-700 mb-1">Tình trạng tập huấn VietGAP/ATVSLĐ</label><select id="training-status" class="form-select"><option>Đã tập huấn đầy đủ</option><option>Một phần đã tập huấn</option><option>Chưa được tập huấn</option></select></div>
+                         </div>
+                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Trang bị bảo hộ lao động (PPE) có sẵn:</label>
+                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Quần áo bảo hộ</span></label>
+                                <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Găng tay cao su</span></label>
+                                <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Ủng bảo hộ</span></label>
+                                <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Kính mắt</span></label>
+                                <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Mũ/nón</span></label>
+                                <label class="flex items-center"><input type="checkbox" class="form-checkbox"><span class="ml-2 text-sm text-gray-600">Mặt nạ/khẩu trang</span></label>
+                            </div>
+                        </div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Trang bị y tế & sơ cứu</label><select class="form-select"><option>Có tủ thuốc và hướng dẫn sơ cứu đầy đủ</option><option>Chỉ có tủ thuốc cơ bản</option><option>Không có</option></select></div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-red-100 text-red-600 rounded-lg mr-3"><i class="fas fa-bug"></i></div>VII. Quản lý Vật tư nông nghiệp & Sâu bệnh hại</h2>
+                    <div class="space-y-6">
+                        <div class="space-y-4 p-4 border rounded-lg bg-slate-50">
+                            <h3 class="font-semibold text-gray-700">A. Quản lý Phân bón</h3>
+                             <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Danh mục phân bón sử dụng (hoặc dự kiến):</label>
+                                <div class="p-2 border rounded-md min-h-[4rem] bg-white"></div>
+                                <button type="button" class="mt-2 text-sm font-medium text-green-600 hover:text-green-800"><i class="fas fa-plus-circle mr-1"></i>Thêm phân bón từ thư viện</button>
+                            </div>
+                        </div>
+                        <div class="space-y-4 p-4 border rounded-lg bg-slate-50">
+                            <h3 class="font-semibold text-gray-700">B. Quản lý Thuốc BVTV & Sâu bệnh hại</h3>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">1. Danh mục thuốc BVTV trong danh mục cho phép sử dụng:</label>
+                                <div class="p-2 border rounded-md min-h-[4rem] bg-white"></div>
+                                <button type="button" class="mt-2 text-sm font-medium text-green-600 hover:text-green-800"><i class="fas fa-plus-circle mr-1"></i>Thêm từ thư viện</button>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">2. Thành phần sinh vật gây hại đã phát hiện</label>
+                                <div class="p-2 border rounded-md min-h-[4rem] bg-white"></div>
+                                <button type="button" class="mt-2 text-sm font-medium text-green-600 hover:text-green-800"><i class="fas fa-plus-circle mr-1"></i>Thêm SVGH từ thư viện</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-yellow-100 text-yellow-600 rounded-lg mr-3"><i class="fas fa-certificate"></i></div>VIII. Thực hành sản xuất & Chứng nhận</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Tiêu chuẩn áp dụng (GAP)</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-green-600" checked><span class="ml-2 text-sm text-gray-600">VietGap</span></label>
+                                <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">GlobalG.A.P</span></label>
+                                <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">Hữu cơ (Organic)</span></label>
+                                <label class="flex items-center"><input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-green-600"><span class="ml-2 text-sm text-gray-600">Thông thường</span></label>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="certificate-serial" class="block text-sm font-medium text-gray-700 mb-1">Số seri chứng nhận</label>
+                            <input type="text" name="certificate-serial" id="certificate-serial" class="form-input" placeholder="Nhập số seri nếu có">
+                            <label class="block text-sm font-medium text-gray-700 mt-4 mb-1">Tải lên ảnh chụp chứng nhận</label>
+                            <div class="file-input-wrapper h-auto py-4"><input type="file" class="sr-only" id="certificate-upload"><label for="certificate-upload" class="cursor-pointer"><i class="fas fa-cloud-upload-alt text-gray-400 text-2xl"></i><p class="text-sm text-gray-500 mt-1">Bấm để chọn file</p></label></div>
+                        </div>
+                    </div>
+                </div>
+                
+                 <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-orange-100 text-orange-600 rounded-lg mr-3"><i class="fas fa-handshake"></i></div>IX. Thông tin bên thu mua</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div><label for="buyer-name" class="block text-sm font-medium text-gray-700 mb-1">Tên đơn vị</label><input type="text" name="buyer-name" id="buyer-name" class="form-input" placeholder="VD: Công ty ABC"></div>
+                        <div><label for="buyer-rep" class="block text-sm font-medium text-gray-700 mb-1">Người đại diện</label><input type="text" name="buyer-rep" id="buyer-rep" class="form-input" placeholder="VD: Nguyễn Văn B"></div>
+                        <div><label for="packing-code" class="block text-sm font-medium text-gray-700 mb-1">Mã cơ sở đóng gói (nếu có)</label><input type="text" name="packing-code" id="packing-code" class="form-input" placeholder="VD: VN-PACK-001"></div>
+                        <div><label for="buyer-phone" class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label><input type="tel" name="buyer-phone" id="buyer-phone" class="form-input" placeholder="0912345678"></div>
+                        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label for="buyer-province" class="block text-sm font-medium text-gray-700 mb-1">Tỉnh/Thành phố</label><select id="buyer-province" class="form-select"></select></div>
+                            <div><label for="buyer-ward" class="block text-sm font-medium text-gray-700 mb-1">Xã/Phường</label><select id="buyer-ward" class="form-select"></select></div>
+                        </div>
+                        <div class="md:col-span-2"><label for="buyer-street" class="block text-sm font-medium text-gray-700 mb-1">Số nhà, tên đường</label><input type="text" name="buyer-street" id="buyer-street" class="form-input" placeholder="VD: 123 Đường ABC"></div>
+                        <div><label for="buyer-volume" class="block text-sm font-medium text-gray-700 mb-1">Sản lượng đã giao dịch (Tấn/năm)</label><input type="number" step="0.1" name="buyer-volume" id="buyer-volume" class="form-input" placeholder="VD: 50"></div>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-200 pt-8">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-6 flex items-center"><div class="w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-600 rounded-lg mr-3"><i class="fas fa-file-alt"></i></div>X. Ghi chú khác</h2>
+                    <div><label for="other-notes" class="block text-sm font-medium text-gray-700 mb-1">Các nội dung khác</label><textarea id="other-notes" name="other-notes" rows="4" class="form-textarea" placeholder="Ghi chú thêm các thông tin quan trọng khác..."></textarea></div>
+                </div>
+
+                <div class="pt-8 flex justify-end gap-4 border-t">
+                    <button type="button" class="bg-white py-2 px-6 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50">Hủy</button>
+                    <button type="submit" class="inline-flex justify-center py-3 px-8 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-green-700">Lưu Hồ Sơ Thiết Lập</button>
+                </div>
+            </form>
+
+            <div class="border-t-4 border-double border-gray-300 mt-16 pt-12">
+                <div class="text-center mb-10">
+                    <h1 class="text-3xl font-bold text-blue-700">NHẬT KÝ SẢN XUẤT ĐIỆN TỬ</h1>
+                    <p class="text-gray-600 mt-2">Ghi chép các hoạt động canh tác hàng ngày tại vườn <span class="font-semibold font-mono">VT-DL-001</span></p>
+                </div>
+
+                <div x-data="{ tab: 'pesticide' }" class="bg-slate-50 p-4 sm:p-6 rounded-xl border">
+                    <div class="mb-6 flex flex-wrap items-center gap-2 sm:gap-4">
+                        <button @click="tab = 'fertilizer'" :class="{ 'active': tab === 'fertilizer' }" class="tab-button flex items-center">
+                            <i class="fas fa-vial mr-2"></i>Bón phân
+                        </button>
+                        <button @click="tab = 'pesticide'" :class="{ 'active': tab === 'pesticide' }" class="tab-button flex items-center">
+                            <i class="fas fa-spray-can-sparkles mr-2"></i>Phun thuốc BVTV
+                        </button>
+                        <button @click="tab = 'irrigation'" :class="{ 'active': tab === 'irrigation' }" class="tab-button flex items-center">
+                            <i class="fas fa-tint mr-2"></i>Tưới nước
+                        </button>
+                        <button @click="tab = 'harvest'" :class="{ 'active': tab === 'harvest' }" class="tab-button flex items-center">
+                            <i class="fas fa-basket-shopping mr-2"></i>Thu hoạch
+                        </button>
+                         <button @click="tab = 'other'" :class="{ 'active': tab === 'other' }" class="tab-button flex items-center">
+                            <i class="fas fa-tools mr-2"></i>Việc khác
+                        </button>
+                    </div>
+
+                    <div>
+                        <div x-show="tab === 'pesticide'" class="space-y-6">
+                            <div class="p-4 border-2 border-dashed rounded-lg bg-white">
+                                <h3 class="font-semibold text-lg mb-4 text-gray-800">Thêm ghi chép Phun thuốc BVTV mới</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <input type="date" class="form-input" value="2025-07-09">
+                                    <select class="form-select"><option>Lô A1</option><option>Lô B2</option></select>
+                                    <input type="text" class="form-input" placeholder="Tên thuốc BVTV">
+                                    <input type="text" class="form-input" placeholder="Hoạt chất">
+                                    <input type="text" class="form-input" placeholder="Đối tượng phòng trừ">
+                                    <input type="text" class="form-input" placeholder="Liều lượng (g/lít)">
+                                    <input type="number" class="form-input" placeholder="TG Cách ly (ngày)">
+                                    <input type="text" class="form-input" placeholder="Người thực hiện">
+                                    <button class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">Lưu Ghi Chép</button>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto bg-white rounded-lg shadow">
+                                <table class="w-full text-sm text-left text-gray-500">
+                                    <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                                        <tr>
+                                            <th scope="col" class="px-4 py-3">Ngày</th>
+                                            <th scope="col" class="px-4 py-3">Tên thuốc</th>
+                                            <th scope="col" class="px-4 py-3">Liều lượng</th>
+                                            <th scope="col" class="px-4 py-3">TGCL</th>
+                                            <th scope="col" class="px-4 py-3">Người thực hiện</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-b"><td class="px-4 py-3">01/07/2025</td><td class="px-4 py-3 font-medium text-gray-900">Aliette 800WG</td><td class="px-4 py-3">25g/10L</td><td class="px-4 py-3">14 ngày</td><td class="px-4 py-3">Anh Ba</td></tr>
+                                        <tr class="border-b"><td class="px-4 py-3">15/06/2025</td><td class="px-4 py-3 font-medium text-gray-900">Amistar Top 325SC</td><td class="px-4 py-3">10ml/10L</td><td class="px-4 py-3">7 ngày</td><td class="px-4 py-3">Anh Tư</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div x-show="tab === 'fertilizer'" class="space-y-6">
+                             <div class="p-4 border-2 border-dashed rounded-lg bg-white">
+                                <h3 class="font-semibold text-lg mb-4 text-gray-800">Thêm ghi chép Bón phân mới</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <input type="date" class="form-input" value="2025-07-09">
+                                    <select class="form-select"><option>Lô A1</option><option>Lô B2</option></select>
+                                    <input type="text" class="form-input" placeholder="Tên phân bón">
+                                    <input type="text" class="form-input" placeholder="Phương pháp (bón gốc, phun lá)">
+                                    <input type="text" class="form-input" placeholder="Liều lượng (kg/cây)">
+                                    <input type="text" class="form-input" placeholder="Người thực hiện">
+                                    <button class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">Lưu Ghi Chép</button>
+                                </div>
+                            </div>
+                            </div>
+                        <div x-show="tab === 'irrigation'" class="space-y-6">
+                             <div class="p-4 border-2 border-dashed rounded-lg bg-white">
+                                <h3 class="font-semibold text-lg mb-4 text-gray-800">Thêm ghi chép Tưới nước mới</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <input type="date" class="form-input" value="2025-07-09">
+                                    <select class="form-select"><option>Toàn vườn</option><option>Lô A1</option></select>
+                                    <input type="text" class="form-input" placeholder="Phương pháp (tưới nhỏ giọt, phun mưa)">
+                                    <input type="number" class="form-input" placeholder="Thời gian tưới (phút)">
+                                    <input type="text" class="form-input" placeholder="Người thực hiện">
+                                    <button class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">Lưu Ghi Chép</button>
+                                </div>
+                            </div>
+                             </div>
+                        <div x-show="tab === 'harvest'" class="space-y-6">
+                             <div class="p-4 border-2 border-dashed rounded-lg bg-white">
+                                <h3 class="font-semibold text-lg mb-4 text-gray-800">Thêm ghi chép Thu hoạch mới</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <input type="date" class="form-input" value="2025-07-09">
+                                    <select class="form-select"><option>Lô A1</option></select>
+                                    <input type="number" class="form-input" placeholder="Sản lượng (kg)">
+                                    <input type="text" class="form-input" placeholder="Chất lượng/Phân loại">
+                                    <input type="text" class="form-input" placeholder="Người thu hoạch">
+                                    <input type="text" class="form-input" placeholder="Bên thu mua (nếu có)">
+                                    <button class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">Lưu Ghi Chép</button>
+                                </div>
+                            </div>
+                             </div>
+                        <div x-show="tab === 'other'" class="space-y-6">
+                             <div class="p-4 border-2 border-dashed rounded-lg bg-white">
+                                <h3 class="font-semibold text-lg mb-4 text-gray-800">Thêm ghi chép Công việc khác</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <input type="date" class="form-input" value="2025-07-09">
+                                    <input type="text" class="form-input" placeholder="Tên công việc (VD: Tỉa cành, làm cỏ)">
+                                    <div class="lg:col-span-2"><textarea class="form-textarea" rows="1" placeholder="Mô tả chi tiết..."></textarea></div>
+                                    <input type="text" class="form-input" placeholder="Người thực hiện">
+                                    <button class="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition">Lưu Ghi Chép</button>
+                                </div>
+                            </div>
+                             </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    
+    <script>
+        let plotCounter = 2;
+
+        function toggleTreeFields() {
+            const stageSelect = document.getElementById('tree-stage');
+            const ageWrapper = document.getElementById('tree-age-wrapper');
+            const fruitWrapper = document.getElementById('fruit-count-wrapper');
+            const recoveryWrapper = document.getElementById('recovery-wrapper');
+
+            ageWrapper.classList.add('hidden');
+            fruitWrapper.classList.add('hidden');
+            recoveryWrapper.classList.add('hidden');
+
+            if (stageSelect.value === 'non') {
+                ageWrapper.classList.remove('hidden');
+            } else if (stageSelect.value === 'mature') {
+                fruitWrapper.classList.remove('hidden');
+            } else if (stageSelect.value === 'recovery') {
+                recoveryWrapper.classList.remove('hidden');
+            }
+        }
+
+        function toggleRowManagement(input) {
+            const plotDiv = input.closest('[id^="plot-"]');
+            const rowManagement = plotDiv.querySelector('.row-management');
+            const rowsContainer = plotDiv.querySelector('.rows-container');
+            
+            if (input.value && parseInt(input.value) > 0) {
+                rowManagement.classList.remove('hidden');
+                rowsContainer.innerHTML = '';
+                const numRows = parseInt(input.value);
+                for (let i = 1; i <= numRows; i++) {
+                    addRowElement(rowsContainer, i);
+                }
+            } else {
+                rowManagement.classList.add('hidden');
+            }
+            updateLocationSelector();
+        }
+
+        function manageRows(button) {
+            const plotDiv = button.closest('[id^="plot-"]');
+            const rowManagement = plotDiv.querySelector('.row-management');
+            const numRowsInput = plotDiv.querySelector('input[placeholder="VD: 10"]');
+            
+            if (numRowsInput.value && parseInt(numRowsInput.value) > 0) {
+                rowManagement.classList.toggle('hidden');
+            } else {
+                alert('Vui lòng nhập số hàng trước khi quản lý hàng.');
+                numRowsInput.focus();
+            }
+        }
+
+        function addRowElement(container, rowNumber) {
+            const plotId = container.closest('[id^="plot-"]').id;
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'row-item p-3';
+            rowDiv.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <h5 class="font-semibold text-blue-700">Hàng ${rowNumber}</h5>
+                    <button type="button" class="text-red-500 hover:text-red-700" onclick="removeRow(this)">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Số cây</label>
+                        <input type="number" class="form-input text-sm" placeholder="VD: 15">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Khoảng cách (m)</label>
+                        <input type="number" step="0.1" class="form-input text-sm" placeholder="VD: 4.5">
+                    </div>
+                </div>
+            `;
+            container.appendChild(rowDiv);
+        }
+
+        function addRow(button) {
+            const container = button.parentNode.querySelector('.rows-container');
+            const existingRows = container.children.length;
+            addRowElement(container, existingRows + 1);
+            updateLocationSelector();
+        }
+
+        function removeRow(button) {
+            if (confirm('Bạn có chắc muốn xóa hàng này?')) {
+                button.closest('.row-item').remove();
+                updateLocationSelector();
+            }
+        }
+
+        function removePlot(button) {
+            if (confirm('Bạn có chắc muốn xóa lô này?')) {
+                button.closest('[id^="plot-"]').remove();
+                updateLocationSelector();
+            }
+        }
+        
+        function updateLocationSelector() {
+            const selectLocation = document.getElementById('select-location');
+            const currentVal = selectLocation.value;
+            selectLocation.innerHTML = '<option value="">-- Chọn vị trí --</option>';
+
+            document.querySelectorAll('[id^="plot-"]').forEach(plot => {
+                const plotId = plot.id;
+                const plotName = plot.querySelector('input[placeholder*="Số Lô"]').value || `Lô ${plotId.split('-')[1]}`;
+                
+                const plotOption = document.createElement('option');
+                plotOption.value = plotId;
+                plotOption.textContent = `${plotName} (Toàn bộ)`;
+                selectLocation.appendChild(plotOption);
+                
+                plot.querySelectorAll('.rows-container .row-item').forEach((row, index) => {
+                    const rowOption = document.createElement('option');
+                    rowOption.value = `${plotId}-row-${index + 1}`;
+                    rowOption.textContent = `${plotName} - Hàng ${index + 1}`;
+                    selectLocation.appendChild(rowOption);
+                });
+            });
+            selectLocation.value = currentVal;
+        }
+
+        function updateTreeForm() {
+            const selectLocation = document.getElementById('select-location');
+            const treeLocationInfo = document.getElementById('tree-location-info');
+            const selectedOption = selectLocation.options[selectLocation.selectedIndex];
+            
+            if (selectedOption.value) {
+                treeLocationInfo.value = selectedOption.text;
+            } else {
+                treeLocationInfo.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('add-plot-btn').addEventListener('click', () => {
+                const plotList = document.getElementById('plot-list');
+                const newPlot = document.createElement('div');
+                newPlot.className = 'p-4 border-2 border-blue-200 rounded-lg bg-blue-50';
+                newPlot.id = `plot-${plotCounter}`;
+                newPlot.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <input type="text" class="form-input font-semibold text-lg w-1/3" placeholder="Số Lô (VD: A${plotCounter})" value="Lô A${plotCounter}">
+                        <button type="button" class="text-red-500 hover:text-red-700 ml-4 flex-shrink-0" onclick="removePlot(this)">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Diện tích (ha)</label><input type="number" step="0.1" class="form-input" placeholder="VD: 1.2"></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Số cây</label><input type="number" class="form-input" placeholder="VD: 150"></div>
+                        <div><label class="block text-sm font-medium text-gray-700 mb-1">Số hàng <span class="text-gray-500">(tùy chọn)</span></label><input type="number" class="form-input" placeholder="VD: 10" onchange="toggleRowManagement(this)"></div>
+                        <div class="flex items-end"><button type="button" class="w-full bg-blue-600 text-white py-2 px-3 rounded-lg text-sm hover:bg-blue-700 transition" onclick="manageRows(this)"><i class="fas fa-list mr-1"></i>Quản lý hàng</button></div>
+                    </div>
+                    
+                    <div class="row-management hidden mt-4 p-4 border border-blue-300 rounded-lg bg-blue-25">
+                        <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                            <i class="fas fa-grip-lines text-blue-600 mr-2"></i>Quản lý Hàng trong Lô A${plotCounter}
+                        </h4>
+                        <div class="rows-container space-y-3"></div>
+                        <button type="button" class="mt-3 w-full border-2 border-dashed border-blue-300 text-blue-600 rounded-lg py-2 hover:border-blue-500 hover:text-blue-700 transition" onclick="addRow(this)">
+                            <i class="fas fa-plus mr-2"></i>Thêm hàng
+                        </button>
+                    </div>
+                `;
+                plotList.appendChild(newPlot);
+                plotCounter++;
+                updateLocationSelector();
+            });
+
+            toggleTreeFields();
+            updateLocationSelector();
+        });
+    </script>
+</body>
+</html>

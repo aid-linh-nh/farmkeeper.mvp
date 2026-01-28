@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tạo Mới KPI - FARMKEEPER</title>
+
+    <!-- Noto Sans Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .logo-color {
+        color: #69bd70;
+      }
+      /* Simple toggle switch styles */
+      .toggle-checkbox {
+        position: absolute;
+        left: 0;
+        opacity: 0; /* Hide the default checkbox */
+      }
+      .toggle-label {
+        display: block;
+        width: 56px; /* W-14 */
+        height: 32px; /* H-8 */
+        background-color: #d1d5db; /* gray-300 */
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .toggle-indicator {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 28px; /* W-7 */
+        height: 28px; /* H-7 */
+        background-color: #fff;
+        border-radius: 9999px;
+        transition: transform 0.2s;
+      }
+      .toggle-checkbox:checked + .toggle-label {
+        background-color: #22c55e; /* green-500 */
+      }
+      .toggle-checkbox:checked + .toggle-label .toggle-indicator {
+        transform: translateX(24px); /* (56px - 2px*2 - 28px) = 24px */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800 min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg p-6 flex flex-col">
+      <!-- Logo -->
+      <div class="flex items-center mb-10">
+        <h1 class="text-2xl font-bold logo-color">FARMKEEPER</h1>
+      </div>
+
+      <!-- Menu -->
+      <nav class="flex-grow">
+        <ul>
+          <li class="mb-2">
+            <span class="block text-gray-500 font-medium text-sm uppercase"
+              >Quản lý kỹ thuật</span
+            >
+            <ul>
+              <li class="mt-2">
+                <a
+                  href="#"
+                  class="flex items-center p-2 rounded-md bg-green-500/20 text-green-500 font-semibold"
+                >
+                  <i data-lucide="bar-chart-2" class="w-4 h-4 mr-2"></i>
+                  <span>Quản lý KPIs</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-grow p-6 lg:p-8">
+      <!-- Header -->
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Tạo Mới KPI</h1>
+        <p class="text-gray-600 mt-1">
+          Điền thông tin chi tiết để thêm một KPI mới vào thư viện.
+        </p>
+      </div>
+
+      <!-- Create/Edit KPI Form -->
+      <div id="kpi-form-container" class="bg-white p-8 rounded-xl shadow-md">
+        <form id="kpi-form">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Column 1 -->
+            <div>
+              <div>
+                <label
+                  for="kpi_name"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >Tên KPI</label
+                >
+                <input
+                  type="text"
+                  id="kpi_name"
+                  placeholder="VD: Doanh số Vật tư"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+              <div class="mt-6">
+                <label
+                  for="kpi_id"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >Mã KPI (System ID)</label
+                >
+                <input
+                  type="text"
+                  id="kpi_id"
+                  placeholder="VD: kpi_sales (không dấu, không khoảng trắng)"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+              <div class="mt-6">
+                <label
+                  for="kpi_group"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >Nhóm Chiến Lược</label
+                >
+                <select
+                  id="kpi_group"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option>I. Hiệu quả Chuỗi Giá trị</option>
+                  <option>II. Tăng trưởng & Dịch vụ</option>
+                  <option>III. Vận hành & Năng lực</option>
+                  <option value="other">Khác</option>
+                </select>
+                <input
+                  type="text"
+                  id="kpi_group_other"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 mt-2 hidden"
+                  placeholder="Nhập nhóm chiến lược khác"
+                />
+              </div>
+              <div class="mt-6">
+                <label
+                  for="kpi_description"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >Mô tả chi tiết</label
+                >
+                <textarea
+                  id="kpi_description"
+                  rows="5"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Giải thích rõ mục đích và cách đo lường của KPI..."
+                ></textarea>
+              </div>
+            </div>
+            <!-- Column 2 -->
+            <div>
+              <div>
+                <label
+                  for="kpi_unit"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >Đơn vị tính</label
+                >
+                <select
+                  id="kpi_unit"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option>VNĐ</option>
+                  <option>%</option>
+                  <option>Điểm</option>
+                  <option>tấn/ha</option>
+                  <option>Vườn</option>
+                  <option>Giờ</option>
+                  <option value="other">Khác</option>
+                </select>
+                <input
+                  type="text"
+                  id="kpi_unit_other"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 mt-2 hidden"
+                  placeholder="Nhập đơn vị tính khác"
+                />
+              </div>
+              <div class="mt-6">
+                <label
+                  for="kpi_source"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >Nguồn Dữ liệu</label
+                >
+                <select
+                  id="kpi_source"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option>Hệ thống ERP / Bán hàng</option>
+                  <option>Module Quản lý Chất lượng (QC)</option>
+                  <option>Module Dự báo & Quản lý Thu hoạch</option>
+                  <option>Nhật ký thu hoạch</option>
+                  <option>Hệ thống CRM / Hợp đồng</option>
+                  <option>Module Khảo sát</option>
+                  <option>Checklist đánh giá tại vườn</option>
+                  <option>Nhật ký công việc & Báo cáo</option>
+                  <option>Hệ thống LMS / Đào tạo</option>
+                </select>
+              </div>
+              <div class="mt-6">
+                <label
+                  for="kpi_direction"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                  >Chiều hướng đo lường</label
+                >
+                <select
+                  id="kpi_direction"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option>Càng cao càng tốt</option>
+                  <option>Càng thấp càng tốt</option>
+                  <option value="other">Khác</option>
+                </select>
+                <input
+                  type="text"
+                  id="kpi_direction_other"
+                  class="w-full bg-gray-50 border-gray-300 text-gray-900 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 mt-2 hidden"
+                  placeholder="Nhập chiều hướng đo lường khác"
+                />
+              </div>
+              <div class="mt-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Trạng thái</label
+                >
+                <!-- Re-implemented toggle switch with better styling and logic -->
+                <div class="relative inline-block">
+                  <input
+                    type="checkbox"
+                    id="kpi_status"
+                    class="toggle-checkbox"
+                    checked
+                  />
+                  <label for="kpi_status" class="toggle-label relative">
+                    <span class="toggle-indicator"></span>
+                  </label>
+                </div>
+                <span
+                  id="status-label"
+                  class="ml-4 text-sm font-medium text-gray-900"
+                  >Đang hoạt động</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Action Buttons -->
+          <div class="mt-8 flex justify-end space-x-4">
+            <button
+              type="button"
+              id="cancel-btn"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-md"
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md"
+            >
+              Lưu KPI
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Custom Modal for Messages (instead of alert) -->
+      <div
+        id="modal"
+        class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden z-50"
+      >
+        <div
+          class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center"
+        >
+          <p
+            id="modal-message"
+            class="text-gray-800 text-lg font-semibold mb-4"
+          ></p>
+          <button
+            id="modal-ok-btn"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md"
+          >
+            OK
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize lucide icons
+      lucide.createIcons();
+
+      // Get elements
+      const kpiForm = document.getElementById('kpi-form');
+      const cancelBtn = document.getElementById('cancel-btn');
+      const kpiStatusCheckbox = document.getElementById('kpi_status');
+      const statusLabel = document.getElementById('status-label');
+      const modal = document.getElementById('modal');
+      const modalMessage = document.getElementById('modal-message');
+      const modalOkBtn = document.getElementById('modal-ok-btn');
+
+      // Get elements for 'Other' option
+      const kpiGroupSelect = document.getElementById('kpi_group');
+      const kpiGroupOtherInput = document.getElementById('kpi_group_other');
+      const kpiUnitSelect = document.getElementById('kpi_unit');
+      const kpiUnitOtherInput = document.getElementById('kpi_unit_other');
+      const kpiDirectionSelect = document.getElementById('kpi_direction');
+      const kpiDirectionOtherInput = document.getElementById(
+        'kpi_direction_other'
+      );
+
+      // Function to show the custom modal
+      function showModal(message) {
+        modalMessage.textContent = message;
+        modal.classList.remove('hidden');
+      }
+
+      // Function to hide the custom modal
+      function hideModal() {
+        modal.classList.add('hidden');
+      }
+
+      // Function to handle showing/hiding the 'Other' input field
+      function handleOtherOption(selectElement, otherInputElement) {
+        if (selectElement.value === 'other') {
+          otherInputElement.classList.remove('hidden');
+          otherInputElement.required = true;
+        } else {
+          otherInputElement.classList.add('hidden');
+          otherInputElement.required = false;
+          otherInputElement.value = '';
+        }
+      }
+
+      // Event listeners for select elements
+      kpiGroupSelect.addEventListener('change', () => {
+        handleOtherOption(kpiGroupSelect, kpiGroupOtherInput);
+      });
+
+      kpiUnitSelect.addEventListener('change', () => {
+        handleOtherOption(kpiUnitSelect, kpiUnitOtherInput);
+      });
+
+      kpiDirectionSelect.addEventListener('change', () => {
+        handleOtherOption(kpiDirectionSelect, kpiDirectionOtherInput);
+      });
+
+      // Event listener for form submission
+      kpiForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        // In a real application, you would collect form data and send it to the server
+        const kpiGroupValue =
+          kpiGroupSelect.value === 'other'
+            ? kpiGroupOtherInput.value
+            : kpiGroupSelect.value;
+        const kpiUnitValue =
+          kpiUnitSelect.value === 'other'
+            ? kpiUnitOtherInput.value
+            : kpiUnitSelect.value;
+        const kpiDirectionValue =
+          kpiDirectionSelect.value === 'other'
+            ? kpiDirectionOtherInput.value
+            : kpiDirectionSelect.value;
+
+        console.log('Form submitted with values:');
+        console.log('Nhóm chiến lược:', kpiGroupValue);
+        console.log('Đơn vị tính:', kpiUnitValue);
+        console.log('Chiều hướng đo lường:', kpiDirectionValue);
+
+        showModal('Đã lưu KPI thành công!');
+      });
+
+      // Event listener for cancel button
+      cancelBtn.addEventListener('click', function () {
+        // For a real app, you might redirect to the KPI list page
+        showModal('Bạn đã hủy thao tác tạo mới.');
+        kpiForm.reset();
+        // Also hide 'Other' fields on reset
+        handleOtherOption(kpiGroupSelect, kpiGroupOtherInput);
+        handleOtherOption(kpiUnitSelect, kpiUnitOtherInput);
+        handleOtherOption(kpiDirectionSelect, kpiDirectionOtherInput);
+      });
+
+      // Event listener for the modal's OK button
+      modalOkBtn.addEventListener('click', function () {
+        hideModal();
+      });
+
+      // Event listener for the toggle switch to update the label
+      kpiStatusCheckbox.addEventListener('change', function () {
+        if (this.checked) {
+          statusLabel.textContent = 'Đang hoạt động';
+        } else {
+          statusLabel.textContent = 'Không hoạt động';
+        }
+      });
+    </script>
+  </body>
+</html>

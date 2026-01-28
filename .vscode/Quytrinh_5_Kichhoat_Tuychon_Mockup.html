@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kích hoạt Quy trình Sầu riêng Dona - Tây Nguyên</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+            line-height: 1.5;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #7c2d12 0%, #dc2626 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="rgba(255,255,255,0.1)"><circle cx="50" cy="50" r="40"/><path d="M30,50 Q50,30 70,50 Q50,70 30,50"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .setup-options {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .option-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .option-card:hover {
+            border-color: #dc2626;
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.1);
+        }
+        
+        .option-card.selected {
+            border-color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2 0%, #fff5f5 100%);
+        }
+        
+        .option-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .option-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .option-new .option-icon {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+        
+        .option-existing .option-icon {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            color: white;
+        }
+        
+        .option-info h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .option-info p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .radio-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .option-card.selected .radio-indicator {
+            border-color: #dc2626;
+            background: #dc2626;
+        }
+        
+        .option-card.selected .radio-indicator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+        }
+        
+        .stage-selector {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .stage-selector.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .stage-selector h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .stages-grid {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .stage-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .stage-option:hover {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .stage-option.selected {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .stage-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .stage-1 { background: #dc2626; }
+        .stage-2 { background: #16a34a; }
+        .stage-3 { background: #ea580c; }
+        .stage-4 { background: #9333ea; }
+        .stage-5 { background: #0891b2; }
+        .stage-6 { background: #7c2d12; }
+        
+        .stage-details h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stage-details p {
+            font-size: 0.8rem;
+            color: #6b7280;
+            line-height: 1.3;
+        }
+        
+        .farm-info {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .farm-info.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .farm-info h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 0.8rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .preview-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .preview-section.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .preview-header h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .timeline-preview {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .timeline-item.active {
+            border-color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2 0%, #fff5f5 100%);
+        }
+        
+        .timeline-item.completed {
+            border-color: #16a34a;
+            background: linear-gradient(135deg, #f0fdf4 0%, #f7fee7 100%);
+            opacity: 0.7;
+        }
+        
+        .timeline-status {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+        }
+        
+        .timeline-item.completed .timeline-status {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .timeline-item.active .timeline-status {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .activation-footer {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .btn-activate-final {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+            disabled: false;
+        }
+        
+        .btn-activate-final:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+        }
+        
+        .btn-activate-final:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .summary-info {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .summary-info strong {
+            color: #1f2937;
+        }
+        
+        .back-button {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: #4b5563;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.25rem;
+            }
+            
+            .option-card {
+                padding: 1rem;
+            }
+            
+            .option-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.8rem;
+            }
+            
+            .option-icon {
+                align-self: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-button" onclick="goBack()">← Quay lại quy trình</button>
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>🚀 Kích hoạt Quy trình Canh tác Sầu riêng - Tây Nguyên</h1>
+                <p>Tùy chọn Giai đoạn phù hợp với tình trạng hiện tại của vườn sầu riêng</p>
+            </div>
+        </div>
+
+        <!-- Setup Options -->
+        <div class="setup-options">
+            <div class="option-card option-new" onclick="selectOption('new')">
+                <div class="radio-indicator"></div>
+                <div class="option-header">
+                    <div class="option-icon">🌱</div>
+                    <div class="option-info">
+                        <h3>Thiết lập trồng mới</h3>
+                        <p>Bắt đầu từ đầu với kế hoạch trồng mới hoàn toàn. Áp dụng đầy đủ từ giai đoạn chuẩn bị đất đến thu hoạch.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="option-card option-existing" onclick="selectOption('existing')">
+                <div class="radio-indicator"></div>
+                <div class="option-header">
+                    <div class="option-icon">🌳</div>
+                    <div class="option-info">
+                        <h3>Vườn/Farm đang canh tác</h3>
+                        <p>Áp dụng vào vườn/Farm sầu riêng đang hoạt động. Chọn giai đoạn hiện tại để tùy chỉnh quy trình phù hợp.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage Selector for Existing Farm -->
+        <div class="stage-selector" id="stageSelector">
+            <h4>🎯 Chọn giai đoạn hiện tại của vườn:</h4>
+            <div class="stages-grid">
+                <div class="stage-option" onclick="selectStage(1)">
+                    <div class="stage-number stage-1">1</div>
+                    <div class="stage-details">
+                        <h5>Thiết lập trồng mới</h5>
+                        <p>Đang chuẩn bị đất, chọn giống hoặc mới trồng (0-6 tháng)</p>
+                    </div>
+                </div>
+
+                <div class="stage-option" onclick="selectStage(2)">
+                    <div class="stage-number stage-2">2</div>
+                    <div class="stage-details">
+                        <h5>Chăm sóc cây con</h5>
+                        <p>Cây 6 tháng - 2 tuổi, đang phát triển thân lá</p>
+                    </div>
+                </div>
+
+                <div class="stage-option" onclick="selectStage(3)">
+                    <div class="stage-number stage-3">3</div>
+                    <div class="stage-details">
+                        <h5>Dưỡng cây chuẩn bị ra hoa</h5>
+                        <p>Cây 2-4 tuổi, tích lũy dinh dưỡng chưa ra hoa</p>
+                    </div>
+                </div>
+
+                <div class="stage-option" onclick="selectStage(4)">
+                    <div class="stage-number stage-4">4</div>
+                    <div class="stage-details">
+                        <h5>Ra hoa</h5>
+                        <p>Cây đang ra hoa hoặc vừa ra hoa (T12-T2)</p>
+                    </div>
+                </div>
+
+                <div class="stage-option" onclick="selectStage(5)">
+                    <div class="stage-number stage-5">5</div>
+                    <div class="stage-details">
+                        <h5>Chăm sóc trái</h5>
+                        <p>Trái đang phát triển, from đậu trái đến gần chín (T2-T5)</p>
+                    </div>
+                </div>
+
+                <div class="stage-option" onclick="selectStage(6)">
+                    <div class="stage-number stage-6">6</div>
+                    <div class="stage-details">
+                        <h5>Thu hoạch</h5>
+                        <p>Chuẩn bị thu hoạch hoặc đang trong mùa thu hoạch (T5-T8)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Farm Information Form -->
+        <div class="farm-info" id="farmInfo">
+            <h4>📊 Thông tin vườn Dona của bạn:</h4>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="farmName">Tên vườn/farm:</label>
+                    <input type="text" id="farmName" placeholder="VD: Vườn Dona Tây Nguyên">
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Vị trí:</label>
+                    <select id="location">
+                        <option value="">Chọn khu vực</option>
+                        <option value="daklak">Đắk Lắk</option>
+                        <option value="daknong">Đắk Nông</option>
+                        <option value="gialai">Gia Lai</option>
+                        <option value="kontum">Kon Tum</option>
+                        <option value="lamdong">Lâm Đồng</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="area">Diện tích (ha):</label>
+                    <input type="number" id="area" placeholder="VD: 2.5" step="0.1" min="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="treeCount">Số cây hiện tại:</label>
+                    <input type="number" id="treeCount" placeholder="VD: 275">
+                </div>
+
+                <div class="form-group">
+                    <label for="treeAge">Tuổi cây (năm):</label>
+                    <input type="number" id="treeAge" placeholder="VD: 3.5" step="0.5" min="0.5">
+                </div>
+
+                <div class="form-group">
+                    <label for="varietyConfirm">Giống Dona xác nhận:</label>
+                    <select id="varietyConfirm">
+                        <option value="">Chọn tình trạng</option>
+                        <option value="confirmed">Đã xác nhận Dona Thai</option>
+                        <option value="likely">Có thể là Dona</option>
+                        <option value="unknown">Chưa xác định</option>
+                        <option value="mixed">Trộn nhiều giống</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="preview-section" id="previewSection">
+            <div class="preview-header">
+                <span>👁️</span>
+                <h4>Xem trước timeline tùy chỉnh:</h4>
+            </div>
+            <div class="timeline-preview" id="timelinePreview">
+                <!-- Timeline items will be generated here -->
+            </div>
+        </div>
+
+        <!-- Activation Footer -->
+        <div class="activation-footer">
+            <div class="summary-info" id="summaryInfo">
+                <strong>📋 Tóm tắt:</strong> Chưa chọn tùy chọn nào
+            </div>
+            <button class="btn-activate-final" id="activateBtn" onclick="finalActivate()" disabled>
+                🚀 Kích hoạt Quy trình Dona
+            </button>
+            <p style="font-size: 0.8rem; color: #6b7280; margin-top: 0.5rem;">
+                Hệ thống sẽ tạo lịch nhắc việc, cảnh báo thời tiết và kết nối chuyên gia Tây Nguyên
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let selectedOption = '';
+        let selectedStage = 0;
+        
+        const stageNames = [
+            '',
+            'Thiết lập trồng mới',
+            'Chăm sóc cây con',
+            'Dưỡng cây chuẩn bị ra hoa',
+            'Ra hoa',
+            'Chăm sóc trái',
+            'Thu hoạch'
+        ];
+
+        function goBack() {
+            if (confirm('Bạn có chắc muốn quay lại? Các thông tin đã nhập sẽ bị mất.')) {
+                window.history.back();
+            }
+        }
+
+        function selectOption(option) {
+            selectedOption = option;
+            
+            // Update UI
+            document.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`.option-${option}`).classList.add('selected');
+            
+            // Show/hide stage selector
+            const stageSelector = document.getElementById('stageSelector');
+            const farmInfo = document.getElementById('farmInfo');
+            
+            if (option === 'existing') {
+                stageSelector.classList.add('show');
+                farmInfo.classList.add('show');
+            } else {
+                stageSelector.classList.remove('show');
+                farmInfo.classList.add('show');
+                selectedStage = 1; // Always start from stage 1 for new setup
+                updatePreview();
+            }
+            
+            updateSummary();
+        }
+
+        function selectStage(stage) {
+            selectedStage = stage;
+            
+            // Update UI
+            document.querySelectorAll('.stage-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.querySelector(`.stage-option:nth-child(${stage})`).classList.add('selected');
+            
+            updatePreview();
+            updateSummary();
+        }
+
+        function updatePreview() {
+            const previewSection = document.getElementById('previewSection');
+            const timelinePreview = document.getElementById('timelinePreview');
+            
+            if (!selectedOption || !selectedStage) return;
+            
+            previewSection.classList.add('show');
+            
+            let timelineHTML = '';
+            
+            for (let i = 1; i <= 6; i++) {
+                let status = '';
+                let statusText = '';
+                
+                if (selectedOption === 'new') {
+                    if (i === 1) {
+                        status = 'active';
+                        statusText = 'Bắt đầu';
+                    } else {
+                        statusText = 'Chờ';
+                    }
+                } else {
+                    if (i < selectedStage) {
+                        status = 'completed';
+                        statusText = 'Hoàn thành';
+                    } else if (i === selectedStage) {
+                        status = 'active';
+                        statusText = 'Hiện tại';
+                    } else {
+                        statusText = 'Tiếp theo';
+                    }
+                }
+                
+                timelineHTML += `
+                    <div class="timeline-item ${status}">
+                        <div class="timeline-status">${statusText}</div>
+                        <div class="stage-number stage-${i}">${i}</div>
+                        <div class="stage-details">
+                            <h5>${stageNames[i]}</h5>
+                            <p>${getStageDescription(i)}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            timelinePreview.innerHTML = timelineHTML;
+        }
+
+        function getStageDescription(stage) {
+            const descriptions = [
+                '',
+                'Chuẩn bị đất bazan, chọn giống và trồng cây',
+                'Chăm sóc cây non, tạo hình và phòng bệnh',
+                'Bón phân tăng trưởng, chuẩn bị ra hoa',
+                'Hỗ trợ thụ phấn, chăm sóc hoa',
+                'Tỉa trái, bón phân chuyên biệt cho trái',
+                'Thu hoạch, phân loại và tiêu thụ'
+            ];
+            return descriptions[stage];
+        }
+
+        function updateSummary() {
+            const summaryInfo = document.getElementById('summaryInfo');
+            const activateBtn = document.getElementById('activateBtn');
+            
+            if (!selectedOption) {
+                summaryInfo.innerHTML = '<strong>📋 Tóm tắt:</strong> Chưa chọn tùy chọn nào';
+                activateBtn.disabled = true;
+                return;
+            }
+            
+            let summary = '';
+            if (selectedOption === 'new') {
+                summary = '<strong>📋 Tóm tắt:</strong> Thiết lập trồng mới - Bắt đầu từ giai đoạn 1 (Thiết lập trồng mới)';
+            } else if (selectedStage > 0) {
+                summary = `<strong>📋 Tóm tắt:</strong> Vườn hiện tại ở giai đoạn ${selectedStage} (${stageNames[selectedStage]})`;
+            }
+            
+            summaryInfo.innerHTML = summary;
+            activateBtn.disabled = !selectedOption || (selectedOption === 'existing' && !selectedStage);
+        }
+
+        function finalActivate() {
+            // Get form data
+            const farmName = document.getElementById('farmName').value || 'Vườn Dona của tôi';
+            const location = document.getElementById('location').value;
+            const area = document.getElementById('area').value;
+            const treeCount = document.getElementById('treeCount').value;
+            const treeAge = document.getElementById('treeAge').value;
+            const varietyConfirm = document.getElementById('varietyConfirm').value;
+            
+            // Validate required fields for existing farms
+            if (selectedOption === 'existing') {
+                if (!location || !area || !treeAge) {
+                    alert('⚠️ Vui lòng điền đầy đủ thông tin: Vị trí, Diện tích và Tuổi cây');
+                    return;
+                }
+            }
+            
+            // Simulate activation
+            const confirmMessage = `🚀 Xác nhận kích hoạt quy trình:\n\n` +
+                `📝 Tên vườn: ${farmName}\n` +
+                `📍 Vị trí: ${location ? getLocationName(location) : 'Chưa chọn'}\n` +
+                `📏 Diện tích: ${area ? area + ' ha' : 'Chưa nhập'}\n` +
+                `🌳 Tuổi cây: ${treeAge ? treeAge + ' năm' : 'Chưa nhập'}\n` +
+                `🎯 Bắt đầu từ: Giai đoạn ${selectedStage} - ${stageNames[selectedStage]}\n\n` +
+                `Hệ thống sẽ:\n` +
+                `✅ Tạo lịch công việc cá nhân\n` +
+                `✅ Cảnh báo thời tiết Tây Nguyên\n` +
+                `✅ Kết nối chuyên gia địa phương\n` +
+                `✅ Theo dõi tiến độ và chi phí\n\n` +
+                `Bạn có muốn tiếp tục?`;
+            
+            if (confirm(confirmMessage)) {
+                // Show loading state
+                const btn = document.getElementById('activateBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '⏳ Đang kích hoạt...';
+                btn.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    alert(`✅ Kích hoạt thành công!\n\n🎉 Chào mừng bạn đến với hệ thống Dona - Tây Nguyên!\n\n📱 Tính năng đã kích hoạt:\n• Dashboard theo dõi tiến độ\n• Lịch nhắc việc thông minh\n• Cảnh báo thời tiết tự động\n• Hotline chuyên gia: 1900-DONA\n• Kết nối thị trường xuất khẩu\n\n📧 Link truy cập đã gửi về email của bạn!`);
+                    
+                    // Redirect to dashboard (simulated)
+                    setTimeout(() => {
+                        window.location.href = '#dashboard';
+                    }, 2000);
+                }, 2000);
+            }
+        }
+
+        function getLocationName(code) {
+            const locations = {
+                'daklak': 'Đắk Lắk',
+                'daknong': 'Đắk Nông', 
+                'gialai': 'Gia Lai',
+                'kontum': 'Kon Tum',
+                'lamdong': 'Lâm Đồng'
+            };
+            return locations[code] || code;
+        }
+
+        // Auto-calculate tree count when area changes
+        document.getElementById('area').addEventListener('input', function() {
+            const area = parseFloat(this.value);
+            if (area > 0) {
+                const treeCountField = document.getElementById('treeCount');
+                if (!treeCountField.value) {
+                    // 110 trees per hectare for Dona
+                    treeCountField.value = Math.round(area * 110);
+                }
+            }
+        });
+
+        // Form validation
+        document.querySelectorAll('#farmInfo input, #farmInfo select').forEach(field => {
+            field.addEventListener('input', updateSummary);
+        });
+    </script>
+</body>
+</html>

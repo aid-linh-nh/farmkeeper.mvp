@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý công việc hàng ngày - Vườn Dona</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            line-height: 1.5;
+            color: #1f2937;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .header-info h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header-meta {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-light {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-light:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            color: white;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--card-color, #3b82f6);
+        }
+        
+        .stats-card.today { --card-color: #16a34a; }
+        .stats-card.pending { --card-color: #ea580c; }
+        .stats-card.team { --card-color: #8b5cf6; }
+        
+        .stats-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-title {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .stats-icon {
+            font-size: 1.5rem;
+        }
+        
+        .stats-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .stats-change {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .stats-change.positive { color: #16a34a; }
+        .stats-change.negative { color: #dc2626; }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+        
+        .tasks-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-tab.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .task-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .task-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 1.2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .task-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .task-item.urgent {
+            border-left: 4px solid #dc2626;
+            background: linear-gradient(90deg, #fef2f2 0%, white 10%);
+        }
+        
+        .task-item.in-progress {
+            border-left: 4px solid #ea580c;
+            background: linear-gradient(90deg, #fff7ed 0%, white 10%);
+        }
+        
+        .task-item.completed {
+            border-left: 4px solid #16a34a;
+            background: linear-gradient(90deg, #f0fdf4 0%, white 10%);
+            opacity: 0.8;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.3rem;
+        }
+        
+        .task-stage {
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .task-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .task-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .task-description {
+            color: #4b5563;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+        
+        .task-assignment {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .assigned-user {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            color: #1f2937;
+            font-size: 0.9rem;
+        }
+        
+        .user-role {
+            font-size: 0.7rem;
+            color: #6b7280;
+        }
+        
+        .task-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-progress {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+        
+        .status-completed {
+            background: #d1fae5;
+            color: #166534;
+        }
+        
+        .status-overdue {
+            background: #fecaca;
+            color: #991b1b;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+        
+        .sidebar {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .team-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .team-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .team-list {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .team-member:hover {
+            background: #f3f4f6;
+        }
+        
+        .member-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+        
+        .status-online { background: #16a34a; }
+        .status-away { background: #ea580c; }
+        .status-offline { background: #6b7280; }
+        
+        .notifications-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .notification-item {
+            display: flex;
+            gap: 0.8rem;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .notification-item:hover {
+            background: #f9fafb;
+        }
+        
+        .notification-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .notif-urgent { background: #fecaca; color: #dc2626; }
+        .notif-info { background: #dbeafe; color: #2563eb; }
+        .notif-success { background: #d1fae5; color: #16a34a; }
+        
+        .notification-content {
+            flex: 1;
+        }
+        
+        .notification-title {
+            font-weight: 500;
+            color: #1f2937;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .notification-text {
+            color: #6b7280;
+            font-size: 0.8rem;
+            line-height: 1.3;
+        }
+        
+        .notification-time {
+            color: #9ca3af;
+            font-size: 0.7rem;
+            margin-top: 0.3rem;
+        }
+        
+        .floating-add-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(22, 163, 74, 0.3);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .floating-add-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(22, 163, 74, 0.4);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0.25rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .btn-cancel {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+            transition: width 0.3s ease;
+        }
+        
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: -1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-meta {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-assignment {
+                flex-direction: column;
+                gap: 0.8rem;
+                align-items: flex-start;
+            }
+            
+            .task-actions {
+                justify-content: flex-start;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal {
+                width: 95%;
+                padding: 1.5rem;
+            }
+            
+            .floating-add-btn {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-info">
+                    <h1>🌱 Quản lý công việc hàng ngày - Vườn Dona</h1>
+                    <div class="header-meta">
+                        <span>📍 Đắk Lắk, 2.5 ha</span>
+                        <span>📅 Thứ Hai, 27/01/2025</span>
+                        <span>🌤️ 28°C, Nắng nhẹ</span>
+                        <span>⏰ Giai đoạn 1: Thiết lập trồng mới</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-light" onclick="openReports()">
+                        📊 Báo cáo
+                    </button>
+                    <button class="btn btn-light" onclick="openCalendar()">
+                        📅 Lịch làm việc
+                    </button>
+                    <button class="btn btn-primary" onclick="openAssignTask()">
+                        ➕ Giao việc mới
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard-grid">
+            <div class="stats-card today">
+                <div class="stats-header">
+                    <span class="stats-title">Công việc hôm nay</span>
+                    <span class="stats-icon">📋</span>
+                </div>
+                <div class="stats-number">8</div>
+                <div class="stats-label">Đã hoàn thành: 3/8</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 37.5%"></div>
+                </div>
+                <div class="stats-change positive">+2 so với hôm qua</div>
+            </div>
+            
+            <div class="stats-card pending">
+                <div class="stats-header">
+                    <span class="stats-title">Đang chờ xử lý</span>
+                    <span class="stats-icon">⏳</span>
+                </div>
+                <div class="stats-number">12</div>
+                <div class="stats-label">Cần giao việc</div>
+                <div class="stats-change negative">+4 từ tuần trước</div>
+            </div>
+            
+            <div class="stats-card team">
+                <div class="stats-header">
+                    <span class="stats-title">Đội ngũ hoạt động</span>
+                    <span class="stats-icon">👥</span>
+                </div>
+                <div class="stats-number">6/8</div>
+                <div class="stats-label">Thành viên online</div>
+                <div class="stats-change positive">Hiệu suất tốt</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Tasks Section -->
+            <div class="tasks-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        📋 Danh sách công việc
+                    </h2>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" onclick="filterTasks('today')">Hôm nay</button>
+                        <button class="filter-tab" onclick="filterTasks('week')">Tuần này</button>
+                        <button class="filter-tab" onclick="filterTasks('overdue')">Quá hạn</button>
+                        <button class="filter-tab" onclick="filterTasks('all')">Tất cả</button>
+                    </div>
+                </div>
+
+                <div class="task-list">
+                    <!-- Urgent Task -->
+                    <div class="task-item urgent">
+                        <div class="task-header">
+                            <div class="task-info">
+                                <div class="task-title">🚨 Khảo sát độ pH đất bazan - Khu vực A</div>
+                                <div class="task-stage">Giai đoạn 1: Thiết lập trồng mới</div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-meta">
+                            <div class="task-meta-item">
+                                <span>⏰</span>
+                                <span>Hạn: Hôm nay 17:00</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>📍</span>
+                                <span>Khu A1-A3 (0.8 ha)</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>🎯</span>
+                                <span>Độ ưu tiên: Khẩn cấp</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>💰</span>
+                                <span>Chi phí: 700k</span>
+                            </div>
+                        </div>
+                        
+                        <div class="task-description">
+                            Đo pH tại 15 điểm khác nhau, lấy mẫu đất sâu 30cm để phân tích hàm lượng Al3+. Ghi chép tọa độ GPS từng điểm đo.
+                        </div>
+                        
+                        <div class="task-assignment">
+                            <div class="assigned-user">
+                                <div class="user-avatar">AN</div>
+                                <div class="user-info">
+                                    <div class="user-name">Nguyễn Văn An</div>
+                                    <div class="user-role">Kỹ thuật viên đất</div>
+                                </div>
+                            </div>
+                            <div class="task-status status-overdue">QUÁ HẠN</div>
+                        </div>
+                        
+                        <div class="task-actions">
+                            <button class="btn btn-sm btn-primary" onclick="sendReminder('task1')">
+                                📱 Nhắc nhở
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="reassignTask('task1')">
+                                🔄 Giao lại
+                            </button>
+                            <button class="btn btn-sm" onclick="viewTaskDetail('task1')">
+                                👁️ Chi tiết
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- In Progress Task -->
+                    <div class="task-item in-progress">
+                        <div class="task-header">
+                            <div class="task-info">
+                                <div class="task-title">🌱 Chuẩn bị hố trồng và bón phân lót</div>
+                                <div class="task-stage">Giai đoạn 1: Thiết lập trồng mới</div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-meta">
+                            <div class="task-meta-item">
+                                <span>⏰</span>
+                                <span>Hạn: 29/01/2025</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>📍</span>
+                                <span>Khu B1-B2 (1.2 ha)</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>🎯</span>
+                                <span>Độ ưu tiên: Cao</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>💰</span>
+                                <span>Chi phí: 2.5 triệu</span>
+                            </div>
+                        </div>
+                        
+                        <div class="task-description">
+                            Đào hố kích thước 80x80x60cm, cách nhau 6m theo đường đồng mức. Bón 20kg phân hữu cơ + 500g NPK cho mỗi hố.
+                        </div>
+                        
+                        <div class="task-assignment">
+                            <div class="assigned-user">
+                                <div class="user-avatar">BH</div>
+                                <div class="user-info">
+                                    <div class="user-name">Trần Bình Huy</div>
+                                    <div class="user-role">Trưởng nhóm canh tác</div>
+                                </div>
+                            </div>
+                            <div class="task-status status-progress">ĐANG LÀM</div>
+                        </div>
+                        
+                        <div style="margin: 1rem 0;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #6b7280; margin-bottom: 0.3rem;">
+                                <span>Tiến độ hoàn thành</span>
+                                <span>45/120 hố (37.5%)</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 37.5%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-actions">
+                            <button class="btn btn-sm btn-success" onclick="updateProgress('task2')">
+                                📊 Cập nhật tiến độ
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="requestPhoto('task2')">
+                                📸 Yêu cầu ảnh
+                            </button>
+                            <button class="btn btn-sm" onclick="chatWithWorker('task2')">
+                                💬 Nhắn tin
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pending Task -->
+                    <div class="task-item">
+                        <div class="task-header">
+                            <div class="task-info">
+                                <div class="task-title">🔧 Lắp đặt hệ thống tưới nhỏ giọt</div>
+                                <div class="task-stage">Giai đoạn 1: Thiết lập trồng mới</div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-meta">
+                            <div class="task-meta-item">
+                                <span>⏰</span>
+                                <span>Hạn: 02/02/2025</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>📍</span>
+                                <span>Toàn vườn (2.5 ha)</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>🎯</span>
+                                <span>Độ ưu tiên: Trung bình</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>💰</span>
+                                <span>Chi phí: 15 triệu</span>
+                            </div>
+                        </div>
+                        
+                        <div class="task-description">
+                            Thiết kế và lắp đặt hệ thống tưới nhỏ giọt với bể chứa 5m³, máy bơm áp lực, đường ống chính và ống nhỏ giọt cho 275 cây.
+                        </div>
+                        
+                        <div class="task-assignment">
+                            <div class="assigned-user">
+                                <div style="background: #d1d5db; color: #6b7280;" class="user-avatar">?</div>
+                                <div class="user-info">
+                                    <div class="user-name">Chưa phân công</div>
+                                    <div class="user-role">Cần giao việc</div>
+                                </div>
+                            </div>
+                            <div class="task-status status-pending">CHỜ GIAO</div>
+                        </div>
+                        
+                        <div class="task-actions">
+                            <button class="btn btn-sm btn-success" onclick="assignTask('task3')">
+                                👤 Giao việc
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="findContractor('task3')">
+                                🔍 Tìm thầu phụ
+                            </button>
+                            <button class="btn btn-sm" onclick="editTask('task3')">
+                                ✏️ Chỉnh sửa
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Completed Task -->
+                    <div class="task-item completed">
+                        <div class="task-header">
+                            <div class="task-info">
+                                <div class="task-title">✅ Làm đất và tạo luống chống xói mòn</div>
+                                <div class="task-stage">Giai đoạn 1: Thiết lập trồng mới</div>
+                            </div>
+                        </div>
+                        
+                        <div class="task-meta">
+                            <div class="task-meta-item">
+                                <span>✅</span>
+                                <span>Hoàn thành: 25/01/2025</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>📍</span>
+                                <span>Toàn vườn (2.5 ha)</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>⭐</span>
+                                <span>Đánh giá: Xuất sắc</span>
+                            </div>
+                            <div class="task-meta-item">
+                                <span>💰</span>
+                                <span>Chi phí: 1.8/2.0 triệu</span>
+                            </div>
+                        </div>
+                        
+                        <div class="task-assignment">
+                            <div class="assigned-user">
+                                <div class="user-avatar">DT</div>
+                                <div class="user-info">
+                                    <div class="user-name">Lê Duc Thành</div>
+                                    <div class="user-role">Operator máy cày</div>
+                                </div>
+                            </div>
+                            <div class="task-status status-completed">HOÀN THÀNH</div>
+                        </div>
+                        
+                        <div class="task-actions">
+                            <button class="btn btn-sm btn-success" onclick="viewResult('task4')">
+                                📊 Xem kết quả
+                            </button>
+                            <button class="btn btn-sm" onclick="rateWork('task4')">
+                                ⭐ Đánh giá
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Team Panel -->
+                <div class="team-panel">
+                    <div class="team-header">
+                        <h3 class="team-title">👥 Đội ngũ</h3>
+                        <button class="btn btn-sm btn-primary" onclick="manageTeam()">Quản lý</button>
+                    </div>
+                    <div class="team-list">
+                        <div class="team-member" onclick="viewWorkerProfile('an')">
+                            <div class="user-avatar">AN</div>
+                            <div class="user-info">
+                                <div class="user-name">Nguyễn Văn An</div>
+                                <div class="user-role">Kỹ thuật viên đất</div>
+                            </div>
+                            <div class="member-status status-online"></div>
+                        </div>
+                        
+                        <div class="team-member" onclick="viewWorkerProfile('huy')">
+                            <div class="user-avatar">BH</div>
+                            <div class="user-info">
+                                <div class="user-name">Trần Bình Huy</div>
+                                <div class="user-role">Trưởng nhóm canh tác</div>
+                            </div>
+                            <div class="member-status status-online"></div>
+                        </div>
+                        
+                        <div class="team-member" onclick="viewWorkerProfile('thanh')">
+                            <div class="user-avatar">DT</div>
+                            <div class="user-info">
+                                <div class="user-name">Lê Duc Thành</div>
+                                <div class="user-role">Operator máy cày</div>
+                            </div>
+                            <div class="member-status status-away"></div>
+                        </div>
+                        
+                        <div class="team-member" onclick="viewWorkerProfile('minh')">
+                            <div class="user-avatar">HM</div>
+                            <div class="user-info">
+                                <div class="user-name">Phan Hoài Minh</div>
+                                <div class="user-role">Thợ tưới nước</div>
+                            </div>
+                            <div class="member-status status-online"></div>
+                        </div>
+                        
+                        <div class="team-member" onclick="viewWorkerProfile('long')">
+                            <div class="user-avatar">TL</div>
+                            <div class="user-info">
+                                <div class="user-name">Võ Thành Long</div>
+                                <div class="user-role">Phụ việc chung</div>
+                            </div>
+                            <div class="member-status status-offline"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Panel -->
+                <div class="notifications-panel">
+                    <div class="team-header">
+                        <h3 class="team-title">🔔 Thông báo</h3>
+                        <button class="btn btn-sm" onclick="markAllRead()">Đọc tất cả</button>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon notif-urgent">🚨</div>
+                        <div class="notification-content">
+                            <div class="notification-title">Công việc quá hạn!</div>
+                            <div class="notification-text">Khảo sát pH đất bazan đã quá hạn 2 giờ</div>
+                            <div class="notification-time">2 giờ trước</div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon notif-info">📸</div>
+                        <div class="notification-content">
+                            <div class="notification-title">Ảnh minh chứng mới</div>
+                            <div class="notification-text">Trần Bình Huy đã gửi 5 ảnh tiến độ đào hố</div>
+                            <div class="notification-time">1 giờ trước</div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon notif-success">✅</div>
+                        <div class="notification-content">
+                            <div class="notification-title">Hoàn thành công việc</div>
+                            <div class="notification-text">Lê Duc Thành đã hoàn thành làm đất khu C</div>
+                            <div class="notification-time">3 giờ trước</div>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-item">
+                        <div class="notification-icon notif-info">💬</div>
+                        <div class="notification-content">
+                            <div class="notification-title">Tin nhắn mới</div>
+                            <div class="notification-text">Nguyễn Văn An: "Cần thêm máy đo pH"</div>
+                            <div class="notification-time">4 giờ trước</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Add Button -->
+        <button class="floating-add-btn" onclick="openAssignTask()" title="Giao việc mới">
+            ➕
+        </button>
+    </div>
+
+    <!-- Assign Task Modal -->
+    <div class="modal-overlay" id="assignTaskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">👤 Giao việc mới</h3>
+                <button class="close-btn" onclick="closeModal('assignTaskModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="taskTitle">Tên công việc:</label>
+                    <input type="text" id="taskTitle" placeholder="VD: Khảo sát độ pH đất bazan">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskStage">Giai đoạn:</label>
+                        <select id="taskStage">
+                            <option value="stage1">Giai đoạn 1: Thiết lập trồng mới</option>
+                            <option value="stage2">Giai đoạn 2: Chăm sóc cây con</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Độ ưu tiên:</label>
+                        <select id="taskPriority">
+                            <option value="low">Thấp</option>
+                            <option value="medium">Trung bình</option>
+                            <option value="high">Cao</option>
+                            <option value="urgent">Khẩn cấp</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Mô tả chi tiết:</label>
+                    <textarea id="taskDescription" placeholder="Mô tả cụ thể công việc cần thực hiện..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskLocation">Vị trí thực hiện:</label>
+                        <input type="text" id="taskLocation" placeholder="VD: Khu A1-A3 (0.8 ha)">
+                    </div>
+                    <div class="form-group">
+                        <label for="taskBudget">Ngân sách dự kiến:</label>
+                        <input type="text" id="taskBudget" placeholder="VD: 700,000 VNĐ">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskDeadline">Hạn hoàn thành:</label>
+                        <input type="datetime-local" id="taskDeadline">
+                    </div>
+                    <div class="form-group">
+                        <label for="assignedWorker">Giao cho:</label>
+                        <select id="assignedWorker">
+                            <option value="">Chọn nhân viên</option>
+                            <option value="an">Nguyễn Văn An - Kỹ thuật viên đất</option>
+                            <option value="huy">Trần Bình Huy - Trưởng nhóm canh tác</option>
+                            <option value="thanh">Lê Duc Thành - Operator máy cày</option>
+                            <option value="minh">Phan Hoài Minh - Thợ tưới nước</option>
+                            <option value="long">Võ Thành Long - Phụ việc chung</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskTools">Công cụ/thiết bị cần thiết:</label>
+                    <textarea id="taskTools" placeholder="Liệt kê các công cụ, thiết bị cần dùng..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskInstructions">Hướng dẫn đặc biệt:</label>
+                    <textarea id="taskInstructions" placeholder="Các lưu ý, yêu cầu đặc biệt..."></textarea>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('assignTaskModal')">Hủy</button>
+                <button class="btn btn-success" onclick="saveTaskAssignment()">👤 Giao việc</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Detail Modal -->
+    <div class="modal-overlay" id="taskDetailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">👁️ Chi tiết công việc</h3>
+                <button class="close-btn" onclick="closeModal('taskDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h4 style="color: #1f2937; margin-bottom: 0.5rem;">🚨 Khảo sát độ pH đất bazan - Khu vực A</h4>
+                    <div class="task-status status-overdue" style="display: inline-block;">QUÁ HẠN</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <strong>📅 Thời gian:</strong><br>
+                        <span style="color: #dc2626;">Hạn: Hôm nay 17:00</span><br>
+                        <span style="color: #6b7280;">Tạo: 26/01/2025 08:00</span>
+                    </div>
+                    <div>
+                        <strong>👤 Người thực hiện:</strong><br>
+                        <span>Nguyễn Văn An</span><br>
+                        <span style="color: #6b7280;">Kỹ thuật viên đất</span>
+                    </div>
+                </div>
+
+                <div style="background: #f9fafb; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <strong>📝 Mô tả công việc:</strong><br>
+                    Đo pH tại 15 điểm khác nhau, lấy mẫu đất sâu 30cm để phân tích hàm lượng Al3+. Ghi chép tọa độ GPS từng điểm đo.
+                </div>
+
+                <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <strong>⚠️ Lý do trễ hạn:</strong><br>
+                    "Máy đo pH bị hỏng, đang chờ sửa chữa. Dự kiến hoàn thành vào sáng mai." - Báo cáo lúc 16:30
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <strong>📸 Hình ảnh báo cáo:</strong><br>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem;">
+                        <div style="aspect-ratio: 1; background: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #6b7280;">
+                            📷 Ảnh 1
+                        </div>
+                        <div style="aspect-ratio: 1; background: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #6b7280;">
+                            📷 Ảnh 2
+                        </div>
+                        <div style="aspect-ratio: 1; background: #e5e7eb; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #6b7280;">
+                            📷 Ảnh 3
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #f0fdf4; padding: 1rem; border-radius: 8px;">
+                    <strong>💬 Trao đổi gần nhất:</strong><br>
+                    <div style="margin-top: 0.5rem;">
+                        <div style="margin-bottom: 0.5rem;">
+                            <strong>Quản lý (16:45):</strong> "Có thể mượn tạm máy đo của vườn bên cạnh không?"
+                        </div>
+                        <div>
+                            <strong>Nguyễn Văn An (16:50):</strong> "Đã liên hệ, họ đồng ý cho mượn. Sẽ bắt đầu làm ngay."
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="sendUrgentReminder()">📱 Nhắc nhở khẩn</button>
+                <button class="btn btn-warning" onclick="extendDeadline()">⏰ Gia hạn</button>
+                <button class="btn btn-cancel" onclick="closeModal('taskDetailModal')">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Task management functions
+        function openAssignTask() {
+            // Set default deadline to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(17, 0, 0, 0);
+            document.getElementById('taskDeadline').value = tomorrow.toISOString().slice(0, 16);
+            
+            openModal('assignTaskModal');
+        }
+
+        function saveTaskAssignment() {
+            const title = document.getElementById('taskTitle').value;
+            const worker = document.getElementById('assignedWorker').value;
+            
+            if (!title.trim()) {
+                alert('⚠️ Vui lòng nhập tên công việc.');
+                return;
+            }
+            
+            if (!worker) {
+                alert('⚠️ Vui lòng chọn nhân viên thực hiện.');
+                return;
+            }
+            
+            closeModal('assignTaskModal');
+            
+            // Simulate notification
+            setTimeout(() => {
+                alert(`✅ Đã giao việc thành công!\n\n📋 Công việc: "${title}"\n👤 Được giao cho: ${document.getElementById('assignedWorker').selectedOptions[0].text}\n\n📱 Thông báo đã được gửi đến nhân viên.`);
+            }, 500);
+        }
+
+        function sendReminder(taskId) {
+            const confirmSend = confirm('📱 Gửi nhắc nhở về công việc?\n\nTin nhắn sẽ được gửi qua:\n• Ứng dụng mobile\n• SMS\n• Zalo (nếu có)');
+            
+            if (confirmSend) {
+                alert('📱 Đã gửi nhắc nhở thành công!\n\n✅ Nhân viên sẽ nhận được thông báo ngay lập tức.\n⏰ Hệ thống sẽ tự động nhắc lại sau 1 giờ nếu chưa có phản hồi.');
+            }
+        }
+
+        function reassignTask(taskId) {
+            const newWorker = prompt('🔄 Giao lại công việc cho ai?\n\n1. Trần Bình Huy - Trưởng nhóm canh tác\n2. Lê Duc Thành - Operator máy cày\n3. Khác (ghi tên)\n\nNhập số hoặc tên:');
+            
+            if (newWorker) {
+                alert(`🔄 Đã giao lại công việc!\n\n👤 Người mới: ${newWorker}\n📱 Thông báo đã được gửi\n⏰ Hạn mới: Ngày mai 17:00`);
+            }
+        }
+
+        function viewTaskDetail(taskId) {
+            openModal('taskDetailModal');
+        }
+
+        function updateProgress(taskId) {
+            const progress = prompt('📊 Cập nhật tiến độ:\n\nHiện tại: 45/120 hố (37.5%)\nNhập số hố đã hoàn thành:');
+            
+            if (progress && !isNaN(progress)) {
+                const percentage = Math.round((progress / 120) * 100);
+                alert(`📊 Đã cập nhật tiến độ!\n\n✅ Hoàn thành: ${progress}/120 hố (${percentage}%)\n📈 Tăng ${progress - 45} hố so với lần báo cáo trước`);
+            }
+        }
+
+        function requestPhoto(taskId) {
+            const confirmRequest = confirm('📸 Yêu cầu gửi ảnh minh chứng?\n\nNhân viên sẽ nhận được thông báo và có thể chụp ảnh trực tiếp từ ứng dụng mobile.');
+            
+            if (confirmRequest) {
+                alert('📸 Đã gửi yêu cầu ảnh!\n\n📱 Nhân viên sẽ nhận được thông báo\n⏰ Thời hạn gửi ảnh: 30 phút\n🖼️ Yêu cầu: Tối thiểu 3 ảnh góc khác nhau');
+            }
+        }
+
+        function chatWithWorker(taskId) {
+            alert('💬 Mở chat với nhân viên:\n\n• Tin nhắn real-time\n• Gửi hình ảnh/video\n• Ghi âm voice message\n• Chia sẻ tọa độ GPS\n\n(Tính năng sẽ mở trong ứng dụng mobile)');
+        }
+
+        function assignTask(taskId) {
+            openAssignTask();
+        }
+
+        function findContractor(taskId) {
+            alert('🔍 Tìm thầu phụ:\n\n📋 Danh sách thầu phụ gần đây:\n• Công ty TNHH Tưới nước Tây Nguyên\n• Hợp tác xã Nông nghiệp Đắk Lắk\n• Anh Nguyễn Văn Hưng (thầu phụ cá nhân)\n\n💰 Báo giá tự động sẽ được gửi');
+        }
+
+        function editTask(taskId) {
+            alert('✏️ Chỉnh sửa công việc:\n\n• Thay đổi mô tả\n• Điều chỉnh hạn hoàn thành\n• Cập nhật ngân sách\n• Thêm yêu cầu mới\n\n(Mở form chỉnh sửa)');
+        }
+
+        function viewResult(taskId) {
+            alert('📊 Kết quả công việc:\n\n✅ Hoàn thành: 100%\n⏰ Thời gian: Sớm hơn 2 ngày\n💰 Chi phí: 1.8/2.0 triệu (tiết kiệm 10%)\n⭐ Chất lượng: Xuất sắc\n📸 Ảnh minh chứng: 12 ảnh\n📝 Báo cáo: Đầy đủ');
+        }
+
+        function rateWork(taskId) {
+            const rating = prompt('⭐ Đánh giá công việc (1-5 sao):\n\n5⭐ - Xuất sắc\n4⭐ - Tốt\n3⭐ - Đạt yêu cầu\n2⭐ - Cần cải thiện\n1⭐ - Không đạt\n\nNhập số sao:');
+            
+            if (rating && rating >= 1 && rating <= 5) {
+                alert(`⭐ Đã đánh giá ${rating} sao!\n\n📝 Nhận xét sẽ được ghi vào hồ sơ nhân viên\n🎯 Giúp cải thiện chất lượng công việc`);
+            }
+        }
+
+        // Filter functions
+        function filterTasks(filter) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Show notification about filter
+            const filterNames = {
+                'today': 'Hôm nay',
+                'week': 'Tuần này',
+                'overdue': 'Quá hạn',
+                'all': 'Tất cả'
+            };
+            
+            console.log(`Đang lọc: ${filterNames[filter]}`);
+        }
+
+        // Team management functions
+        function viewWorkerProfile(workerId) {
+            const workers = {
+                'an': 'Nguyễn Văn An - Kỹ thuật viên đất\n📞 0901234567\n📧 an@vietgarden.com\n🏆 4.8/5 sao (24 đánh giá)\n📊 92% hoàn thành đúng hạn',
+                'huy': 'Trần Bình Huy - Trưởng nhóm canh tác\n📞 0901234568\n📧 huy@vietgarden.com\n🏆 4.9/5 sao (31 đánh giá)\n📊 96% hoàn thành đúng hạn',
+                'thanh': 'Lê Duc Thành - Operator máy cày\n📞 0901234569\n📧 thanh@vietgarden.com\n🏆 4.7/5 sao (18 đánh giá)\n📊 89% hoàn thành đúng hạn'
+            };
+            
+            alert(`👤 Hồ sơ nhân viên:\n\n${workers[workerId] || 'Thông tin không có'}`);
+        }
+
+        function manageTeam() {
+            alert('👥 Quản lý đội ngũ:\n\n• Thêm/xóa nhân viên\n• Phân quyền truy cập\n• Lịch làm việc\n• Đánh giá hiệu suất\n• Quản lý lương/thưởng\n• Đào tạo kỹ năng');
+        }
+
+        // Notification functions
+        function markAllRead() {
+            alert('✅ Đã đánh dấu tất cả thông báo là đã đọc');
+        }
+
+        function sendUrgentReminder() {
+            alert('🚨 Đã gửi nhắc nhở KHẨN CẤP!\n\n📱 Gọi điện trực tiếp\n📱 SMS khẩn cấp\n📱 Push notification ưu tiên cao\n\n⏰ Yêu cầu phản hồi trong 15 phút');
+        }
+
+        function extendDeadline() {
+            const newDeadline = prompt('⏰ Gia hạn đến khi nào?\n\n1. Ngày mai 17:00\n2. Ngày mai 09:00\n3. Thời gian khác (nhập)\n\nChọn:');
+            
+            if (newDeadline) {
+                alert(`⏰ Đã gia hạn công việc!\n\n📅 Hạn mới: ${newDeadline}\n📱 Thông báo đã được gửi cho nhân viên\n📝 Lý do gia hạn đã được ghi nhận`);
+            }
+        }
+
+        // Utility functions
+        function openReports() {
+            alert('📊 Báo cáo tổng hợp:\n\n• Tiến độ theo giai đoạn\n• Hiệu suất nhân viên\n• Chi phí thực tế vs dự kiến\n• Chất lượng công việc\n• Dự báo hoàn thành');
+        }
+
+        function openCalendar() {
+            alert('📅 Lịch làm việc:\n\n• Xem lịch tuần/tháng\n• Phân công ca làm việc\n• Quản lý nghỉ phép\n• Lên kế hoạch công việc\n• Theo dõi thời gian làm việc');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('show');
+                    }
+                });
+            });
+
+            // Auto-refresh notifications every 30 seconds
+            setInterval(() => {
+                console.log('Auto-refreshing notifications...');
+            }, 30000);
+
+            // Show welcome message
+            setTimeout(() => {
+                console.log('Dashboard loaded successfully');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

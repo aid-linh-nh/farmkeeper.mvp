@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Điều Hành v2.0 - Dự Án Sầu Riêng Đắk Lắk</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .interactive-card {
+            transition: all 0.2s ease-in-out;
+        }
+        .interactive-card:hover {
+            transform: translateY(-4px);
+            border-color: #3B82F6; /* blue-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans">
+    <div class="flex min-h-screen">
+        <main class="flex-1 p-6 lg:p-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start mb-6">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">Dashboard Điều Hành Nông Nghiệp</h1>
+                    <p class="text-gray-400 mt-1">Dự án Sầu Riêng Đắk Lắk - Mô hình làm việc trực tiếp với vườn.</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <div class="relative inline-block text-left">
+                        <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-700 shadow-sm px-4 py-2 bg-gray-800 text-sm font-medium text-gray-300 hover:bg-gray-700 focus:outline-none">
+                            Quý Hiện Tại
+                            <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+                    <div class="flex items-center"><div class="bg-blue-600/20 p-2 rounded-lg"><i data-lucide="dollar-sign" class="w-6 h-6 text-blue-400"></i></div><h3 class="text-sm font-medium text-gray-400 ml-3">Doanh Thu Vùng</h3></div>
+                    <p class="text-3xl font-bold text-white mt-4">3.2 Tỷ</p>
+                    <div class="flex items-center text-sm mt-2 text-green-400"><i data-lucide="arrow-up" class="w-4 h-4"></i><span class="ml-1">+25% so với tháng trước</span></div>
+                </div>
+                <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+                    <div class="flex items-center"><div class="bg-green-600/20 p-2 rounded-lg"><i data-lucide="sprout" class="w-6 h-6 text-green-400"></i></div><h3 class="text-sm font-medium text-gray-400 ml-3">Năng Suất TB</h3></div>
+                    <p class="text-3xl font-bold text-white mt-4">22 tấn/ha</p>
+                    <div class="flex items-center text-sm mt-2 text-green-400"><i data-lucide="arrow-up" class="w-4 h-4"></i><span class="ml-1">+10% so với TB vùng</span></div>
+                </div>
+                <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+                    <div class="flex items-center"><div class="bg-purple-600/20 p-2 rounded-lg"><i data-lucide="gantt-chart-square" class="w-6 h-6 text-purple-400"></i></div><h3 class="text-sm font-medium text-gray-400 ml-3">Số Vườn Mới</h3></div>
+                    <p class="text-3xl font-bold text-white mt-4">35</p>
+                    <div class="flex items-center text-sm mt-2 text-green-400"><i data-lucide="arrow-up" class="w-4 h-4"></i><span class="ml-1">+8 trong quý này</span></div>
+                </div>
+                <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+                    <div class="flex items-center"><div class="bg-yellow-600/20 p-2 rounded-lg"><i data-lucide="smile" class="w-6 h-6 text-yellow-400"></i></div><h3 class="text-sm font-medium text-gray-400 ml-3">NPS Nông Dân</h3></div>
+                    <p class="text-3xl font-bold text-white mt-4">9.1</p>
+                    <div class="flex items-center text-sm mt-2 text-green-400"><i data-lucide="trending-up" class="w-4 h-4"></i><span class="ml-1">Tăng trưởng ổn định</span></div>
+                </div>
+                <div class="bg-gray-800 p-5 rounded-xl border border-gray-700">
+                    <div class="flex items-center"><div class="bg-red-600/20 p-2 rounded-lg"><i data-lucide="shield-check" class="w-6 h-6 text-red-400"></i></div><h3 class="text-sm font-medium text-gray-400 ml-3">Chi Phí HT / Vườn</h3></div>
+                    <p class="text-3xl font-bold text-white mt-4">2.1 Triệu</p>
+                    <div class="flex items-center text-sm mt-2 text-green-400"><i data-lucide="arrow-down" class="w-4 h-4"></i><span class="ml-1">-5% so với mục tiêu</span></div>
+                </div>
+            </div>
+            
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-white">Quy Trình Canh Tác & Tình Trạng Vườn</h2>
+                    <p class="text-sm text-gray-500 italic hidden lg:block">(Nhấn vào một giai đoạn để lọc toàn bộ dashboard)</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 interactive-card cursor-pointer">
+                        <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-white">Phục Hồi Sau Thu Hoạch</h3><span class="bg-blue-600/20 text-blue-300 text-sm font-semibold px-3 py-1 rounded-full">48 Vườn</span></div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start"><i data-lucide="wrench" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Công việc:</span> Tỉa cành, tạo tán, rửa vườn, bón phân hữu cơ.</div></li>
+                            <li class="flex items-start"><i data-lucide="calendar-days" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Dự báo:</span> Chuẩn bị cơi đọt mới trong 2 tuần tới.</div></li>
+                            <li class="flex items-start"><i data-lucide="shield-alert" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Rủi ro:</span> Nấm hồng, thán thư tấn công cành non.</div></li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 interactive-card cursor-pointer">
+                         <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-white">Làm Bông / Ra Hoa</h3><span class="bg-purple-600/20 text-purple-300 text-sm font-semibold px-3 py-1 rounded-full">112 Vườn</span></div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start"><i data-lucide="wrench" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Công việc:</span> Siết nước, phun tạo mầm, bổ sung Canxi-Bo.</div></li>
+                            <li class="flex items-start"><i data-lucide="calendar-days" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Dự báo:</span> Mắt cua xuất hiện đồng loạt trong 7-10 ngày.</div></li>
+                            <li class="flex items-start"><i data-lucide="shield-alert" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Rủi ro:</span> Rụng hoa do sốc nhiệt, cạnh tranh dinh dưỡng.</div></li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 interactive-card cursor-pointer">
+                         <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-white">Đậu Trái / Nuôi Trái</h3><span class="bg-yellow-600/20 text-yellow-300 text-sm font-semibold px-3 py-1 rounded-full">86 Vườn</span></div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start"><i data-lucide="wrench" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Công việc:</span> Tỉa trái, bón phân NPK cân đối, quản lý nước.</div></li>
+                            <li class="flex items-start"><i data-lucide="calendar-days" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Dự báo:</span> Trái đạt kích thước tối đa sau 60-70 ngày.</div></li>
+                            <li class="flex items-start"><i data-lucide="shield-alert" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Rủi ro:</span> Rệp sáp, ruồi đục trái, cháy múi.</div></li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-800 p-5 rounded-xl border border-gray-700 interactive-card cursor-pointer">
+                         <div class="flex justify-between items-center mb-3"><h3 class="font-bold text-white">Sắp Thu Hoạch</h3><span class="bg-green-600/20 text-green-300 text-sm font-semibold px-3 py-1 rounded-full">25 Vườn</span></div>
+                        <ul class="space-y-3 text-sm">
+                            <li class="flex items-start"><i data-lucide="wrench" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Công việc:</span> Bón Kali cao, ngưng tưới trước thu 7-10 ngày.</div></li>
+                            <li class="flex items-start"><i data-lucide="calendar-days" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Dự báo:</span> Thu hoạch trong vòng 1-2 tuần tới.</div></li>
+                            <li class="flex items-start"><i data-lucide="shield-alert" class="w-4 h-4 text-gray-400 mr-3 mt-0.5 shrink-0"></i><div><span class="font-semibold text-gray-300">Rủi ro:</span> Bệnh thối trái, nứt trái do mưa.</div></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-gray-800 p-6 rounded-xl border border-gray-700">
+                    <h3 class="text-lg font-semibold text-white mb-4">Xu Hướng Doanh Thu & Số Vườn Hợp Tác</h3>
+                    <div id="revenue-farm-trend-chart"></div>
+                </div>
+                <div class="lg:col-span-1 bg-gray-800 p-6 rounded-xl border border-gray-700">
+                     <h3 class="text-lg font-semibold text-white mb-4">Hiệu Suất Theo Huyện</h3>
+                     <div id="district-performance-chart"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Common Chart Options
+        const commonChartOptions = {
+            chart: { toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'sans-serif' },
+            grid: { borderColor: '#4A5568', strokeDashArray: 4 },
+            tooltip: { theme: 'dark' },
+            dataLabels: { enabled: false },
+            legend: { labels: { colors: '#A0AEC0' } }
+        };
+
+        // Revenue & Farm Trend Chart
+        var revenueFarmOptions = {
+            ...commonChartOptions,
+            series: [{
+                name: 'Doanh Thu (Tỷ)',
+                type: 'area',
+                data: [0.2, 0.5, 0.9, 1.5, 2.2, 3.2]
+            }, {
+                name: 'Số Vườn Mới',
+                type: 'line',
+                data: [5, 8, 12, 18, 27, 35]
+            }],
+            chart: { ...commonChartOptions.chart, height: 350, type: 'line' },
+            xaxis: {
+                categories: ['Thg 2', 'Thg 3', 'Thg 4', 'Thg 5', 'Thg 6', 'Thg 7'],
+                labels: { style: { colors: '#A0AEC0' } },
+                axisBorder: { show: false },
+            },
+            yaxis: [
+                {
+                    seriesName: 'Doanh Thu (Tỷ)',
+                    labels: { style: { colors: '#A0AEC0' }, formatter: (value) => { return value + " Tỷ" } },
+                },
+                {
+                    seriesName: 'Số Vườn Mới',
+                    opposite: true,
+                    labels: { style: { colors: '#A0AEC0' }, formatter: (value) => { return Math.round(value) } },
+                }
+            ],
+            stroke: { curve: 'smooth', width: [2, 3] },
+            fill: { type: 'gradient', gradient: { opacityFrom: 0.6, opacityTo: 0.05, } },
+            colors: ['#3B82F6', '#8B5CF6'],
+        };
+        var revenueFarmChart = new ApexCharts(document.querySelector("#revenue-farm-trend-chart"), revenueFarmOptions);
+        revenueFarmChart.render();
+        
+        // District Performance Chart
+        var districtOptions = {
+            ...commonChartOptions,
+            series: [{ name: 'Doanh thu (Tỷ)', data: [1.1, 0.9, 0.7, 0.5] }],
+            chart: { ...commonChartOptions.chart, type: 'bar', height: 350 },
+            plotOptions: { bar: { horizontal: true, columnWidth: '60%', borderRadius: 4, } },
+            xaxis: {
+                categories: ['Krông Pắc', 'Cư M\'gar', 'Krông Búk', 'Ea H\'leo'],
+                labels: { style: { colors: '#A0AEC0', fontSize: '12px' }, formatter: (value) => { return value + " Tỷ" } },
+                axisBorder: { show: false },
+            },
+            yaxis: { labels: { style: { colors: '#A0AEC0' } } },
+            fill: { opacity: 1, colors: ['#10B981'] },
+        };
+        var districtChart = new ApexCharts(document.querySelector("#district-performance-chart"), districtOptions);
+        districtChart.render();
+
+    </script>
+</body>
+</html>

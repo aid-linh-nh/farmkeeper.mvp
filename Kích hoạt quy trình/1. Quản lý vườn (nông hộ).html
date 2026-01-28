@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Quản lý vườn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        background: linear-gradient(135deg, #e6f0fa 0%, #f4f7fa 100%);
+        color: #1f2a44;
+        overflow-x: hidden;
+      }
+      .sidebar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        transition: width 0.3s ease;
+        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar.collapsed {
+        width: 80px;
+      }
+      .sidebar.collapsed .menu-text,
+      .sidebar.collapsed .fa-chevron-down,
+      .sidebar.collapsed .fa-chevron-up {
+        display: none;
+      }
+      .sidebar.collapsed .menu-item {
+        justify-content: center;
+      }
+      .sidebar .menu-item {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        margin: 0 10px;
+      }
+      .sidebar .menu-item:hover {
+        background: #e6f0fa;
+        transform: scale(1.05);
+      }
+      .sidebar .menu-item.active {
+        background: linear-gradient(90deg, #69bd70 0%, #4d944f 100%);
+        color: #ffffff;
+        font-weight: 600;
+      }
+      .sidebar .menu-item.active i {
+        color: #ffffff;
+      }
+      .btn-primary {
+        background: linear-gradient(90deg, #69bd70 0%, #4d944f 100%);
+        color: white;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+      }
+      .tab {
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        font-weight: 500;
+        color: #6b7280;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tab:hover {
+        background: #e6f0fa;
+        color: #69bd70;
+        transform: translateX(5px);
+      }
+      .tab.active {
+        background: #69bd70;
+        color: #ffffff;
+        font-weight: 600;
+      }
+      .tab-content {
+        display: none;
+        animation: slideIn 0.5s ease-in-out;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+      .progress-bar {
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #69bd70 0%, #4d944f 100%);
+        transition: width 0.5s ease;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateX(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+      @media (max-width: 768px) {
+        .sidebar {
+          position: fixed;
+          height: 100%;
+          z-index: 50;
+        }
+        .sidebar.collapsed {
+          width: 0;
+          overflow: hidden;
+        }
+        .main-content {
+          margin-left: 0 !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="flex min-h-screen">
+    <aside class="sidebar w-64 flex-shrink-0 flex flex-col transition-all">
+      <div class="p-4 border-b h-16 flex items-center justify-between">
+        <a href="#" class="flex items-center gap-3">
+          <i class="fas fa-leaf text-2xl" style="color: #69bd70"></i>
+          <h1 class="text-xl font-bold text-gray-800 menu-text">FARMKEEPER</h1>
+        </a>
+        <button id="toggle-sidebar" class="text-gray-600 hover:text-gray-800">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+      <nav class="flex-grow p-4">
+        <ul>
+          <li>
+            <a
+              href="#"
+              class="flex items-center gap-3 py-3 px-4 rounded-md menu-item"
+            >
+              <i class="fas fa-home-alt w-5 text-center text-gray-500"></i>
+              <span class="menu-text">Trang chủ</span>
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-between gap-3 py-3 px-4 rounded-md menu-item"
+            >
+              <div class="flex items-center gap-3">
+                <i class="fas fa-seedling w-5 text-center text-gray-500"></i>
+                <span class="menu-text">Quy trình canh tác</span>
+              </div>
+              <i class="fas fa-chevron-up text-xs"></i>
+            </a>
+            <ul class="pl-6 mt-2">
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center gap-3 py-3 px-4 rounded-md menu-item active"
+                >
+                  <span class="menu-text">Kích hoạt quy trình</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a
+              href="#"
+              class="flex items-center justify-between gap-3 py-3 px-4 rounded-md menu-item"
+            >
+              <div class="flex items-center gap-3">
+                <i class="fas fa-users w-5 text-center text-gray-500"></i>
+                <span class="menu-text">Quản lý khách hàng</span>
+              </div>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col main-content transition-all">
+      <header
+        class="h-16 bg-white flex items-center justify-between px-6 flex-shrink-0 shadow-md"
+      >
+        <div class="flex items-center gap-4">
+          <button
+            id="mobile-toggle-sidebar"
+            class="lg:hidden text-gray-600 hover:text-gray-800"
+          >
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          <h2 class="text-xl font-semibold text-gray-800">Quản lý vườn</h2>
+        </div>
+        <div class="flex items-center gap-4">
+          <a
+            href="#"
+            class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition"
+          >
+            <i class="fas fa-globe"></i>
+            <span>Tiếng Việt</span>
+            <i class="fas fa-chevron-down text-xs"></i>
+          </a>
+          <button class="relative text-gray-600 hover:text-gray-800 transition">
+            <i class="fas fa-bell text-xl"></i>
+            <span
+              class="absolute top-0 right-0 h-2.5 w-2.5 bg-red-500 rounded-full border-2 border-white"
+            ></span>
+          </button>
+          <img
+            src="https://placehold.co/32x32/E2E8F0/4A5568?text=A"
+            alt="User Avatar"
+            class="w-9 h-9 rounded-full border-2 border-gray-200"
+          />
+        </div>
+      </header>
+
+      <main class="flex-1 p-6 max-w-7xl mx-auto w-full">
+        <div class="mb-6 text-sm text-gray-500 flex items-center">
+          <span>Quy trình canh tác</span>
+          <i class="fas fa-chevron-right mx-2 text-xs"></i>
+          <span>Kích hoạt quy trình</span>
+        </div>
+
+        <div class="card">
+          <div
+            class="p-6 border-b flex flex-wrap gap-4 justify-between items-center"
+          >
+            <h3 class="font-bold text-gray-800 text-xl flex items-center gap-3">
+              <i class="fas fa-clipboard-list text-2xl text-green-600"></i>
+              Thông tin vườn
+            </h3>
+            <div class="flex items-center gap-3">
+              <button
+                class="btn-primary py-2.5 px-5 text-sm font-semibold flex items-center gap-2"
+              >
+                <i class="fas fa-rocket"></i> Kích hoạt quy trình
+              </button>
+            </div>
+          </div>
+          <div class="p-6 flex flex-col lg:flex-row gap-6">
+            <div class="w-full lg:w-1/4">
+              <div class="flex flex-col gap-2">
+                <div class="tab active" data-tab="basic">
+                  <i class="fas fa-info-circle"></i> Thông tin cơ bản
+                </div>
+                <div class="tab" data-tab="environment">
+                  <i class="fas fa-tree"></i> Môi trường & Thổ nhưỡng
+                </div>
+                <div class="tab" data-tab="layout">
+                  <i class="fas fa-map"></i> Sơ đồ & Định vị
+                </div>
+                <div class="tab" data-tab="resources">
+                  <i class="fas fa-tools"></i> Nguồn lực & Con người
+                </div>
+                <div class="tab" data-tab="practices">
+                  <i class="fas fa-leaf"></i> Canh tác & Chứng nhận
+                </div>
+                <div class="tab" data-tab="partners">
+                  <i class="fas fa-handshake"></i> Đối tác & Ghi chú
+                </div>
+              </div>
+            </div>
+            <div class="w-full lg:w-3/4">
+              <div class="tab-content active" id="basic">
+                <div class="space-y-6">
+                  <h4 class="font-semibold text-gray-800 text-lg">
+                    I. Thông tin chung & Năng suất
+                  </h4>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="card p-4">
+                      <p class="text-sm text-gray-500">Loại cây trồng</p>
+                      <p class="font-medium text-gray-800">Sầu riêng</p>
+                    </div>
+                    <div class="card p-4">
+                      <p class="text-sm text-gray-500">Tổng diện tích</p>
+                      <p class="font-medium text-gray-800">2.5 ha</p>
+                    </div>
+                    <div class="card p-4">
+                      <p class="text-sm text-gray-500">Tổng số cây</p>
+                      <p class="font-medium text-gray-800">1500 cây</p>
+                    </div>
+                    <div class="card p-4">
+                      <p class="text-sm text-gray-500">Năm bắt đầu thu hoạch</p>
+                      <p class="font-medium text-gray-800">2020</p>
+                    </div>
+                    <div class="card p-4">
+                      <p class="text-sm text-gray-500">Sản lượng năm trước</p>
+                      <p class="font-medium text-gray-800">15.5 tấn</p>
+                      <div class="progress-bar mt-2">
+                        <div class="progress-bar-fill" style="width: 75%"></div>
+                      </div>
+                    </div>
+                    <div class="card p-4">
+                      <p class="text-sm text-gray-500">Sản lượng dự báo</p>
+                      <p class="font-medium text-gray-800">16.8 tấn</p>
+                      <div class="progress-bar mt-2">
+                        <div class="progress-bar-fill" style="width: 80%"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <h4 class="font-semibold text-gray-800 text-lg mt-6">
+                    II. Thông tin Giống & Cây trồng
+                  </h4>
+                  <div class="card p-4">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <p class="text-sm text-gray-500">Tên giống</p>
+                        <p class="font-medium text-gray-800">Ri6</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-500">Nguồn gốc giống</p>
+                        <p class="font-medium text-gray-800">
+                          Viện cây ăn quả Miền Nam
+                        </p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-500">Số lượng cây</p>
+                        <p class="font-medium text-gray-800">120 cây</p>
+                      </div>
+                      <div>
+                        <p class="text-sm text-gray-500">Giai đoạn</p>
+                        <p class="font-medium text-gray-800">Kinh doanh</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" id="environment">
+                <h4 class="font-semibold text-gray-800 text-lg">
+                  III. Thổ nhưỡng & Môi trường
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Loại đất</p>
+                    <p class="font-medium text-gray-800">Đất đỏ bazan</p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Nguồn nước</p>
+                    <p class="font-medium text-gray-800">Giếng khoan</p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Lịch sử sử dụng đất</p>
+                    <p class="font-medium text-gray-800">
+                      Trồng cà phê, bỏ trống 1 năm
+                    </p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">
+                      Kết quả phân tích mẫu nước
+                    </p>
+                    <a href="#" class="text-blue-600 hover:underline"
+                      >Xem báo cáo</a
+                    >
+                  </div>
+                </div>
+                <div class="mt-6 card p-4">
+                  <p class="text-sm text-gray-500">Nguy cơ ô nhiễm</p>
+                  <p class="font-medium text-gray-800">Không có nguy cơ</p>
+                </div>
+                <div class="mt-6 card p-4">
+                  <p class="text-sm text-gray-500">
+                    Kết quả phân tích đất từ phòng Lab
+                  </p>
+                  <p class="font-medium text-gray-800">
+                    pH: 5.5, N: 0.12%, P: 65 mg/100g, K: 80 mg/100g
+                  </p>
+                </div>
+              </div>
+              <div class="tab-content" id="layout">
+                <h4 class="font-semibold text-gray-800 text-lg">
+                  IV. Sơ đồ vườn & Định vị cây
+                </h4>
+                <div class="mb-6 card p-4">
+                  <p class="text-sm text-gray-500">Sơ đồ tổng thể</p>
+                  <div
+                    class="bg-gray-200 h-48 rounded-lg flex items-center justify-center mt-2"
+                  >
+                    <p class="text-gray-500">Placeholder: Bản đồ vườn</p>
+                  </div>
+                </div>
+                <div class="card p-4">
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                      <p class="text-sm text-gray-500">Số lô</p>
+                      <p class="font-medium text-gray-800">Lô A1</p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Diện tích</p>
+                      <p class="font-medium text-gray-800">1.2 ha</p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Khoảng cách trồng</p>
+                      <p class="font-medium text-gray-800">8x8</p>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Số cây</p>
+                      <p class="font-medium text-gray-800">195 cây</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" id="resources">
+                <h4 class="font-semibold text-gray-800 text-lg">
+                  V. Cơ sở vật chất & Trang thiết bị
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Tình trạng kho</p>
+                    <p class="font-medium text-gray-800">
+                      Có kho riêng, xây kiên cố
+                    </p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Điều kiện bảo quản</p>
+                    <p class="font-medium text-gray-800">
+                      Có biển báo, khóa an toàn, kệ đỡ
+                    </p>
+                  </div>
+                </div>
+                <div class="mt-6 card p-4">
+                  <p class="text-sm text-gray-500">Thiết bị giám sát IoT</p>
+                  <p class="font-medium text-gray-800">
+                    Camera giám sát, Cảm biến pH đất, Cảm biến độ ẩm
+                  </p>
+                </div>
+                <div class="mt-6 card p-4">
+                  <p class="text-sm text-gray-500">Trang thiết bị sản xuất</p>
+                  <p class="font-medium text-gray-800">
+                    Máy cày, bình phun, máy cắt cỏ
+                  </p>
+                </div>
+                <h4 class="font-semibold text-gray-800 text-lg mt-6">
+                  VI. Nhân sự & An toàn lao động
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Tổng số lao động</p>
+                    <p class="font-medium text-gray-800">5 người</p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Tình trạng tập huấn</p>
+                    <p class="font-medium text-gray-800">Đã tập huấn VietGAP</p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Trang bị bảo hộ</p>
+                    <p class="font-medium text-gray-800">
+                      Quần áo bảo hộ, găng tay, ủng, mũ
+                    </p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Trang bị y tế</p>
+                    <p class="font-medium text-gray-800">Có tủ thuốc đầy đủ</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" id="practices">
+                <h4 class="font-semibold text-gray-800 text-lg">
+                  VII. Quản lý Vật tư & Sâu bệnh hại
+                </h4>
+                <div class="card p-4">
+                  <p class="text-sm text-gray-500">Danh mục phân bón</p>
+                  <p class="font-medium text-gray-800">
+                    NPK 16-16-8, phân hữu cơ vi sinh
+                  </p>
+                </div>
+                <div class="mt-6 card p-4">
+                  <p class="text-sm text-gray-500">Thuốc BVTV</p>
+                  <p class="font-medium text-gray-800">
+                    Thuốc trừ rầy, thuốc trừ nấm
+                  </p>
+                </div>
+                <div class="mt-6 card p-4">
+                  <p class="text-sm text-gray-500">Sâu bệnh hại</p>
+                  <p class="font-medium text-gray-800">Rầy mềm, nấm rễ</p>
+                </div>
+                <h4 class="font-semibold text-gray-800 text-lg mt-6">
+                  VIII. Thực hành sản xuất & Chứng nhận
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Tiêu chuẩn áp dụng</p>
+                    <p class="font-medium text-gray-800">VietGAP</p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Số seri chứng nhận</p>
+                    <p class="font-medium text-gray-800">VG-2023-001</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-content" id="partners">
+                <h4 class="font-semibold text-gray-800 text-lg">
+                  IX. Thông tin bên thu mua
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Tên đơn vị</p>
+                    <p class="font-medium text-gray-800">Công ty ABC</p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Người đại diện</p>
+                    <p class="font-medium text-gray-800">Nguyễn Văn B</p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Mã cơ sở đóng gói</p>
+                    <p class="font-medium text-gray-800">VN-PACK-001</p>
+                  </div>
+                  <div class="card p-4">
+                    <p class="text-sm text-gray-500">Số điện thoại</p>
+                    <p class="font-medium text-gray-800">0912345678</p>
+                  </div>
+                  <div class="md:col-span-2 card p-4">
+                    <p class="text-sm text-gray-500">Địa chỉ</p>
+                    <p class="font-medium text-gray-800">
+                      123 Đường ABC, Phường X, Quận Y
+                    </p>
+                  </div>
+                </div>
+                <h4 class="font-semibold text-gray-800 text-lg mt-6">
+                  X. Ghi chú khác
+                </h4>
+                <div class="card p-4">
+                  <p class="font-medium text-gray-800">
+                    Đã ký hợp đồng xuất khẩu với công ty ABC cho vụ mùa 2025.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Tab Functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+
+            tabs.forEach((t) => t.classList.remove('active'));
+            tabContents.forEach((content) =>
+              content.classList.remove('active')
+            );
+
+            tab.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+          });
+        });
+
+        // Sidebar Toggle
+        const sidebar = document.querySelector('.sidebar');
+        const toggleButton = document.getElementById('toggle-sidebar');
+        const mobileToggleButton = document.getElementById(
+          'mobile-toggle-sidebar'
+        );
+        const mainContent = document.querySelector('.main-content');
+
+        function toggleSidebar() {
+          sidebar.classList.toggle('collapsed');
+          if (window.innerWidth > 768) {
+            if (sidebar.classList.contains('collapsed')) {
+              mainContent.style.marginLeft = '80px';
+            } else {
+              mainContent.style.marginLeft = '256px';
+            }
+          }
+        }
+
+        function setupSidebar() {
+          if (window.innerWidth <= 768) {
+            sidebar.classList.add('collapsed');
+            mainContent.style.marginLeft = '0';
+          } else {
+            if (sidebar.classList.contains('collapsed')) {
+              mainContent.style.marginLeft = '80px';
+            } else {
+              mainContent.style.marginLeft = '256px';
+            }
+          }
+        }
+
+        toggleButton.addEventListener('click', toggleSidebar);
+        mobileToggleButton.addEventListener('click', () => {
+          sidebar.classList.toggle('collapsed');
+        });
+
+        window.addEventListener('resize', setupSidebar);
+        setupSidebar();
+      });
+    </script>
+  </body>
+</html>

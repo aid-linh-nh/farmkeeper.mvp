@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Kích hoạt Quy trình</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* --- General Styles --- */
+      :root {
+        --primary-color: #69bd70;
+        --light-gray: #f4f7fa;
+        --dark-gray: #6c757d;
+        --text-color: #333;
+        --white-color: #ffffff;
+        --border-color: #dee2e6;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        background-color: var(--light-gray);
+        color: var(--text-color);
+        display: flex;
+      }
+
+      /* --- Sidebar Menu --- */
+      .sidebar {
+        width: 260px;
+        background-color: var(--white-color);
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .sidebar .logo {
+        padding: 24px 20px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .sidebar .logo h1 {
+        color: var(--primary-color);
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      .sidebar .menu {
+        list-style: none;
+        padding: 20px 0;
+        flex-grow: 1;
+      }
+
+      .sidebar .menu-item {
+        padding: 0 20px;
+      }
+
+      .sidebar .menu-item .menu-link {
+        display: block;
+        padding: 14px 18px;
+        color: #555;
+        text-decoration: none;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .sidebar .menu-item .menu-link:hover {
+        background-color: var(--light-gray);
+      }
+
+      .sidebar .menu-item.open > .menu-link {
+        color: var(--primary-color);
+        font-weight: 600;
+      }
+
+      .sidebar .submenu .menu-item.active .menu-link {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+      }
+
+      .sidebar .submenu {
+        list-style: none;
+        padding-left: 25px;
+        margin-top: 5px;
+      }
+
+      .sidebar .submenu .menu-link {
+        padding: 10px 18px;
+        font-size: 14px;
+      }
+
+      /* --- Main Content --- */
+      .main-content {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        padding: 30px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .header h2 {
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      .btn-back {
+        padding: 8px 16px;
+        background-color: var(--white-color);
+        color: var(--dark-gray);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.3s;
+      }
+      .btn-back:hover {
+        background-color: #f8f9fa;
+      }
+
+      /* --- Filters --- */
+      .filters {
+        background-color: var(--white-color);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .filter-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--dark-gray);
+        margin-bottom: 5px;
+      }
+
+      .filters input,
+      .filters select {
+        padding: 10px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-family: 'Noto Sans', sans-serif;
+        font-size: 14px;
+        min-width: 200px;
+      }
+
+      .filters button.filter-btn {
+        padding: 10px 20px;
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        align-self: flex-end;
+        transition: background-color 0.3s;
+      }
+
+      .filters button.filter-btn:hover {
+        background-color: #58a860;
+      }
+
+      /* --- Process List Table --- */
+      .process-list-container {
+        background-color: var(--white-color);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+      }
+
+      thead th {
+        background-color: #f8f9fa;
+        padding: 16px;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--dark-gray);
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      tbody tr {
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      tbody td {
+        padding: 16px;
+        font-size: 14px;
+        vertical-align: middle;
+      }
+
+      .actions {
+        white-space: nowrap;
+      }
+
+      .actions button {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 13px;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .actions .btn-primary {
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        border-color: var(--primary-color);
+        margin-right: 8px;
+      }
+
+      .actions .btn-primary:hover {
+        background-color: #58a860;
+      }
+
+      .actions .btn-secondary {
+        background-color: var(--white-color);
+        color: var(--dark-gray);
+      }
+
+      .actions .btn-secondary:hover {
+        background-color: var(--light-gray);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar Menu -->
+    <aside class="sidebar">
+      <div class="logo">
+        <h1>FARMKEEPER</h1>
+      </div>
+      <ul class="menu">
+        <li class="menu-item">
+          <a href="#" class="menu-link">Quản lý vườn</a>
+        </li>
+        <li class="menu-item open">
+          <a href="#" class="menu-link">Quy trình canh tác</a>
+          <ul class="submenu">
+            <li class="menu-item active">
+              <a href="#" class="menu-link">Kích hoạt quy trình</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="header">
+        <div class="header-left">
+          <a href="#" class="btn-back">&larr; Quay lại</a>
+          <h2>Danh sách quy trình có thể kích hoạt</h2>
+        </div>
+      </header>
+
+      <!-- Filters -->
+      <div class="filters">
+        <div class="filter-group">
+          <label for="process-source">Nguồn quy trình</label>
+          <select id="process-source">
+            <option value="">Tất cả nguồn</option>
+            <option value="self">Tự tạo đã phê duyệt</option>
+            <option value="corp">HTX/Doanh nghiệp</option>
+            <option value="public">Public</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="crop-type">Loại cây trồng</label>
+          <select id="crop-type">
+            <option value="">Tất cả loại cây</option>
+            <option value="ri6">Sầu riêng Ri6</option>
+            <option value="monthong">Sầu riêng Monthong</option>
+          </select>
+        </div>
+        <button class="filter-btn">Lọc</button>
+      </div>
+
+      <!-- Process List Table -->
+      <div class="process-list-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nguồn</th>
+              <th>Tên quy trình</th>
+              <th>Loại cây trồng</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>HTX/Doanh nghiệp</td>
+              <td>Quy trình VietGAP cho sầu riêng Ri6</td>
+              <td>Sầu riêng Ri6</td>
+              <td class="actions">
+                <button class="btn-primary">Kích hoạt</button>
+                <button class="btn-secondary">Xem chi tiết</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Public</td>
+              <td>Quy trình canh tác hữu cơ cơ bản</td>
+              <td>Tất cả</td>
+              <td class="actions">
+                <button class="btn-primary">Kích hoạt</button>
+                <button class="btn-secondary">Xem chi tiết</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Tự tạo đã phê duyệt</td>
+              <td>Quy trình xử lý ra hoa nghịch vụ 2024</td>
+              <td>Sầu riêng Monthong</td>
+              <td class="actions">
+                <button class="btn-primary">Kích hoạt</button>
+                <button class="btn-secondary">Xem chi tiết</button>
+              </td>
+            </tr>
+            <tr>
+              <td>HTX/Doanh nghiệp</td>
+              <td>Quy trình GlobalGAP xuất khẩu châu Âu</td>
+              <td>Sầu riêng Monthong</td>
+              <td class="actions">
+                <button class="btn-primary">Kích hoạt</button>
+                <button class="btn-secondary">Xem chi tiết</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

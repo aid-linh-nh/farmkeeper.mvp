@@ -1,0 +1,41 @@
+1. Màn hình 1
+
+- Xuất hiện khi người dùng chọn "Quản lý kỹ thuật" --> "Báo cáo nhân sự" từ thanh menu
+
+2. Màn hình 2
+
+- Xuất hiện khi người dùng chọn nút "Xem chi tiết" từ màn hình 1
+
+3. Màn hình 3
+
+- Xuất hiện khi người dùng chọn nút "Tạo báo cáo" từ màn hình 1
+
+---
+
+Các phép tính liên quan:
+
+1. Điểm công việc từng kỹ sư
+   ![alt text](image.png)
+
+2. Điểm CV Trung bình (Average)
+   ![alt text](image-1.png)
+
+3. Điểm CV Trung vị (Median)
+
+- Sắp xếp tất cả các điểm theo thứ tự từ thấp đến cao.
+- Nếu số lượng điểm là lẻ, lấy giá trị ở giữa.
+- Nếu số lượng điểm là chẵn, lấy trung bình của 2 giá trị ở giữa.
+
+4. Độ lệch chuẩn (Standard Deviation)
+   ![alt text](image-2.png)
+
+5. Điểm CV Cao nhất (Max) và Điểm CV Thấp nhất (Min)
+
+- Max: Điểm CV cao nhất trong danh sách.
+- Min: Điểm CV thấp nhất trong danh sách.
+
+6. Phân loại điểm CV
+
+- Quá tải (Điểm CV ≥ 3.5): Những kỹ sư có điểm CV cao hơn hoặc bằng 3.5.
+- Tối ưu (2.5 ≤ Điểm CV < 3.5): Những kỹ sư có điểm CV trong khoảng từ 2.5 đến dưới 3.5.
+- Dưới tải (Điểm CV < 2.5): Những kỹ sư có điểm CV dưới 2.5.

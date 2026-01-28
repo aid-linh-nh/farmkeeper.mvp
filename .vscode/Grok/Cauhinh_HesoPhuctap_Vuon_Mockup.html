@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cấu Hình Hệ Số Phức Tạp</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200 font-sans p-6 lg:p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-white">Cấu Hình Hệ Số Phức Tạp</h1>
+                <p class="text-gray-400 mt-1">Thiết lập các "Quy tắc" để hệ thống tự động tính toán độ khó của từng Vườn/Farm.</p>
+            </div>
+             <button type="submit" class="mt-4 md:mt-0 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md flex items-center">
+                <i data-lucide="save" class="w-5 h-5 mr-2"></i>
+                Lưu Toàn Bộ Cấu Hình
+            </button>
+        </div>
+
+        <!-- Configuration Groups Container -->
+        <div id="groups-container" class="space-y-8">
+
+            <!-- Group 1: Nông học & Kỹ thuật -->
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 group-card">
+                <div class="flex justify-between items-center mb-6">
+                    <input type="text" value="1. Nhóm Hệ số Nông học & Kỹ thuật" class="text-xl font-semibold text-white bg-transparent border-b-2 border-gray-700 focus:border-blue-500 focus:outline-none w-full">
+                    <button class="ml-4 text-red-500 hover:text-red-400 p-2 remove-group-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </div>
+                <div class="space-y-4 rules-container">
+                    <!-- Rule: Tuổi cây & Giai đoạn (Categorical) -->
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-3">
+                            <p class="font-semibold text-gray-300">Hệ số Tuổi cây & Giai đoạn</p>
+                            <button class="text-gray-400 hover:text-red-400 p-1 remove-rule-btn"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                        <div class="grid grid-cols-12 gap-4 items-center">
+                            <span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span>
+                            <select class="col-span-5 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                                <option selected>Kiến thiết cơ bản</option>
+                                <option>Kinh doanh năm đầu</option>
+                                <option>Kinh doanh ổn định</option>
+                                <option>Vườn già/cải tạo</option>
+                            </select>
+                            <span class="col-span-1 text-center text-gray-400 text-sm">thì</span>
+                            <span class="col-span-2 text-right text-gray-400 text-sm">Hệ số =</span>
+                            <input type="number" step="0.05" value="1.2" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                        </div>
+                    </div>
+                    <!-- Rule: Yêu cầu Kỹ thuật Đặc thù (Categorical) -->
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                         <div class="flex justify-between items-center mb-3">
+                            <p class="font-semibold text-gray-300">Hệ số Yêu cầu Kỹ thuật Đặc thù</p>
+                            <button class="text-gray-400 hover:text-red-400 p-1 remove-rule-btn"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                        <div class="grid grid-cols-12 gap-4 items-center">
+                            <span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span>
+                            <select class="col-span-5 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                                <option>Canh tác thông thường</option>
+                                <option selected>Canh tác theo tiêu chuẩn (VietGAP, GlobalG.A.P.)</option>
+                                <option>Canh tác hữu cơ</option>
+                            </select>
+                            <span class="col-span-1 text-center text-gray-400 text-sm">thì</span>
+                            <span class="col-span-2 text-right text-gray-400 text-sm">Hệ số =</span>
+                            <input type="number" step="0.05" value="1.15" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                        </div>
+                    </div>
+                </div>
+                <button class="mt-4 text-blue-400 hover:text-blue-300 text-sm font-semibold flex items-center add-rule-btn"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Thêm Hệ số/Quy tắc</button>
+            </div>
+
+            <!-- Group 2: Vận hành & Địa lý -->
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 group-card">
+                <div class="flex justify-between items-center mb-6">
+                    <input type="text" value="2. Nhóm Hệ số Vận hành & Địa lý" class="text-xl font-semibold text-white bg-transparent border-b-2 border-gray-700 focus:border-blue-500 focus:outline-none w-full">
+                    <button class="ml-4 text-red-500 hover:text-red-400 p-2 remove-group-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </div>
+                <div class="space-y-4 rules-container">
+                    <!-- Rule: Quy mô Diện tích (Numerical Range) -->
+                    <div class="bg-gray-900/50 p-4 rounded-lg">
+                        <div class="flex justify-between items-center mb-3">
+                            <p class="font-semibold text-gray-300">Hệ số Quy mô Diện tích</p>
+                            <button class="text-gray-400 hover:text-red-400 p-1 remove-rule-btn"><i data-lucide="x" class="w-4 h-4"></i></button>
+                        </div>
+                        <div class="grid grid-cols-12 gap-4 items-center">
+                            <span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span>
+                            <input type="text" value="Diện tích (ha)" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm" readonly>
+                            <select class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                                <option>&lt;</option>
+                                <option selected>&ge;</option>
+                            </select>
+                            <input type="number" value="5" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                            <span class="col-span-1 text-center text-gray-400 text-sm">thì</span>
+                            <span class="col-span-1 text-right text-gray-400 text-sm">HS =</span>
+                            <input type="number" step="0.05" value="1.2" class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                        </div>
+                    </div>
+                </div>
+                 <button class="mt-4 text-blue-400 hover:text-blue-300 text-sm font-semibold flex items-center add-rule-btn"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Thêm Hệ số/Quy tắc</button>
+            </div>
+
+        </div>
+
+        <!-- Add Group Button -->
+        <div class="mt-8">
+            <button id="add-group-btn" class="w-full bg-gray-800 hover:bg-gray-700 border-2 border-dashed border-gray-600 text-gray-400 font-bold py-4 px-4 rounded-xl flex items-center justify-center">
+                <i data-lucide="plus" class="w-5 h-5 mr-2"></i> Thêm Nhóm Hệ số Mới
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const groupsContainer = document.getElementById('groups-container');
+        const addGroupBtn = document.getElementById('add-group-btn');
+
+        // --- TEMPLATES ---
+        const ruleTemplate = `
+            <div class="bg-gray-900/50 p-4 rounded-lg">
+                <div class="flex justify-between items-center mb-3">
+                    <input type="text" placeholder="Tên hệ số/quy tắc..." class="font-semibold text-gray-300 bg-transparent border-b border-gray-600 focus:outline-none w-full">
+                    <button class="ml-2 text-gray-400 hover:text-red-400 p-1 remove-rule-btn"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+                <div class="grid grid-cols-12 gap-4 items-center">
+                    <span class="col-span-1 text-right text-gray-400 text-sm">Nếu</span>
+                    <input type="text" placeholder="Tên trường dữ liệu" class="col-span-3 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                    <select class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                        <option>&lt;</option>
+                        <option>&gt;</option>
+                        <option>&ge;</option>
+                        <option>&le;</option>
+                        <option>=</option>
+                    </select>
+                    <input type="text" placeholder="Giá trị" class="col-span-1 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                    <span class="col-span-1 text-center text-gray-400 text-sm">thì</span>
+                    <span class="col-span-1 text-right text-gray-400 text-sm">HS =</span>
+                    <input type="number" step="0.05" placeholder="Hệ số" class="col-span-2 bg-gray-700 border-gray-600 rounded-md px-2 py-2 text-sm">
+                </div>
+            </div>
+        `;
+
+        const groupTemplate = `
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 group-card">
+                <div class="flex justify-between items-center mb-6">
+                    <input type="text" placeholder="Tên Nhóm Hệ số Mới..." class="text-xl font-semibold text-white bg-transparent border-b-2 border-gray-700 focus:border-blue-500 focus:outline-none w-full">
+                    <button class="ml-4 text-red-500 hover:text-red-400 p-2 remove-group-btn"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </div>
+                <div class="space-y-4 rules-container">
+                    <!-- New rules will be added here -->
+                </div>
+                <button class="mt-4 text-blue-400 hover:text-blue-300 text-sm font-semibold flex items-center add-rule-btn"><i data-lucide="plus-circle" class="w-4 h-4 mr-2"></i>Thêm Hệ số/Quy tắc</button>
+            </div>
+        `;
+
+        // --- EVENT LISTENERS ---
+        addGroupBtn.addEventListener('click', () => {
+            const newGroup = document.createElement('div');
+            newGroup.innerHTML = groupTemplate;
+            groupsContainer.appendChild(newGroup.firstElementChild);
+            lucide.createIcons();
+        });
+
+        groupsContainer.addEventListener('click', (e) => {
+            // Add a new rule to a group
+            const addRuleBtn = e.target.closest('.add-rule-btn');
+            if (addRuleBtn) {
+                const rulesContainer = addRuleBtn.previousElementSibling;
+                const newRule = document.createElement('div');
+                newRule.innerHTML = ruleTemplate;
+                rulesContainer.appendChild(newRule.firstElementChild);
+                lucide.createIcons();
+            }
+
+            // Remove a rule from a group
+            const removeRuleBtn = e.target.closest('.remove-rule-btn');
+            if (removeRuleBtn) {
+                removeRuleBtn.closest('.bg-gray-900\\/50').remove();
+            }
+
+            // Remove a whole group
+            const removeGroupBtn = e.target.closest('.remove-group-btn');
+            if (removeGroupBtn) {
+                removeGroupBtn.closest('.group-card').remove();
+            }
+        });
+    </script>
+</body>
+</html>

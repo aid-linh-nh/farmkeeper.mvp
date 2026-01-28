@@ -1,0 +1,29 @@
+1. Màn hình 1
+
+- Xuất hiện khi người dùng chọn mục "Quản lý người dùng" --> "Quản lý HTX" ở thanh menu
+
+2. Màn hình 2
+
+- Màn hình xuất hiện khi người dùng chọn nút "Xem chi tiết" từ màn hình 1
+- Có pop up xuất hiện khi bấm nút "Từ chối" hoặc nút "Phê duyệt"
+  - [Thông báo từ chối thành công] --> (image.png)
+  - [Thông báo phê duyệt thành công] --> (image-1.png)
+    Note: Với trạng thái chờ phê duyệt
+
+3. Màn hình 3
+
+- Màn hình xuất hiện khi người dùng chọn nút "Xem chi tiết" từ màn hình 1
+  Note: Với trạng thái phê duyệt
+
+4. Màn hình 4
+
+- Màn hình xuất hiện khi người dùng chọn nút "Xem chi tiết" từ màn hình 1
+  Note: Với trạng thái từ chối
+
+5. Màn hình 5
+
+- Template email khi người dùng chọn và xác nhận "Phê duyệt" HTX.
+
+6. Màn hình 6
+
+- Template email khi người dùng chọn và xác nhận "Từ chối" HTX.

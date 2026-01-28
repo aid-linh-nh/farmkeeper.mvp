@@ -1,0 +1,21 @@
+1. Màn hình 1
+- Màn hình xuất hiện khi người dùng truy cập vào "Quản lý người dùng" --> "Quản lý doanh nghiệp" ở thanh menu
+
+2. Màn hình 2
+- Xuất hiện khi người dùng bấm nút "Xem chi tiết" ở màn hình 1
+Note: Ở trạng thái "Phê duyệt"
+
+3. Màn hình 3
+- Xuất hiện khi người dùng bấm nút "Xem chi tiết" ở màn hình 1
+Note: Ở trạng thái "Từ chối"
+
+4. Màn hình 4
+- Xuất hiện khi người dùng bấm nút "Xem chi tiết" ở màn hình 1
+- Ở button "Từ chối" và "Phê duyệt" khi bấm vào sẽ xuất hiện pop xác nhận
+Note: Ở trạng thái "Chờ phê duyệt"
+
+5. Template email gửi account và portal
+- Sau khi admin duyệt đăng ký của doanh nghiệp, hệ thống sẽ tự động gửi email cho người dùng, trong đó sẽ có thông tin tài khoản và link portal
+
+6. Template email từ chối 
+- Sau khi admin từ chối đăng ký của doanh nghiệp, hệ thống sẽ tự động gửi email cho người dùng.

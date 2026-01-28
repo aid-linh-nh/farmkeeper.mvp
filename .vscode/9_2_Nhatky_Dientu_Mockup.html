@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhật Ký Canh Tác - Vườn Anh Hiền</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .farming-header {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            padding: 24px;
+            border-radius: 0 0 16px 16px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-container {
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            margin: 0 16px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+        }
+        
+        .tab-button {
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: none;
+            background: #f1f5f9;
+            color: #64748b;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+        
+        .tab-button.active {
+            background: #10b981;
+            color: white;
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: #e2e8f0;
+        }
+        
+        .content-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 0 16px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e0f2fe;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0c4a6e;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .data-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #f9fafb;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-inprogress {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-urgent {
+            background: #fecaca;
+            color: #dc2626;
+        }
+        
+        .btn-primary {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #059669;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f1f5f9;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+        }
+        
+        .alert-box {
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background: #dcfce7;
+            border-color: #10b981;
+            color: #166534;
+        }
+        
+        .alert-warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+        
+        .alert-danger {
+            background: #fecaca;
+            border-color: #ef4444;
+            color: #dc2626;
+        }
+        
+        .input-group {
+            margin-bottom: 16px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .farming-header {
+                padding: 16px;
+            }
+            
+            .content-section {
+                margin: 0 8px 16px;
+                padding: 16px;
+            }
+            
+            .tab-container {
+                margin: 0 8px 16px;
+            }
+            
+            .metric-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .metric-value {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen">
+        <!-- Header -->
+        <div class="farming-header">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold mb-2">
+                        <i class="fas fa-seedling mr-3"></i>Nhật Ký Canh Tác
+                    </h1>
+                    <p class="text-green-100">Vườn Anh Hiền • 12.5ha • 156 cây sầu riêng</p>
+                    <p class="text-green-200 text-sm">Cú M'Gar, Đắk Lắk • VietGAP Certified</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold">2025</div>
+                    <div class="text-sm text-green-200">Cây 6-7 tuổi</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tab-container">
+            <button class="tab-button active" onclick="showTab('overview')">
+                <i class="fas fa-chart-line mr-2"></i>Tổng quan
+            </button>
+            <button class="tab-button" onclick="showTab('monthly')">
+                <i class="fas fa-calendar-alt mr-2"></i>Theo tháng
+            </button>
+            <button class="tab-button" onclick="showTab('tasks')">
+                <i class="fas fa-tasks mr-2"></i>Công việc
+            </button>
+            <button class="tab-button" onclick="showTab('materials')">
+                <i class="fas fa-boxes mr-2"></i>Vật tư
+            </button>
+            <button class="tab-button" onclick="showTab('costs')">
+                <i class="fas fa-calculator mr-2"></i>Chi phí
+            </button>
+            <button class="tab-button" onclick="showTab('pest')">
+                <i class="fas fa-bug mr-2"></i>Sâu bệnh
+            </button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="content-section">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-chart-pie text-blue-600 mr-3"></i>Tổng quan năm 2025
+                </h2>
+                
+                <div class="metric-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">160 tấn</div>
+                        <div class="metric-label">Sản lượng dự kiến</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">9.7 tỷ</div>
+                        <div class="metric-label">Doanh thu dự kiến</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">464.7tr</div>
+                        <div class="metric-label">Chi phí sản xuất</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">95.2%</div>
+                        <div class="metric-label">Tỷ suất lợi nhuận</div>
+                    </div>
+                </div>
+
+                <div class="alert-box alert-success">
+                    <h3 class="font-semibold text-lg mb-2">🎯 Mục tiêu năm 2025</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <div class="text-sm font-medium">Tỷ lệ đậu quả</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 92%"></div>
+                            </div>
+                            <div class="text-xs text-green-600">92% (mục tiêu: 90%)</div>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium">Chất lượng loại 1</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 80%"></div>
+                            </div>
+                            <div class="text-xs text-green-600">80 tấn (50%)</div>
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium">Tiết kiệm chi phí</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 15%"></div>
+                            </div>
+                            <div class="text-xs text-green-600">15% so với năm trước</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-xl font-bold text-gray-800 mb-4">📅 Lịch trình chính</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Giai đoạn</th>
+                            <th>Thời gian</th>
+                            <th>Công việc chính</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fas fa-flower text-pink-500 mr-2"></i>Ra hoa</td>
+                            <td>T1 - T2</td>
+                            <td>Theo dõi hoa, thụ phấn</td>
+                            <td><span class="status-badge status-completed">Hoàn thành</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-apple-alt text-green-500 mr-2"></i>Ra quả</td>
+                            <td>T3 - T7</td>
+                            <td>Chăm sóc quả, phòng sâu bệnh</td>
+                            <td><span class="status-badge status-inprogress">Đang thực hiện</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-leaf text-orange-500 mr-2"></i>Thu hoạch</td>
+                            <td>T8 - T9</td>
+                            <td>Hái quả, phân loại, bán</td>
+                            <td><span class="status-badge status-pending">Sắp tới</span></td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-tools text-gray-500 mr-2"></i>Nghỉ ngơi</td>
+                            <td>T10 - T12</td>
+                            <td>Vệ sinh vườn, bảo trì</td>
+                            <td><span class="status-badge status-pending">Chưa bắt đầu</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Monthly Tab -->
+        <div id="monthly" class="tab-content">
+            <div class="content-section">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-calendar-alt text-blue-600 mr-3"></i>Kế hoạch theo tháng
+                    </h2>
+                    <div class="input-group">
+                        <select class="input-field w-40" onchange="changeMonth(this.value)">
+                            <option value="1">Tháng 1</option>
+                            <option value="2">Tháng 2</option>
+                            <option value="3" selected>Tháng 3</option>
+                            <option value="4">Tháng 4</option>
+                            <option value="5">Tháng 5</option>
+                            <option value="6">Tháng 6</option>
+                            <option value="7">Tháng 7</option>
+                            <option value="8">Tháng 8</option>
+                            <option value="9">Tháng 9</option>
+                            <option value="10">Tháng 10</option>
+                            <option value="11">Tháng 11</option>
+                            <option value="12">Tháng 12</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="alert-box alert-success">
+                    <h3 class="font-bold text-lg mb-2">🍇 Tháng 3: Giai đoạn đậu quả</h3>
+                    <p class="text-sm">Quả non đang phát triển, cần chăm sóc đặc biệt để đảm bảo chất lượng</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">📋 Công việc tháng 3</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Công việc</th>
+                                    <th>Ngày</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Đếm quả non</td>
+                                    <td>1-5/3</td>
+                                    <td><span class="status-badge status-completed">Xong</span></td>
+                                    <td><button class="btn-secondary">Xem</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Tỉa quả dị tật</td>
+                                    <td>10-15/3</td>
+                                    <td><span class="status-badge status-inprogress">Đang làm</span></td>
+                                    <td><button class="btn-secondary">Cập nhật</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Bón phân NPK</td>
+                                    <td>20-25/3</td>
+                                    <td><span class="status-badge status-pending">Chờ</span></td>
+                                    <td><button class="btn-secondary">Bắt đầu</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Bao quả</td>
+                                    <td>25-31/3</td>
+                                    <td><span class="status-badge status-pending">Chờ</span></td>
+                                    <td><button class="btn-secondary">Lên lịch</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">💰 Chi phí tháng 3</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium">Nhân công (85 công)</span>
+                                <span class="font-bold text-green-700">26.35tr</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium">NPK 16-16-8</span>
+                                <span class="font-bold text-orange-700">6.08tr</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium">Phân kali</span>
+                                <span class="font-bold text-orange-700">9.36tr</span>
+                            </div>
+                            <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium">Bao bọc quả</span>
+                                <span class="font-bold text-orange-700">936k</span>
+                            </div>
+                            <div class="border-t pt-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-lg">Tổng chi phí:</span>
+                                    <span class="text-2xl font-bold text-red-600">42.9 triệu</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Tab -->
+        <div id="tasks" class="tab-content">
+            <div class="content-section">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-tasks text-purple-600 mr-3"></i>Quản lý công việc
+                    </h2>
+                    <button class="btn-primary" onclick="addNewTask()">
+                        <i class="fas fa-plus mr-2"></i>Thêm công việc
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Công việc</th>
+                                    <th>Khu vực</th>
+                                    <th>Ngày</th>
+                                    <th>Người phụ trách</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="font-medium">Phun thuốc sâu phủ quả</div>
+                                        <div class="text-xs text-gray-500">Imidacloprid 200SC</div>
+                                    </td>
+                                    <td>A3, B1</td>
+                                    <td>12/03/2025</td>
+                                    <td>Anh Minh</td>
+                                    <td><span class="status-badge status-urgent">Khẩn cấp</span></td>
+                                    <td>
+                                        <button class="btn-secondary mr-1">Bắt đầu</button>
+                                        <button class="btn-secondary">Chi tiết</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="font-medium">Bón phân NPK</div>
+                                        <div class="text-xs text-gray-500">2kg/cây</div>
+                                    </td>
+                                    <td>Toàn vườn</td>
+                                    <td>20/03/2025</td>
+                                    <td>Anh Hùng</td>
+                                    <td><span class="status-badge status-inprogress">Đang làm</span></td>
+                                    <td>
+                                        <button class="btn-secondary mr-1">Cập nhật</button>
+                                        <button class="btn-secondary">Chi tiết</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="font-medium">Kiểm tra quả non</div>
+                                        <div class="text-xs text-gray-500">Đếm số lượng</div>
+                                    </td>
+                                    <td>A1, A2</td>
+                                    <td>05/03/2025</td>
+                                    <td>Chủ vườn</td>
+                                    <td><span class="status-badge status-completed">Hoàn thành</span></td>
+                                    <td>
+                                        <button class="btn-secondary mr-1">Báo cáo</button>
+                                        <button class="btn-secondary">Chi tiết</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">📊 Thống kê công việc</h4>
+                        <div class="space-y-4">
+                            <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                                <div class="text-2xl font-bold text-red-600">1</div>
+                                <div class="text-sm text-red-700">Công việc khẩn cấp</div>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <div class="text-2xl font-bold text-blue-600">2</div>
+                                <div class="text-sm text-blue-700">Đang thực hiện</div>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <div class="text-2xl font-bold text-green-600">5</div>
+                                <div class="text-sm text-green-700">Hoàn thành tuần này</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <h4 class="font-semibold text-gray-800 mb-4">⏰ Lịch sắp tới</h4>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between p-2 bg-gray-50 rounded">
+                                    <span>Bao quả B2-B4</span>
+                                    <span class="text-gray-500">25/03</span>
+                                </div>
+                                <div class="flex justify-between p-2 bg-gray-50 rounded">
+                                    <span>Kiểm tra hệ thống tưới</span>
+                                    <span class="text-gray-500">28/03</span>
+                                </div>
+                                <div class="flex justify-between p-2 bg-gray-50 rounded">
+                                    <span>Phun thuốc diệt nấm</span>
+                                    <span class="text-gray-500">30/03</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Materials Tab -->
+        <div id="materials" class="tab-content">
+            <div class="content-section">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-boxes text-orange-600 mr-3"></i>Quản lý vật tư
+                    </h2>
+                    <button class="btn-primary" onclick="addMaterial()">
+                        <i class="fas fa-plus mr-2"></i>Thêm vật tư
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">📦 Tồn kho hiện tại</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Vật tư</th>
+                                    <th>Tồn kho</th>
+                                    <th>Đơn vị</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>NPK 16-16-8</td>
+                                    <td class="font-bold text-red-600">0</td>
+                                    <td>kg</td>
+                                    <td><span class="status-badge status-urgent">Hết hàng</span></td>
+                                    <td><button class="btn-secondary">Đặt hàng</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Imidacloprid 200SC</td>
+                                    <td>2.5</td>
+                                    <td>lít</td>
+                                    <td><span class="status-badge status-pending">Sắp hết</span></td>
+                                    <td><button class="btn-secondary">Đặt thêm</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Phân hữu cơ</td>
+                                    <td>850</td>
+                                    <td>kg</td>
+                                    <td><span class="status-badge status-completed">Đủ dùng</span></td>
+                                    <td><button class="btn-secondary">Chi tiết</button></td>
+                                </tr>
+                                <tr>
+                                    <td>Bao bọc quả</td>
+                                    <td>3,200</td>
+                                    <td>cái</td>
+                                    <td><span class="status-badge status-pending">Cần thêm</span></td>
+                                    <td><button class="btn-secondary">Đặt hàng</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">🛒 Kế hoạch mua sắm</h4>
+                        <div class="space-y-4">
+                            <div class="border rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <div class="font-medium">NPK 16-16-8</div>
+                                        <div class="text-sm text-gray-500">500 kg</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-red-600">9.75tr</div>
+                                        <div class="text-xs text-gray-500">19,500đ/kg</div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn-primary flex-1">Đặt hàng ngay</button>
+                                    <button class="btn-secondary">Sửa</button>
+                                </div>
+                            </div>
+
+                            <div class="border rounded-lg p-4">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <div class="font-medium">Bao bọc quả</div>
+                                        <div class="text-sm text-gray-500">2,000 cái</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-bold text-orange-600">400k</div>
+                                        <div class="text-xs text-gray-500">200đ/cái</div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button class="btn-primary flex-1">Đặt hàng</button>
+                                    <button class="btn-secondary">Sửa</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 alert-box alert-success">
+                            <h5 class="font-semibold mb-2">💡 Gợi ý tiết kiệm</h5>
+                            <ul class="text-sm space-y-1">
+                                <li>• Mua phân NPK số lượng lớn giảm 8%</li>
+                                <li>• Đặt bao quả trước mùa giảm 15%</li>
+                                <li>• Nhóm với các vườn khác để được giá sỉ</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Costs Tab -->
+        <div id="costs" class="tab-content">
+            <div class="content-section">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-calculator text-green-600 mr-3"></i>Quản lý chi phí
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">📊 Tổng quan chi phí năm</h4>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Hạng mục</th>
+                                    <th>Dự toán</th>
+                                    <th>Thực tế</th>
+                                    <th>Chênh lệch</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Nhân công</td>
+                                    <td>290tr</td>
+                                    <td>285.2tr</td>
+                                    <td class="text-green-600">-4.8tr</td>
+                                </tr>
+                                <tr>
+                                    <td>Phân bón</td>
+                                    <td>150tr</td>
+                                    <td>145.6tr</td>
+                                    <td class="text-green-600">-4.4tr</td>
+                                </tr>
+                                <tr>
+                                    <td>Thuốc BVTV</td>
+                                    <td>10tr</td>
+                                    <td>8.5tr</td>
+                                    <td class="text-green-600">-1.5tr</td>
+                                </tr>
+                                <tr>
+                                    <td>Vật tư khác</td>
+                                    <td>30tr</td>
+                                    <td>25.4tr</td>
+                                    <td class="text-green-600">-4.6tr</td>
+                                </tr>
+                                <tr class="bg-gray-50 font-bold">
+                                    <td>Tổng</td>
+                                    <td>480tr</td>
+                                    <td>464.7tr</td>
+                                    <td class="text-green-600">-15.3tr</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">💰 Phân tích lợi nhuận</h4>
+                        <div class="space-y-4">
+                            <div class="bg-green-50 rounded-lg p-6 border border-green-200">
+                                <div class="text-3xl font-bold text-green-700">9.235 tỷ</div>
+                                <div class="text-sm text-green-600">Lợi nhuận dự kiến</div>
+                                <div class="text-xs text-gray-500 mt-1">Doanh thu 9.7 tỷ - Chi phí 464.7tr</div>
+                            </div>
+
+                            <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
+                                <div class="text-2xl font-bold text-blue-700">95.2%</div>
+                                <div class="text-sm text-blue-600">Tỷ suất lợi nhuận</div>
+                                <div class="text-xs text-gray-500 mt-1">Cao hơn 5% so với năm trước</div>
+                            </div>
+
+                            <div class="bg-orange-50 rounded-lg p-6 border border-orange-200">
+                                <div class="text-2xl font-bold text-orange-700">59.2tr/ha</div>
+                                <div class="text-sm text-orange-600">Lợi nhuận/ha</div>
+                                <div class="text-xs text-gray-500 mt-1">Hiệu quả kinh tế cao</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pest Control Tab -->
+        <div id="pest" class="tab-content">
+            <div class="content-section">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-bug text-red-600 mr-3"></i>Phòng trừ sâu bệnh
+                </h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">🚨 Cảnh báo hiện tại</h4>
+                        <div class="space-y-4">
+                            <div class="alert-box alert-danger">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h5 class="font-bold text-lg">Sâu phủ quả</h5>
+                                    <span class="status-badge status-urgent">Khẩn cấp</span>
+                                </div>
+                                <p class="text-sm mb-3">Khu A3, B1 • 35 cây bị ảnh hưởng</p>
+                                <div class="bg-white rounded p-3 text-sm mb-3">
+                                    <strong>Xử lý:</strong> Imidacloprid 200SC, 1.5ml/L nước, phun buổi chiều
+                                </div>
+                                <button class="btn-primary w-full">Bắt đầu xử lý</button>
+                            </div>
+
+                            <div class="alert-box alert-warning">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h5 class="font-bold">Nấm thán thư</h5>
+                                    <span class="status-badge status-pending">Theo dõi</span>
+                                </div>
+                                <p class="text-sm mb-3">Khu B3 • Xuất hiện đốm trên lá</p>
+                                <button class="btn-secondary w-full">Lên kế hoạch phun</button>
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <h4 class="font-semibold text-gray-800 mb-4">📅 Lịch phun thuốc</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày</th>
+                                        <th>Thuốc</th>
+                                        <th>Khu vực</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>05/03</td>
+                                        <td>Imidacloprid</td>
+                                        <td>A3, B1</td>
+                                        <td><span class="status-badge status-pending">Sắp phun</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>15/03</td>
+                                        <td>Copper Oxychloride</td>
+                                        <td>Toàn vườn</td>
+                                        <td><span class="status-badge status-pending">Chờ</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>25/02</td>
+                                        <td>Trichoderma</td>
+                                        <td>B2, B4</td>
+                                        <td><span class="status-badge status-completed">Đã phun</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-800 mb-4">📚 Cẩm nang sâu bệnh</h4>
+                        <div class="space-y-3">
+                            <div class="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-bug text-red-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-medium">Sâu phủ quả</div>
+                                        <div class="text-sm text-gray-500">Conopomorpha cramerella</div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </div>
+                            </div>
+
+                            <div class="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-leaf text-yellow-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-medium">Thrips</div>
+                                        <div class="text-sm text-gray-500">Thrips palmi</div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </div>
+                            </div>
+
+                            <div class="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-virus text-green-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-medium">Nấm thán thư</div>
+                                        <div class="text-sm text-gray-500">Colletotrichum spp.</div>
+                                    </div>
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 alert-box alert-success">
+                            <h5 class="font-semibold mb-2">💡 Lưu ý quan trọng</h5>
+                            <ul class="text-sm space-y-1">
+                                <li>• Phun thuốc buổi chiều tránh nắng gắt</li>
+                                <li>• Xoay vòng các loại thuốc tránh kháng</li>
+                                <li>• Kiểm tra pH nước trước khi pha</li>
+                                <li>• Đeo đầy đủ bảo hộ lao động</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab navigation function
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Add active class to clicked button
+            const clickedButton = event.target.closest('.tab-button');
+            if (clickedButton) {
+                clickedButton.classList.add('active');
+            }
+        }
+
+        // Month selector
+        function changeMonth(month) {
+            const monthNames = {
+                1: 'Ra hoa - Chuẩn bị cho mùa vụ mới',
+                2: 'Nở hoa - Theo dõi thụ phấn',
+                3: 'Đậu quả - Chăm sóc quả non',
+                4: 'Phát triển quả - Bón phân đều đặn',
+                5: 'Quả lớn - Phòng sâu bệnh',
+                6: 'Quả gần chín - Chuẩn bị thu hoạch',
+                7: 'Chuẩn bị thu hoạch',
+                8: 'Thu hoạch chính vụ',
+                9: 'Kết thúc thu hoạch',
+                10: 'Nghỉ ngơi - Vệ sinh vườn',
+                11: 'Bảo trì thiết bị',
+                12: 'Chuẩn bị năm mới'
+            };
+            
+            console.log(`Chuyển sang tháng ${month}: ${monthNames[month]}`);
+            alert(`Chuyển sang tháng ${month}: ${monthNames[month]}`);
+        }
+
+        // Task management
+        function addNewTask() {
+            const taskName = prompt('Tên công việc:');
+            if (taskName) {
+                alert(`Đã thêm công việc mới: ${taskName}`);
+            }
+        }
+
+        // Material management
+        function addMaterial() {
+            alert('Mở form thêm vật tư mới');
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Nhật ký canh tác điện tử đã khởi tạo thành công');
+            
+            // Set up any initial data or animations
+            setTimeout(() => {
+                console.log('Tất cả thành phần đã load xong');
+            }, 1000);
+        });
+
+        // Add click handlers for table rows
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.btn-secondary')) {
+                const action = e.target.textContent.trim();
+                alert(`Thực hiện: ${action}`);
+            }
+        });
+    </script>
+</body>
+</html>

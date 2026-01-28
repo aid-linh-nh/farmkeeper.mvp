@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo Phân tích Khối lượng Công việc</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            .print-break-inside-avoid {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+    <div class="max-w-4xl mx-auto p-4 sm:p-8">
+        <!-- Header & Actions -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-8 no-print">
+            <h1 class="text-2xl font-bold text-gray-700">Bản xem trước Báo cáo</h1>
+            <button onclick="window.print()" class="mt-4 sm:mt-0 w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center">
+                <i data-lucide="printer" class="w-5 h-5 mr-2"></i> In Báo cáo
+            </button>
+        </div>
+
+        <!-- Report Content -->
+        <div class="bg-white p-8 sm:p-12 rounded-lg shadow-lg print-container">
+            <!-- Report Header -->
+            <header class="text-center border-b pb-6 mb-8">
+                <h1 class="text-4xl font-bold text-gray-800">BÁO CÁO PHÂN TÍCH KHỐI LƯỢNG CÔNG VIỆC</h1>
+                <p class="text-gray-500 mt-2">Tài liệu dành cho Ban Lãnh đạo và các cấp Quản lý</p>
+            </header>
+
+            <!-- Report Metadata -->
+            <div class="grid grid-cols-2 gap-4 mb-10 text-sm">
+                <div>
+                    <label for="report-period" class="font-semibold text-gray-600">Kỳ Báo Cáo:</label>
+                    <input id="report-period" type="text" value="Quý 4, 2025" class="w-full border-b mt-1 p-1 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="report-scope" class="font-semibold text-gray-600">Phạm vi:</label>
+                    <input id="report-scope" type="text" value="Toàn đội ngũ Kỹ sư Nông nghiệp" class="w-full border-b mt-1 p-1 focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+
+            <!-- Section 1: Statistical Summary -->
+            <section class="mb-12 print-break-inside-avoid">
+                <h2 class="text-xl font-bold text-gray-700 mb-4 border-l-4 border-blue-500 pl-4">1. Tóm tắt các chỉ số Thống kê Quan trọng</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-500">Tổng số Kỹ sư</p>
+                        <p class="text-3xl font-bold text-blue-600">15</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-500">Điểm CV Trung bình</p>
+                        <p class="text-3xl font-bold text-blue-600">2.85</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-500">Điểm CV Trung vị</p>
+                        <p class="text-3xl font-bold text-blue-600">2.95</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-500">Điểm CV Cao nhất</p>
+                        <p class="text-3xl font-bold text-red-600">4.36</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-500">Điểm CV Thấp nhất</p>
+                        <p class="text-3xl font-bold text-green-600">2.15</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg text-center">
+                        <p class="text-sm text-gray-500">Độ lệch chuẩn</p>
+                        <p class="text-3xl font-bold text-gray-600">0.65</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 2: Workload Distribution -->
+            <section class="mb-12 print-break-inside-avoid">
+                <h2 class="text-xl font-bold text-gray-700 mb-4 border-l-4 border-blue-500 pl-4">2. Phân bổ Khối lượng Công việc</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="h-64"><canvas id="distributionChart"></canvas></div>
+                    <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr><th class="px-6 py-3">Phân loại</th><th class="px-6 py-3 text-center">Số lượng Kỹ sư</th><th class="px-6 py-3 text-center">Tỷ lệ (%)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span>Quá tải (≥3.5)</td><td class="px-6 py-4 text-center">3</td><td class="px-6 py-4 text-center">20%</td></tr>
+                            <tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900 flex items-center"><span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>Tối ưu (2.5-3.5)</td><td class="px-6 py-4 text-center">9</td><td class="px-6 py-4 text-center">60%</td></tr>
+                            <tr class="bg-white"><td class="px-6 py-4 font-medium text-gray-900 flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>Dưới tải (&lt;2.5)</td><td class="px-6 py-4 text-center">3</td><td class="px-6 py-4 text-center">20%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section 3: Detailed Breakdown -->
+            <section class="mb-12 print-break-inside-avoid">
+                 <h2 class="text-xl font-bold text-gray-700 mb-4 border-l-4 border-blue-500 pl-4">3. Chi tiết Khối lượng Công việc theo từng Kỹ sư</h2>
+                 <div class="overflow-x-auto">
+                     <table class="w-full text-sm text-left text-gray-500">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr><th class="px-6 py-3">STT</th><th class="px-6 py-3">Tên Kỹ sư</th><th class="px-6 py-3">Cấp bậc</th><th class="px-6 py-3 text-center">Số Vườn</th><th class="px-6 py-3 text-center">Điểm CV</th><th class="px-6 py-3">Phân loại</th></tr>
+                        </thead>
+                        <tbody>
+                            <!-- This part will be dynamically generated by the backend -->
+                            <!-- Sample Row 1 -->
+                            <tr class="bg-white border-b"><td class="px-6 py-4">1</td><td class="px-6 py-4 font-medium text-gray-900">Nguyễn Văn An</td><td class="px-6 py-4">Senior</td><td class="px-6 py-4 text-center">3</td><td class="px-6 py-4 text-center font-bold">4.36</td><td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Quá tải</span></td></tr>
+                            <!-- Sample Row 2 -->
+                            <tr class="bg-white border-b"><td class="px-6 py-4">2</td><td class="px-6 py-4 font-medium text-gray-900">Trần Thị Bích</td><td class="px-6 py-4">Standard</td><td class="px-6 py-4 text-center">4</td><td class="px-6 py-4 text-center font-bold">3.45</td><td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Tối ưu</span></td></tr>
+                             <!-- Sample Row 3 -->
+                            <tr class="bg-white border-b"><td class="px-6 py-4">...</td><td class="px-6 py-4 font-medium text-gray-900">...</td><td class="px-6 py-4">...</td><td class="px-6 py-4 text-center">...</td><td class="px-6 py-4 text-center font-bold">...</td><td class="px-6 py-4">...</td></tr>
+                             <!-- Sample Row 4 -->
+                            <tr class="bg-white"><td class="px-6 py-4">15</td><td class="px-6 py-4 font-medium text-gray-900">Vũ Thị Hoa</td><td class="px-6 py-4">Junior</td><td class="px-6 py-4 text-center">2</td><td class="px-6 py-4 text-center font-bold">2.15</td><td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">Dưới tải</span></td></tr>
+                        </tbody>
+                     </table>
+                 </div>
+            </section>
+
+            <!-- Section 4: Analysis & Recommendation -->
+            <section class="print-break-inside-avoid">
+                <h2 class="text-xl font-bold text-gray-700 mb-4 border-l-4 border-blue-500 pl-4">4. Phân tích & Đề xuất</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label for="analysis-general" class="block text-sm font-medium text-gray-600 mb-1">4.1. Nhận xét chung</label>
+                        <textarea id="analysis-general" rows="3" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">Nhìn chung, khối lượng công việc của đội ngũ đang được phân bổ tương đối hợp lý, với 60% nhân sự đang ở mức tải tối ưu. Điểm trung bình (2.85) và trung vị (2.95) khá gần nhau, cho thấy không có sự chênh lệch quá lớn.</textarea>
+                    </div>
+                     <div>
+                        <label for="analysis-cases" class="block text-sm font-medium text-gray-600 mb-1">4.2. Các trường hợp cần chú ý</label>
+                        <textarea id="analysis-cases" rows="4" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">- Kỹ sư Nguyễn Văn An đang có Điểm CV rất cao (4.36). Cần xem xét tái phân công.
+- Kỹ sư Vũ Thị Hoa đang có Điểm CV khá thấp (2.15). Cần xem xét gán thêm vườn mới.</textarea>
+                    </div>
+                     <div>
+                        <label for="analysis-recommendation" class="block text-sm font-medium text-gray-600 mb-1">4.3. Đề xuất `Điểm Khối lượng Công việc Chuẩn` cho kỳ tới</label>
+                        <textarea id="analysis-recommendation" rows="3" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500">Dựa trên phân tích dữ liệu hiện tại và chiến lược muốn thúc đẩy hiệu suất trong kỳ tới, đề xuất thiết lập `Điểm Khối lượng Công việc Chuẩn` cho kỳ kinh doanh tiếp theo là 3.0.</textarea>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- Chart.js ---
+        const distributionData = {
+            labels: ['Quá tải', 'Tối ưu', 'Dưới tải'],
+            datasets: [{
+                label: 'Số lượng Kỹ sư',
+                data: [3, 9, 3], // Replaced placeholders with sample data
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.7)', // Red
+                    'rgba(34, 197, 94, 0.7)', // Green
+                    'rgba(59, 130, 246, 0.7)'  // Blue
+                ],
+                borderColor: [
+                    'rgba(239, 68, 68, 1)',
+                    'rgba(34, 197, 94, 1)',
+                    'rgba(59, 130, 246, 1)'
+                ],
+                borderWidth: 1
+            }]
+        };
+
+        const ctx = document.getElementById('distributionChart');
+        if (ctx) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'doughnut',
+                data: distributionData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Tỷ lệ Phân bổ Khối lượng Công việc'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

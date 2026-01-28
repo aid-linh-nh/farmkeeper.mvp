@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danh sách Báo cáo Hiệu quả Nhân sự - FARMKEEPER</title>
+
+    <!-- Noto Sans font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <div class="flex h-screen">
+      <!-- Sidebar -->
+      <aside class="w-64 bg-white shadow-lg flex flex-col no-print">
+        <div class="p-4 border-b">
+          <div class="flex items-center space-x-2">
+            <img
+              src="https://placehold.co/40x40/69BD70/white/png?text=FK"
+              alt="FARMKEEPER Logo"
+              class="rounded-md"
+            />
+            <span class="text-xl font-bold text-[#69BD70]">FARMKEEPER</span>
+          </div>
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+          <div>
+            <h3 class="text-xs uppercase font-bold text-gray-400 mb-2">
+              DANH MỤC
+            </h3>
+            <ul>
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                >
+                  <i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i>
+                  Tổng quan
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                >
+                  <i data-lucide="droplets" class="w-5 h-5 mr-3"></i>
+                  Quản lý tưới tiêu
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                >
+                  <i data-lucide="spray-can" class="w-5 h-5 mr-3"></i>
+                  Quản lý sâu bệnh
+                </a>
+              </li>
+              <li class="relative">
+                <span
+                  class="flex items-center p-3 rounded-lg text-gray-700 font-bold bg-gray-100 cursor-pointer"
+                >
+                  <i data-lucide="clipboard-list" class="w-5 h-5 mr-3"></i>
+                  Quản lý kỹ thuật
+                  <i
+                    data-lucide="chevron-down"
+                    class="w-4 h-4 ml-auto transition-transform duration-200 transform rotate-180"
+                  ></i>
+                </span>
+                <ul class="ml-4 mt-2 space-y-1">
+                  <li>
+                    <a
+                      href="#"
+                      class="flex items-center p-2 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      <i
+                        data-lucide="dot"
+                        class="w-5 h-5 mr-2 text-[#69BD70]"
+                      ></i>
+                      Sổ tay quy trình
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="flex items-center p-2 rounded-lg text-gray-700 bg-[#69BD70] bg-opacity-10 text-[#69BD70] font-semibold transition-colors duration-200"
+                    >
+                      <i
+                        data-lucide="dot"
+                        class="w-5 h-5 mr-2 text-[#69BD70]"
+                      ></i>
+                      Báo cáo nhân sự
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#"
+                      class="flex items-center p-2 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+                    >
+                      <i
+                        data-lucide="dot"
+                        class="w-5 h-5 mr-2 text-[#69BD70]"
+                      ></i>
+                      Phân tích vườn cây
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 p-8 overflow-y-auto">
+        <div class="max-w-6xl mx-auto">
+          <!-- Page Header -->
+          <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">
+              Báo cáo Hiệu quả Nhân sự
+            </h1>
+            <button
+              class="bg-[#69BD70] hover:bg-[#5aa861] text-white font-bold py-2 px-4 rounded-md flex items-center"
+            >
+              <i data-lucide="plus" class="w-5 h-5 mr-2"></i> Tạo Báo cáo mới
+            </button>
+          </div>
+
+          <!-- Search and Filters -->
+          <div
+            class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-6"
+          >
+            <input
+              type="text"
+              placeholder="Tìm kiếm..."
+              class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#69BD70] focus:border-transparent transition-all duration-200"
+            />
+            <select
+              class="p-3 border border-gray-300 rounded-lg appearance-none bg-white focus:ring-2 focus:ring-[#69BD70] focus:border-transparent transition-all duration-200"
+            >
+              <option>Lọc theo Kỳ Báo cáo</option>
+              <option>Quý 4, 2025</option>
+              <option>Quý 3, 2025</option>
+            </select>
+          </div>
+
+          <!-- Report List Table -->
+          <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Tên Báo cáo</th>
+                    <th scope="col" class="px-6 py-3">Kỳ Báo cáo</th>
+                    <th scope="col" class="px-6 py-3">Phạm vi</th>
+                    <th scope="col" class="px-6 py-3">Ngày tạo</th>
+                    <th scope="col" class="px-6 py-3 text-right">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    class="bg-white border-b hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                      Báo cáo Phân tích Khối lượng Công việc Quý 4
+                    </td>
+                    <td class="px-6 py-4">Quý 4, 2025</td>
+                    <td class="px-6 py-4">Toàn đội ngũ Kỹ sư Nông nghiệp</td>
+                    <td class="px-6 py-4">15/08/2025</td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                      <button
+                        title="Xem chi tiết"
+                        class="p-2 rounded-full text-gray-500 hover:bg-gray-200 transition-colors duration-200"
+                      >
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                      </button>
+                      <button
+                        title="Tải xuống"
+                        class="p-2 rounded-full text-gray-500 hover:bg-gray-200 transition-colors duration-200"
+                      >
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr
+                    class="bg-white border-b hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                      Báo cáo Hiệu suất Tổ đội Kỹ thuật Miền Nam
+                    </td>
+                    <td class="px-6 py-4">Quý 3, 2025</td>
+                    <td class="px-6 py-4">Đội ngũ Kỹ thuật Miền Nam</td>
+                    <td class="px-6 py-4">25/07/2025</td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                      <button
+                        title="Xem chi tiết"
+                        class="p-2 rounded-full text-gray-500 hover:bg-gray-200 transition-colors duration-200"
+                      >
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                      </button>
+                      <button
+                        title="Tải xuống"
+                        class="p-2 rounded-full text-gray-500 hover:bg-gray-200 transition-colors duration-200"
+                      >
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr
+                    class="bg-white hover:bg-gray-50 transition-colors duration-200"
+                  >
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                      Báo cáo Tổng hợp Hiệu quả Kỹ sư theo cấp bậc
+                    </td>
+                    <td class="px-6 py-4">Quý 3, 2025</td>
+                    <td class="px-6 py-4">Toàn đội ngũ Kỹ sư Nông nghiệp</td>
+                    <td class="px-6 py-4">15/07/2025</td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                      <button
+                        title="Xem chi tiết"
+                        class="p-2 rounded-full text-gray-500 hover:bg-gray-200 transition-colors duration-200"
+                      >
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                      </button>
+                      <button
+                        title="Tải xuống"
+                        class="p-2 rounded-full text-gray-500 hover:bg-gray-200 transition-colors duration-200"
+                      >
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

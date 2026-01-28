@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Chi tiết đăng ký doanh nghiệp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* * ==============================================
+         * CÀI ĐẶT BIẾN VÀ THIẾT LẬP CHUNG
+         * ==============================================
+         */
+      :root {
+        --primary-color: #69bd70;
+        --primary-color-dark: #58a05f;
+        --danger-color: #e53e3e;
+        --danger-color-dark: #c53030;
+        --pending-bg-color: #fffbeb;
+        --pending-text-color: #b45309;
+        --background-color: #f7f8fc;
+        --card-background-color: #ffffff;
+        --text-primary: #2d3748;
+        --text-secondary: #718096;
+        --border-color: #e2e8f0;
+        --font-family: 'Noto Sans', sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-family);
+        margin: 0;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        display: flex;
+        height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* * ==============================================
+         * THANH MENU BÊN TRÁI (SIDEBAR)
+         * ==============================================
+         */
+      .sidebar {
+        width: 260px;
+        background-color: var(--card-background-color);
+        padding: 24px;
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+
+      .sidebar .logo {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 40px;
+        letter-spacing: 1px;
+      }
+
+      .menu-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        margin: 20px 0 10px 15px;
+      }
+
+      .menu-item a {
+        text-decoration: none;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        margin-bottom: 5px;
+      }
+
+      .menu-item a .icon {
+        margin-right: 15px;
+        width: 20px;
+        height: 20px;
+        color: var(--text-secondary);
+        transition: color 0.2s ease;
+      }
+
+      .menu-item a:hover {
+        background-color: var(--background-color);
+      }
+
+      .menu-item.active a {
+        background-color: var(--primary-color);
+        color: var(--card-background-color);
+        font-weight: 600;
+      }
+
+      .menu-item.active a .icon {
+        color: var(--card-background-color);
+      }
+
+      /* * ==============================================
+         * KHUNG NỘI DUNG CHÍNH
+         * ==============================================
+         */
+      .main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+      }
+
+      .main-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .header-title-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 20px;
+      }
+
+      .status-badge.pending {
+        background-color: var(--pending-bg-color);
+        color: var(--pending-text-color);
+      }
+
+      .back-link {
+        display: flex;
+        align-items: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+      }
+      .back-link:hover {
+        color: var(--text-primary);
+      }
+      .back-link .icon {
+        margin-right: 8px;
+      }
+
+      .details-card {
+        background-color: var(--card-background-color);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+          0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      }
+
+      .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px 40px;
+        margin-bottom: 40px;
+      }
+
+      .detail-item label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-weight: 500;
+        display: block;
+      }
+
+      .detail-item .value {
+        font-size: 16px;
+        padding: 12px 15px;
+        background-color: var(--background-color);
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        font-weight: 500;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .map-container {
+        width: 100%;
+        height: 350px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+      }
+      .map-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* * ==============================================
+         * KHU VỰC HÀNH ĐỘNG (CHỜ PHÊ DUYỆT)
+         * ==============================================
+         */
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        padding-top: 30px;
+        border-top: 1px solid var(--border-color);
+        margin-top: 30px;
+      }
+
+      .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+      }
+      .action-button .icon {
+        margin-right: 8px;
+      }
+      .action-button:hover {
+        transform: translateY(-1px);
+      }
+
+      .approve-button {
+        background-color: var(--primary-color);
+        color: var(--card-background-color);
+      }
+      .approve-button:hover {
+        background-color: var(--primary-color-dark);
+      }
+
+      .reject-button {
+        background-color: var(--danger-color);
+        color: var(--card-background-color);
+      }
+      .reject-button:hover {
+        background-color: var(--danger-color-dark);
+      }
+
+      /* * ==============================================
+         * POP-UP XÁC NHẬN (MODAL)
+         * ==============================================
+         */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: none; /* Hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .modal-overlay.show {
+        display: flex;
+      }
+
+      .modal-content {
+        background-color: var(--card-background-color);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 450px;
+        text-align: center;
+        animation: slideIn 0.3s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(-30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      .modal-icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-icon.approve {
+        background-color: var(--success-bg-color);
+        color: var(--success-text-color);
+      }
+
+      .modal-icon.reject {
+        background-color: var(--danger-bg-color);
+        color: var(--danger-text-color);
+      }
+
+      .modal-content h2 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 22px;
+        color: var(--text-primary);
+      }
+
+      .modal-content p {
+        margin-bottom: 20px;
+        color: var(--text-secondary);
+        font-size: 16px;
+      }
+
+      .rejection-reason-input {
+        display: none; /* Hidden by default */
+        text-align: left;
+        margin-bottom: 20px;
+      }
+
+      .rejection-reason-input label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--text-primary);
+      }
+
+      .rejection-reason-input textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-family: var(--font-family);
+        font-size: 15px;
+        resize: vertical;
+      }
+      .rejection-reason-input textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(105, 189, 112, 0.2);
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .modal-button {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        min-width: 120px;
+        transition: all 0.2s ease;
+      }
+
+      .modal-button.cancel {
+        background-color: var(--card-background-color);
+        color: var(--text-primary);
+      }
+      .modal-button.cancel:hover {
+        background-color: var(--background-color);
+      }
+
+      .modal-button.confirm {
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="logo">FARMKEEPER</div>
+      <nav class="menu">
+        <div class="menu-title">Quản lý chung</div>
+        <div class="menu-item">
+          <a href="#">
+            <svg
+              class="icon"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3 3 0 0110.5 9.75v-.75a3 3 0 013-3h.75a3 3 0 013 3v.75a3 3 0 01-1.253 2.488M9.06 15.75A3 3 0 009 18h.75a3 3 0 003-3v-.75a3 3 0 00-3-3H9.75a3 3 0 00-3 3v.75a3 3 0 00.06 1.036M12 15.75a3 3 0 01-3-3v-.75a3 3 0 013-3h.75a3 3 0 013 3v.75a3 3 0 01-3 3h-.75z"
+              />
+            </svg>
+            Quản lý người dùng
+          </a>
+        </div>
+        <div class="menu-item active">
+          <a href="#">
+            <svg
+              class="icon"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 21h16.5M4.5 3h15M5.25 3v18M18.75 3v18M9 6.75h6.375M9 12h6.375M9 17.25h6.375M12 3c-1.105 0-2.07.123-3 .348m6 0A9.005 9.005 0 0012 3zm0 18c1.105 0 2.07-.123 3-.348m-6 0A9.005 9.005 0 0112 21z"
+              />
+            </svg>
+            Quản lý Doanh nghiệp
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="main-container">
+        <header class="header">
+          <div class="header-title-group">
+            <h1>Chi tiết đăng ký</h1>
+            <span class="status-badge pending">Chờ phê duyệt</span>
+          </div>
+          <a href="#" class="back-link">
+            <svg
+              class="icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"
+              />
+            </svg>
+            Quay lại danh sách
+          </a>
+        </header>
+
+        <div class="details-card">
+          <div class="details-grid">
+            <!-- Nội dung chi tiết giữ nguyên -->
+            <div class="detail-item">
+              <label>Tên doanh nghiệp</label>
+              <div class="value">Công ty TNHH Nông sản Sầu riêng Vàng</div>
+            </div>
+            <div class="detail-item">
+              <label>Mã số thuế</label>
+              <div class="value">0312345678</div>
+            </div>
+            <div class="detail-item">
+              <label>Người đại diện</label>
+              <div class="value">Nguyễn Văn An</div>
+            </div>
+            <div class="detail-item">
+              <label>Số điện thoại</label>
+              <div class="value">0987654321</div>
+            </div>
+            <div class="detail-item full-width">
+              <label>Email</label>
+              <div class="value">contact@sauriengvang.com.vn</div>
+            </div>
+            <div class="detail-item">
+              <label>Tỉnh/Thành phố</label>
+              <div class="value">Tỉnh Tiền Giang</div>
+            </div>
+            <div class="detail-item">
+              <label>Phường/Xã (Quận/Huyện)</label>
+              <div class="value">Xã Tam Bình, Huyện Cai Lậy</div>
+            </div>
+            <div class="detail-item">
+              <label>Lĩnh vực</label>
+              <div class="value">Sản xuất nông nghiệp</div>
+            </div>
+            <div class="detail-item">
+              <label>Quy mô</label>
+              <div class="value">50 - 200 ha</div>
+            </div>
+            <div class="detail-item full-width">
+              <label>Vị trí ghim</label>
+              <div class="map-container">
+                <img
+                  src="https://placehold.co/1200x800/e2e8f0/718096?text=Bản+đồ+vị+trí"
+                  alt="Bản đồ vị trí doanh nghiệp"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="action-button reject-button" id="reject-trigger">
+              <svg
+                class="icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"
+                />
+              </svg>
+              Từ chối
+            </button>
+            <button class="action-button approve-button" id="approve-trigger">
+              <svg
+                class="icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022z"
+                />
+              </svg>
+              Phê duyệt
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal Structure -->
+    <div class="modal-overlay" id="confirmation-modal">
+      <div class="modal-content">
+        <div class="modal-icon" id="modal-icon">
+          <!-- Icon sẽ được chèn bằng JS -->
+        </div>
+        <h2 id="modal-title"></h2>
+        <p id="modal-message"></p>
+
+        <!-- Khung nhập lý do từ chối -->
+        <div class="rejection-reason-input" id="rejection-reason-container">
+          <label for="rejection-reason">Lý do từ chối (bắt buộc)</label>
+          <textarea
+            id="rejection-reason"
+            rows="3"
+            placeholder="Nhập lý do..."
+          ></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-button cancel" id="modal-cancel-btn">
+            Hủy bỏ
+          </button>
+          <button class="modal-button confirm" id="modal-confirm-btn"></button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Lấy các phần tử DOM
+        const modalOverlay = document.getElementById('confirmation-modal');
+        const approveTrigger = document.getElementById('approve-trigger');
+        const rejectTrigger = document.getElementById('reject-trigger');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+
+        const rejectionReasonContainer = document.getElementById(
+          'rejection-reason-container'
+        );
+        const rejectionReasonTextarea =
+          document.getElementById('rejection-reason');
+
+        let currentAction = null;
+
+        // Hàm để mở modal
+        const openModal = (action) => {
+          currentAction = action;
+          modalOverlay.classList.add('show');
+
+          if (action === 'approve') {
+            rejectionReasonContainer.style.display = 'none'; // Ẩn khung lý do
+            modalIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M12.736 3.97a.733.733 0 0 1 1.047 0c.286.289.29.756.01 1.05L7.88 12.01a.733.733 0 0 1-1.065.02L3.217 8.384a.757.757 0 0 1 0-1.06.733.733 0 0 1 1.047 0l3.052 3.093 5.4-6.425a.247.247 0 0 1 .02-.022z"/></svg>`;
+            modalIcon.className = 'modal-icon approve';
+            modalTitle.textContent = 'Xác nhận phê duyệt';
+            modalMessage.textContent =
+              'Bạn có chắc chắn muốn phê duyệt đăng ký này không?';
+            modalConfirmBtn.textContent = 'Phê duyệt';
+            modalConfirmBtn.className = 'modal-button confirm approve-button';
+          } else if (action === 'reject') {
+            rejectionReasonContainer.style.display = 'block'; // Hiện khung lý do
+            rejectionReasonTextarea.value = ''; // Xóa lý do cũ
+            modalIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/></svg>`;
+            modalIcon.className = 'modal-icon reject';
+            modalTitle.textContent = 'Xác nhận từ chối';
+            modalMessage.textContent =
+              'Vui lòng nhập lý do trước khi từ chối đăng ký này.';
+            modalConfirmBtn.textContent = 'Xác nhận từ chối';
+            modalConfirmBtn.className = 'modal-button confirm reject-button';
+          }
+        };
+
+        // Hàm để đóng modal
+        const closeModal = () => {
+          modalOverlay.classList.remove('show');
+        };
+
+        // Gán sự kiện cho các nút trigger
+        approveTrigger.addEventListener('click', () => openModal('approve'));
+        rejectTrigger.addEventListener('click', () => openModal('reject'));
+
+        // Gán sự kiện cho các nút trong modal
+        modalCancelBtn.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', (event) => {
+          if (event.target === modalOverlay) {
+            closeModal();
+          }
+        });
+
+        modalConfirmBtn.addEventListener('click', () => {
+          if (currentAction === 'approve') {
+            // Thực hiện hành động phê duyệt
+            alert('Đã phê duyệt doanh nghiệp thành công!');
+            closeModal();
+          } else if (currentAction === 'reject') {
+            const reason = rejectionReasonTextarea.value.trim();
+            if (reason === '') {
+              alert('Vui lòng nhập lý do từ chối.');
+              rejectionReasonTextarea.focus();
+            } else {
+              // Thực hiện hành động từ chối với lý do
+              alert(`Đã từ chối đăng ký với lý do: "${reason}"`);
+              closeModal();
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

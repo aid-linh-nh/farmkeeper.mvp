@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Danh sách HTX đăng ký</title>
+
+    <!-- Google Fonts: Noto Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- General Reset & Body --- */
+      :root {
+        --primary-color: #69bd70;
+        --primary-light-color: #e8f5e9;
+        --text-color: #333;
+        --border-color: #e0e0e0;
+        --background-color: #f4f6f9;
+        --white-color: #ffffff;
+        --pending-color: #ffc107;
+        --approved-color: #28a745;
+        --rejected-color: #dc3545;
+        --info-color: #007bff;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-color);
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* --- Main Layout: Sidebar + Content --- */
+      .app-container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* --- Sidebar (Menu) --- */
+      .sidebar {
+        width: 260px;
+        background-color: var(--white-color);
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        padding: 20px 0;
+        flex-shrink: 0;
+      }
+
+      .sidebar-header {
+        padding: 0 24px;
+        margin-bottom: 24px;
+      }
+
+      .sidebar-header h1 {
+        color: var(--primary-color);
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .sidebar-nav ul {
+        list-style-type: none;
+      }
+
+      .sidebar-nav ul li a {
+        display: block;
+        color: #555;
+        text-decoration: none;
+        padding: 12px 24px;
+        font-weight: 500;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+      }
+
+      .sidebar-nav ul li a:hover {
+        background-color: #f8f9fa;
+      }
+
+      .nav-parent > a {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .nav-child {
+        padding-left: 20px;
+      }
+
+      .nav-child li.active a {
+        background-color: var(--primary-light-color);
+        color: var(--primary-color);
+        border-left-color: var(--primary-color);
+        font-weight: 600;
+      }
+
+      /* --- Main Content --- */
+      .main-content {
+        flex-grow: 1;
+        padding: 24px;
+        overflow-y: auto;
+      }
+
+      .page-header {
+        margin-bottom: 24px;
+      }
+
+      .page-header h2 {
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      .card {
+        background-color: var(--white-color);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* --- Search & Filters --- */
+      .controls-container {
+        margin-bottom: 24px;
+      }
+
+      .search-container {
+        margin-bottom: 20px;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-family: 'Noto Sans', sans-serif;
+        font-size: 15px;
+      }
+
+      .filters-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: flex-end;
+      }
+
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .filter-group label {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .filter-group select,
+      .filter-group input {
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        font-family: 'Noto Sans', sans-serif;
+        font-size: 14px;
+        min-width: 180px;
+      }
+
+      .filter-button {
+        padding: 10px 20px;
+        border: none;
+        background-color: var(--primary-color);
+        color: var(--white-color);
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: background-color 0.2s;
+      }
+
+      .filter-button:hover {
+        background-color: #55a85b;
+      }
+
+      /* --- Table --- */
+      .table-wrapper {
+        overflow-x: auto; /* For responsive behavior on small screens */
+      }
+
+      table.data-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table.data-table thead th {
+        background-color: #f8f9fa;
+        padding: 16px;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 600;
+        color: #555;
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      table.data-table tbody td {
+        padding: 16px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 14px;
+        vertical-align: middle;
+      }
+
+      table.data-table tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      table.data-table tbody tr:hover {
+        background-color: #fcfcfc;
+      }
+
+      /* --- Status Badges --- */
+      .status-badge {
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--white-color);
+        display: inline-block;
+        text-align: center;
+        min-width: 110px;
+      }
+      .status-pending {
+        background-color: var(--pending-color);
+      }
+      .status-approved {
+        background-color: var(--approved-color);
+      }
+      .status-rejected {
+        background-color: var(--rejected-color);
+      }
+
+      /* --- Action Buttons --- */
+      .action-buttons {
+        display: flex;
+        gap: 8px;
+      }
+      .action-button {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        transition: opacity 0.2s;
+      }
+      .action-button:hover {
+        opacity: 0.85;
+      }
+
+      .btn-details {
+        background-color: var(--info-color);
+        color: white;
+      }
+      .btn-approve {
+        background-color: var(--primary-color);
+        color: white;
+      }
+      .btn-reject {
+        background-color: var(--rejected-color);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar Menu -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h1>FARMKEEPER</h1>
+        </div>
+        <nav class="sidebar-nav">
+          <ul>
+            <li class="nav-parent">
+              <a href="#">Quản lý người dùng</a>
+              <ul class="nav-child">
+                <li class="active"><a href="#">Quản lý HTX</a></li>
+                <li><a href="#">Quản lý Nông dân</a></li>
+                <li><a href="#">Quản lý Chuyên gia</a></li>
+              </ul>
+            </li>
+            <li class="nav-parent">
+              <a href="#">Quản lý Quy trình</a>
+            </li>
+            <li class="nav-parent">
+              <a href="#">Báo cáo & Thống kê</a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="page-header">
+          <h2>Danh sách Hợp tác xã đăng ký</h2>
+        </header>
+
+        <div class="card">
+          <div class="controls-container">
+            <div class="search-container">
+              <input
+                type="text"
+                class="search-input"
+                placeholder="Tìm kiếm theo Tên HTX, MST, Người đại diện..."
+              />
+            </div>
+            <!-- Filters -->
+            <div class="filters-container">
+              <div class="filter-group">
+                <label for="filter-status">Trạng thái</label>
+                <select id="filter-status">
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="pending">Chờ phê duyệt</option>
+                  <option value="approved">Đã phê duyệt</option>
+                  <option value="rejected">Từ chối</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="filter-province">Tỉnh/Thành phố</label>
+                <select id="filter-province">
+                  <option value="">Tất cả tỉnh/thành</option>
+                  <option value="tiengiang">Tiền Giang</option>
+                  <option value="bentre">Bến Tre</option>
+                  <option value="daklak">Đắk Lắk</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="filter-date">Ngày đăng ký</label>
+                <input type="date" id="filter-date" />
+              </div>
+              <button class="filter-button">Lọc</button>
+            </div>
+          </div>
+
+          <!-- Data Table -->
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tên HTX</th>
+                  <th>Mã số thuế</th>
+                  <th>Người đại diện</th>
+                  <th>Số điện thoại</th>
+                  <th>Email</th>
+                  <th>Trạng thái</th>
+                  <th>Ngày đăng ký</th>
+                  <th>Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>HTX Sầu riêng Cai Lậy</td>
+                  <td>0123456789</td>
+                  <td>Nguyễn Văn A</td>
+                  <td>0912345678</td>
+                  <td>vana@example.com</td>
+                  <td>
+                    <span class="status-badge status-approved"
+                      >Đã phê duyệt</span
+                    >
+                  </td>
+                  <td>20/07/2025</td>
+                  <td class="action-buttons">
+                    <button class="action-button btn-details">
+                      Xem chi tiết
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>HTX Nông sản Krông Pắc</td>
+                  <td>9876543210</td>
+                  <td>Trần Thị B</td>
+                  <td>0987654321</td>
+                  <td>thib@example.com</td>
+                  <td>
+                    <span class="status-badge status-pending"
+                      >Chờ phê duyệt</span
+                    >
+                  </td>
+                  <td>01/08/2025</td>
+                  <td class="action-buttons">
+                    <button class="action-button btn-details">
+                      Xem chi tiết
+                    </button>
+                    <button class="action-button btn-approve">Phê duyệt</button>
+                    <button class="action-button btn-reject">Từ chối</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>HTX Cây trái Chợ Lách</td>
+                  <td>5556667778</td>
+                  <td>Lê Văn C</td>
+                  <td>0905112233</td>
+                  <td>vanc@example.com</td>
+                  <td>
+                    <span class="status-badge status-rejected">Từ chối</span>
+                  </td>
+                  <td>15/07/2025</td>
+                  <td class="action-buttons">
+                    <button class="action-button btn-details">
+                      Xem chi tiết
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>HTX Sầu riêng Cái Bè</td>
+                  <td>1122334455</td>
+                  <td>Phạm Thị D</td>
+                  <td>0334455667</td>
+                  <td>phamd@example.com</td>
+                  <td>
+                    <span class="status-badge status-pending"
+                      >Chờ phê duyệt</span
+                    >
+                  </td>
+                  <td>05/08/2025</td>
+                  <td class="action-buttons">
+                    <button class="action-button btn-details">
+                      Xem chi tiết
+                    </button>
+                    <button class="action-button btn-approve">Phê duyệt</button>
+                    <button class="action-button btn-reject">Từ chối</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

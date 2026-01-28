@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Thư Viện KPI - FARMKEEPER</title>
+
+    <!-- Noto Sans Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .logo-color {
+        color: #69bd70;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800 min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white shadow-lg p-6 flex flex-col">
+      <!-- Logo -->
+      <div class="flex items-center mb-10">
+        <h1 class="text-2xl font-bold logo-color">FARMKEEPER</h1>
+      </div>
+
+      <!-- Menu -->
+      <nav class="flex-grow">
+        <ul>
+          <li class="mb-2">
+            <span class="block text-gray-500 font-medium text-sm uppercase"
+              >Quản lý kỹ thuật</span
+            >
+            <ul>
+              <li class="mt-2">
+                <a
+                  href="#"
+                  class="flex items-center p-2 rounded-md bg-green-500/20 text-green-500 font-semibold"
+                >
+                  <i data-lucide="bar-chart-2" class="w-4 h-4 mr-2"></i>
+                  <span>Quản lý KPIs</span>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-grow p-6 lg:p-8">
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Quản Lý Thư Viện KPI</h1>
+          <p class="text-gray-600 mt-1">
+            Xây dựng và duy trì kho chỉ số đo lường hiệu suất trung tâm của công
+            ty.
+          </p>
+        </div>
+        <button
+          id="add-kpi-btn"
+          class="mt-4 md:mt-0 w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md flex items-center justify-center"
+        >
+          <i data-lucide="plus" class="w-5 h-5 mr-2"></i> Thêm KPI mới
+        </button>
+      </div>
+
+      <!-- KPI List Table -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3">Mã KPI</th>
+                <th scope="col" class="px-6 py-3">Tên KPI</th>
+                <th scope="col" class="px-6 py-3">Nhóm Chiến Lược</th>
+                <th scope="col" class="px-6 py-3">Nguồn Dữ liệu</th>
+                <th scope="col" class="px-6 py-3 text-center">Trạng thái</th>
+                <th scope="col" class="px-6 py-3 text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Sample Row 1 - Trạng thái Hoạt động -->
+              <tr class="bg-white border-b hover:bg-gray-50">
+                <td class="px-6 py-4 font-mono text-xs">kpi_sales</td>
+                <td class="px-6 py-4 font-medium text-gray-900">
+                  Doanh số Vật tư
+                </td>
+                <td class="px-6 py-4">I. Hiệu quả Chuỗi Giá trị</td>
+                <td class="px-6 py-4">Hệ thống ERP / Bán hàng</td>
+                <td class="px-6 py-4 text-center">
+                  <span
+                    class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800"
+                    >Hoạt động</span
+                  >
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <button class="p-2 text-gray-400 hover:text-blue-500">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                  </button>
+                  <button class="p-2 text-gray-400 hover:text-blue-500">
+                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                  </button>
+                  <button class="p-2 text-gray-400 hover:text-red-500">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </td>
+              </tr>
+              <!-- Sample Row 2 - Trạng thái Hoạt động -->
+              <tr class="bg-white border-b hover:bg-gray-50">
+                <td class="px-6 py-4 font-mono text-xs">kpi_qc_score</td>
+                <td class="px-6 py-4 font-medium text-gray-900">
+                  Chất lượng Nông sản Thu mua
+                </td>
+                <td class="px-6 py-4">I. Hiệu quả Chuỗi Giá trị</td>
+                <td class="px-6 py-4">Module Quản lý Chất lượng (QC)</td>
+                <td class="px-6 py-4 text-center">
+                  <span
+                    class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800"
+                    >Hoạt động</span
+                  >
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <button class="p-2 text-gray-400 hover:text-blue-500">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                  </button>
+                  <button class="p-2 text-gray-400 hover:text-blue-500">
+                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                  </button>
+                  <button class="p-2 text-gray-400 hover:text-red-500">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </td>
+              </tr>
+              <!-- Sample Row 3 - Trạng thái Không hoạt động -->
+              <tr class="bg-white hover:bg-gray-50">
+                <td class="px-6 py-4 font-mono text-xs">kpi_response_time</td>
+                <td class="px-6 py-4 font-medium text-gray-900">
+                  Thời gian Phản hồi Yêu cầu
+                </td>
+                <td class="px-6 py-4">III. Vận hành & Năng lực</td>
+                <td class="px-6 py-4">Module hỗ trợ khách hàng</td>
+                <td class="px-6 py-4 text-center">
+                  <span
+                    class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800"
+                    >Không hoạt động</span
+                  >
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <button class="p-2 text-gray-400 hover:text-blue-500">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                  </button>
+                  <button class="p-2 text-gray-400 hover:text-blue-500">
+                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                  </button>
+                  <button class="p-2 text-gray-400 hover:text-red-500">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize lucide icons
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

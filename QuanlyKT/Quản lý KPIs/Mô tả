@@ -1,0 +1,36 @@
+1. Màn hình 1
+- Xuất hiện khi người dùng bấm "Quản lý kỹ thuật" --> "Quản lý KPIs" ở thanh menu
+Note: 
+- Đối với người dùng Quản lý phụ trách kỹ thuật, Kỹ thuật viên --> vai trò người đề xuất
+- Có 2 trạng thái là Hoạt động/Không hoạt động.
+
+2. Màn hình 2
+- Xuất hiện khi người dùng bấm "Quản lý kỹ thuật" --> "Quản lý KPIs" ở thanh menu
+Note: 
+- Đối với người dùng Admin Farmkeeper --> vai trò người kiểm duyệt
+- Có 3 trạng thái: Hoạt động/Không hoạt động/Chờ phê duyệt
+
+3. Pop up 3
+- Xuất hiện khi người dùng bấm nút "Xem chi tiết" ở màn hình 1 hoặc 2.
+Note: KPI ở trạng thái Hoạt động
+
+4. Pop up 4
+- Xuất hiện khi người dùng bấm nút "Xem chi tiết" ở màn hình 1 hoặc 2.
+Note: KPI ở trạng thái Không hoạt động
+
+5. Pop up 5
+- Xuất hiện khi người dùng bấm nút "Xem chi tiết" ở màn hình 2.
+Note: 
+- KPI ở trạng thái Chờ phê duyệt
+- Sau khi người dùng bấm nút "Phê duyệt", sẽ chuyển sang trạng thái "Hoạt động"
+
+6. Màn hình 6
+- Xuất hiện khi người dùng bấm nút "Thêm mới KPI" ở màn hình 1 hoặc 2
+Note: Màn hình khi người dùng bấm chỉnh sửa cũng sẽ giống như màn hình tạo mới, chỉ khác là nó đã có sẵn dữ liệu ở các trường
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+- Đối tượng tạo mới và phê duyệt KPIs bao gồm: 
+    + Admin Farmkeeper
+    + GĐ HTX/DN
+

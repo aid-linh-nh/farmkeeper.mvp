@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper - Kích hoạt Quy trình Sản xuất</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .main-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        
+        .card-modern {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .wizard-step {
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .wizard-step.active {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+            background: rgba(34, 197, 94, 0.02);
+        }
+        
+        .wizard-step.completed {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+        }
+        
+        .wizard-step.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -12px;
+            left: 24px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #6b7280;
+        }
+        
+        .wizard-step.active .step-number {
+            border-color: #22c55e;
+            color: #22c55e;
+            background: white;
+        }
+        
+        .wizard-step.completed .step-number {
+            border-color: #22c55e;
+            background: #22c55e;
+            color: white;
+        }
+        
+        .filter-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .process-template-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+        
+        .process-template-card:hover {
+            border-color: #22c55e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
+        }
+        
+        .process-template-card.selected {
+            border-color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+        }
+        
+        .process-template-card.suggested {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.02);
+        }
+        
+        .process-template-card.suggested::after {
+            content: "Gợi ý";
+            position: absolute;
+            top: -8px;
+            right: 16px;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .template-carousel {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem;
+            background: white;
+        }
+        
+        .template-carousel::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .template-carousel::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+        
+        .template-carousel::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        
+        .activation-type-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            text-align: center;
+        }
+        
+        .activation-type-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+        
+        .activation-type-card.selected {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .phase-selector {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .phase-selector:hover {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.02);
+        }
+        
+        .phase-selector.selected {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.05);
+        }
+        
+        .phase-selector.setup {
+            border-left: 6px solid #6366f1;
+        }
+        
+        .phase-selector.recurring {
+            border-left: 6px solid #22c55e;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e5e7eb;
+        }
+        
+        .timeline-item.setup::before {
+            background: #6366f1;
+        }
+        
+        .timeline-item.recurring::before {
+            background: #22c55e;
+        }
+        
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1.25rem;
+            width: 2px;
+            height: calc(100% + 0.5rem);
+            background: #e5e7eb;
+        }
+        
+        .param-display {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .resource-tag {
+            background: #e0f2fe;
+            color: #0277bd;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin: 2px 4px 2px 0;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .cost-summary {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        
+        .progress-bar {
+            background: #e5e7eb;
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .weather-widget {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .growth-parameters {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .param-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .param-label {
+            min-width: 120px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .param-value {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            min-width: 80px;
+        }
+        
+        .param-unit {
+            font-size: 0.75rem;
+            color: #6b7280;
+            min-width: 40px;
+        }
+        
+        .cycle-config {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 2px solid rgba(34, 197, 94, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .data-source-card .selected {
+            border-color: #3b82f6 !important;
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .phase-config-card {
+            transition: all 0.3s ease;
+        }
+        
+        .phase-config-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .task-item {
+            transition: all 0.3s ease;
+        }
+        
+        .task-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .environmental-section {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+        }
+        
+        .climate-params {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .soil-params {
+            background: rgba(245, 158, 11, 0.05);
+        }
+        
+        .nutrition-params {
+            background: rgba(34, 197, 94, 0.05);
+        }
+    </style>
+</head>
+<body class="main-container">
+    <div class="container mx-auto px-6 py-8 max-w-7xl">
+        <!-- Header -->
+        <div class="card-modern mb-8">
+            <div class="p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800 mb-2">Kích hoạt Quy trình Sản xuất</h1>
+                        <p class="text-gray-600">Chọn Quy trình tiêu chuẩn và thiết lập thông số cho vụ mùa</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="text-right">
+                            <div class="text-sm text-gray-600">Tài khoản</div>
+                            <div class="font-semibold text-gray-800">Nông trại ABC</div>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Main Wizard -->
+            <div class="lg:col-span-3">
+                <!-- Step 1: Choose Process Template -->
+                <div class="wizard-step active" id="step-1">
+                    <div class="step-number">1</div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Chọn Quy trình Tiêu chuẩn</h2>
+                    
+                    <!-- Filter Section -->
+                    <div class="filter-section">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Bộ lọc Quy trình gợi ý</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Loại hình canh tác</label>
+                                <select class="form-input" id="farming-type" onchange="filterTemplates()">
+                                    <option value="">Tất cả</option>
+                                    <option value="crops" selected>Trồng trọt</option>
+                                    <option value="livestock">Chăn nuôi</option>
+                                    <option value="aquaculture">Thủy sản</option>
+                                    <option value="vac">VAC (Vườn-Ao-Chuồng)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Loại cây trồng/Vật nuôi</label>
+                                <select class="form-input" id="crop-type" onchange="filterTemplates()">
+                                    <option value="">Tất cả</option>
+                                    <option value="durian" selected>Sầu riêng</option>
+                                    <option value="coffee">Cà phê</option>
+                                    <option value="mango">Xoài</option>
+                                    <option value="avocado">Bơ</option>
+                                    <option value="coconut">Dừa</option>
+                                    <option value="pepper">Tiêu</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Giống</label>
+                                <select class="form-input" id="variety-type" onchange="filterTemplates()">
+                                    <option value="">Tất cả</option>
+                                    <option value="dona-thai" selected>Dona - Thái</option>
+                                    <option value="ri6">Ri 6</option>
+                                    <option value="monthong">Monthong</option>
+                                    <option value="chanee">Chanee</option>
+                                    <option value="kanyao">Kan Yao</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Đơn vị nghiên cứu</label>
+                                <select class="form-input" id="research-unit" onchange="filterTemplates()">
+                                    <option value="">Tất cả</option>
+                                    <option value="svifarm" selected>SVIFARM</option>
+                                    <option value="viện-nn">Viện Nông nghiệp VN</option>
+                                    <option value="nestlé">Nestlé Vietnam</option>
+                                    <option value="vineco">Vineco</option>
+                                    <option value="fdi">FDI Hà Nội</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 flex items-center justify-between">
+                            <div class="text-sm text-gray-600">
+                                <span id="template-count">Tìm thấy 8 Quy trình phù hợp</span>
+                            </div>
+                            <button class="btn-secondary" onclick="resetFilters()">
+                                <i class="fas fa-undo mr-2"></i>Đặt lại bộ lọc
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Suggested Templates -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Quy trình Gợi ý</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="process-template-card suggested selected" onclick="selectTemplate('durian-dona-svifarm')" data-farming="crops" data-crop="durian" data-variety="dona-thai" data-research="svifarm">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-seedling text-green-600 text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-gray-800">Sầu riêng Dona - Thái</h3>
+                                            <p class="text-sm text-gray-600">Quy trình toàn diện 7 giai đoạn</p>
+                                            <div class="flex items-center space-x-2 mt-1">
+                                                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">SVIFARM</span>
+                                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Trồng trọt</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <span class="text-sm font-semibold">4.8</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    <div class="flex justify-between">
+                                        <span>Chu kỳ sản xuất:</span>
+                                        <span class="font-semibold">12 tháng</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Giai đoạn thiết lập:</span>
+                                        <span class="font-semibold">2 giai đoạn</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Giai đoạn lặp lại:</span>
+                                        <span class="font-semibold">5 giai đoạn</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Khu vực phù hợp:</span>
+                                        <span class="font-semibold">Tây Nguyên, ĐNB</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Năng suất mục tiêu:</span>
+                                        <span class="font-semibold text-green-600">25-40 kg/cây</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="process-template-card suggested" onclick="selectTemplate('durian-ri6-viện')" data-farming="crops" data-crop="durian" data-variety="ri6" data-research="viện-nn">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-seedling text-orange-600 text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-bold text-gray-800">Sầu riêng Ri 6</h3>
+                                            <p class="text-sm text-gray-600">Quy trình tiêu chuẩn 6 giai đoạn</p>
+                                            <div class="flex items-center space-x-2 mt-1">
+                                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Viện NN VN</span>
+                                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Trồng trọt</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-1">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <span class="text-sm font-semibold">4.6</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2 text-sm text-gray-600">
+                                    <div class="flex justify-between">
+                                        <span>Chu kỳ sản xuất:</span>
+                                        <span class="font-semibold">10 tháng</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Giai đoạn thiết lập:</span>
+                                        <span class="font-semibold">2 giai đoạn</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Giai đoạn lặp lại:</span>
+                                        <span class="font-semibold">4 giai đoạn</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Khu vực phù hợp:</span>
+                                        <span class="font-semibold">Toàn quốc</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Năng suất mục tiêu:</span>
+                                        <span class="font-semibold text-green-600">20-35 kg/cây</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- All Templates Carousel -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Tất cả Quy trình</h3>
+                        <div class="template-carousel">
+                            <div class="space-y-3">
+                                <div class="process-template-card" onclick="selectTemplate('coffee-arabica-nestlé')" data-farming="crops" data-crop="coffee" data-variety="arabica" data-research="nestlé">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-coffee text-yellow-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800">Cà phê Arabica chuyên sâu</h4>
+                                            <p class="text-sm text-gray-600">8 giai đoạn - Nestlé Vietnam</p>
+                                            <div class="flex items-center justify-between mt-2">
+                                                <span class="text-xs text-gray-500">12 tháng | Tây Nguyên</span>
+                                                <div class="flex items-center space-x-1">
+                                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                    <span class="text-xs">4.7</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="process-template-card" onclick="selectTemplate('mango-catchu-vineco')" data-farming="crops" data-crop="mango" data-variety="catchu" data-research="vineco">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-apple-alt text-yellow-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800">Xoài Cát Chu xuất khẩu</h4>
+                                            <p class="text-sm text-gray-600">6 giai đoạn - Vineco</p>
+                                            <div class="flex items-center justify-between mt-2">
+                                                <span class="text-xs text-gray-500">9 tháng | Đông Nam Bộ</span>
+                                                <div class="flex items-center space-x-1">
+                                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                    <span class="text-xs">4.5</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="process-template-card" onclick="selectTemplate('coconut-tall-fdi')" data-farming="crops" data-crop="coconut" data-variety="tall" data-research="fdi">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-seedling text-green-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800">Dừa xiêm lùn thương phẩm</h4>
+                                            <p class="text-sm text-gray-600">5 giai đoạn - FDI Hà Nội</p>
+                                            <div class="flex items-center justify-between mt-2">
+                                                <span class="text-xs text-gray-500">24 tháng | Miền Nam</span>
+                                                <div class="flex items-center space-x-1">
+                                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                    <span class="text-xs">4.3</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="process-template-card" onclick="selectTemplate('pepper-black-svifarm')" data-farming="crops" data-crop="pepper" data-variety="black" data-research="svifarm">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-pepper-hot text-gray-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800">Tiêu đen VietGAP</h4>
+                                            <p class="text-sm text-gray-600">7 giai đoạn - SVIFARM</p>
+                                            <div class="flex items-center justify-between mt-2">
+                                                <span class="text-xs text-gray-500">18 tháng | Đông Nam Bộ</span>
+                                                <div class="flex items-center space-x-1">
+                                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                    <span class="text-xs">4.4</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="process-template-card" onclick="selectTemplate('durian-monthong-viện')" data-farming="crops" data-crop="durian" data-variety="monthong" data-research="viện-nn">
+                                    <div class="flex items-start space-x-3">
+                                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-seedling text-green-600"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="font-semibold text-gray-800">Sầu riêng Monthong cao cấp</h4>
+                                            <p class="text-sm text-gray-600">8 giai đoạn - Viện NN VN</p>
+                                            <div class="flex items-center justify-between mt-2">
+                                                <span class="text-xs text-gray-500">15 tháng | Tây Nguyên</span>
+                                                <div class="flex items-center space-x-1">
+                                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                    <span class="text-xs">4.9</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="process-template-card" onclick="selectTemplate('custom')" data-farming="" data-crop="" data-variety="" data-research="">
+                                    <div class="flex items-center justify-center py-4">
+                                        <div class="text-center">
+                                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                                                <i class="fas fa-plus text-gray-400"></i>
+                                            </div>
+                                            <h4 class="font-semibold text-gray-600">Tạo quy trình tùy chỉnh</h4>
+                                            <p class="text-sm text-gray-500">Xây dựng quy trình riêng</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end">
+                        <button class="btn-primary" onclick="nextStep(2)">
+                            Tiếp tục <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Choose Activation Type -->
+                <div class="wizard-step disabled" id="step-2">
+                    <div class="step-number">2</div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Chọn Giai đoạn Kích hoạt</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="activation-type-card" onclick="selectActivationType('new')">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-rocket text-blue-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Bắt đầu Vườn/Farm mới</h3>
+                            <p class="text-gray-600 mb-4">Kích hoạt quy trình từ đầu hoặc từ giai đoạn cụ thể</p>
+                            
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div>✓ Phù hợp với farm mới</div>
+                                <div>✓ Có thể chọn giai đoạn bắt đầu</div>
+                                <div>✓ Thiết lập toàn bộ thông số</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activation-type-card selected" onclick="selectActivationType('recurring')">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-sync-alt text-green-600 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-800 mb-2">Chu kỳ Lặp lại</h3>
+                            <p class="text-gray-600 mb-4">Kích hoạt chu kỳ sản xuất cho vụ mùa mới</p>
+                            
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div>✓ Phù hợp với farm đã hoạt động</div>
+                                <div>✓ Sử dụng thông số có sẵn</div>
+                                <div>✓ Tự động tính toán từ vụ trước</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-between">
+                        <button class="btn-secondary" onclick="prevStep(1)">
+                            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                        </button>
+                        <button class="btn-primary" onclick="nextStep(3)">
+                            Tiếp tục <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Configuration (integrated from template form) -->
+                <div class="wizard-step disabled" id="step-3">
+                    <div class="step-number">3</div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Nhập Thông tin Vườn/Farm (Tùy chọn từ Thiết lập GAP trước đó)</h2>
+                    
+                    <!-- Phase Selection (for new activation) -->
+                    <div id="phase-selection" style="display: none;">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Chọn Giai đoạn Bắt đầu</h3>
+                        <div class="space-y-3 mb-6">
+                            <div class="phase-selector setup selected" onclick="selectPhase(1)">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Giai đoạn 1: Trồng cây mới</h4>
+                                        <p class="text-sm text-gray-600">Chuẩn bị đất và trồng cây giống (4-6 tháng)</p>
+                                    </div>
+                                    <div class="text-sm text-indigo-600 font-semibold">Thiết lập</div>
+                                </div>
+                            </div>
+                            
+                            <div class="phase-selector setup" onclick="selectPhase(2)">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Giai đoạn 2: Chăm sóc cây non</h4>
+                                        <p class="text-sm text-gray-600">Nuôi dưỡng cây 2-3 năm đầu (24-36 tháng)</p>
+                                    </div>
+                                    <div class="text-sm text-indigo-600 font-semibold">Thiết lập</div>
+                                </div>
+                            </div>
+                            
+                            <div class="phase-selector recurring" onclick="selectPhase(3)">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Giai đoạn 3: Chuẩn bị ra hoa</h4>
+                                        <p class="text-sm text-gray-600">Stress nước và kích thích ra hoa (2-3 tháng)</p>
+                                    </div>
+                                    <div class="text-sm text-green-600 font-semibold">Lặp lại</div>
+                                </div>
+                            </div>
+                            
+                            <div class="phase-selector recurring" onclick="selectPhase(4)">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">Giai đoạn 4: Chăm sóc hoa và đậu trái</h4>
+                                        <p class="text-sm text-gray-600">Từ nụ hoa đến trái non (2-3 tháng)</p>
+                                    </div>
+                                    <div class="text-sm text-green-600 font-semibold">Lặp lại</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Process Info (integrated from template) -->
+                    <div class="card-modern mb-6">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6">Thông tin Chung</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tên farm/vườn</label>
+                                    <input type="text" class="form-input" value="Vườn sầu riêng Đắk Lắk" placeholder="Nhập tên farm">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Dự án</label>
+                                    <input type="text" class="form-input" placeholder="VD: Vụ mùa sầu riêng 2024" value="Vụ mùa sầu riêng xuất khẩu 2024">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Địa điểm</label>
+                                    <select class="form-input" id="location" onchange="updateGrowthParameters()">
+                                        <option value="dak-lak">Đắk Lắk - Tây Nguyên</option>
+                                        <option value="lam-dong">Lâm Đồng - Tây Nguyên</option>
+                                        <option value="binh-phuoc">Bình Phước - Đông Nam Bộ</option>
+                                        <option value="dong-nai">Đồng Nai - Đông Nam Bộ</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Giống chính</label>
+                                    <select class="form-input" id="main-variety" onchange="updateGrowthParameters()">
+                                        <option value="dona-thai" selected>Dona - Thái</option>
+                                        <option value="ri6">Ri 6</option>
+                                        <option value="monthong">Monthong</option>
+                                        <option value="chanee">Chanee</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Mô tả vụ mùa</label>
+                                <textarea class="form-input" rows="2" placeholder="Mô tả mục tiêu và điều kiện vụ mùa này...">Vụ mùa sầu riêng 2024 với mục tiêu năng suất cao và chất lượng xuất khẩu</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Growth Parameters (integrated from template) -->
+                    <div class="growth-parameters">
+                        <h3 class="text-xl font-bold text-blue-800 mb-4 flex items-center">
+                            <i class="fas fa-chart-line mr-3"></i>
+                            Tham số Sinh trưởng
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="param-input-group">
+                                <div class="param-label">Tổng diện tích:</div>
+                                <input type="number" class="param-value" id="total-area" value="5.2" step="0.1" onchange="calculateParameters()">
+                                <span class="param-unit">ha</span>
+                            </div>
+                            
+                            <div class="param-input-group">
+                                <div class="param-label">Số cây hiện tại:</div>
+                                <input type="number" class="param-value" id="current-trees" value="520" onchange="calculateParameters()">
+                                <span class="param-unit">cây</span>
+                            </div>
+                            
+                            <div class="param-input-group">
+                                <div class="param-label">Tuổi cây TB:</div>
+                                <select class="param-value" id="tree-age" onchange="calculateParameters()">
+                                    <option value="1">1 năm</option>
+                                    <option value="2">2 năm</option>
+                                    <option value="3">3 năm</option>
+                                    <option value="4" selected>4 năm</option>
+                                    <option value="5">5+ năm</option>
+                                </select>
+                            </div>
+                            
+                            <div class="param-input-group">
+                                <div class="param-label">Khoảng cách trồng:</div>
+                                <select class="param-value" id="planting-distance" onchange="calculateParameters()">
+                                    <option value="8x8">8m x 8m</option>
+                                    <option value="9x9">9m x 9m</option>
+                                    <option value="10x10" selected>10m x 10m</option>
+                                    <option value="8x10">8m x 10m</option>
+                                </select>
+                            </div>
+                            
+                            <div class="param-input-group">
+                                <div class="param-label">Mục tiêu năng suất:</div>
+                                <select class="param-value" id="yield-target" onchange="calculateParameters()">
+                                    <option value="standard">Tiêu chuẩn</option>
+                                    <option value="high" selected>Cao</option>
+                                    <option value="premium">Xuất sắc</option>
+                                </select>
+                            </div>
+                            
+                            <div class="param-input-group">
+                                <div class="param-label">Mùa vụ bắt đầu:</div>
+                                <select class="param-value" id="season-start">
+                                    <option value="2024-01">Tháng 1/2024</option>
+                                    <option value="2024-02">Tháng 2/2024</option>
+                                    <option value="2024-03" selected>Tháng 3/2024</option>
+                                    <option value="2024-04">Tháng 4/2024</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Environmental Data -->
+                    <div class="card-modern mb-6">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-green-800 mb-6 flex items-center">
+                                <i class="fas fa-leaf mr-3"></i>
+                                Dữ liệu Môi trường
+                            </h3>
+                            
+                            <!-- Data Source Selection -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-3">Nguồn dữ liệu môi trường</label>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="data-source-card" onclick="selectDataSource('iot')">
+                                        <div class="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-blue-500 selected" id="data-source-iot">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-wifi text-blue-600"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">Thiết bị IoT</h4>
+                                                <p class="text-sm text-gray-600">Dữ liệu thời gian thực</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="data-source-card" onclick="selectDataSource('forecast')">
+                                        <div class="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-green-500" id="data-source-forecast">
+                                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-satellite text-green-600"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">Quan trắc & Dự báo</h4>
+                                                <p class="text-sm text-gray-600">Dữ liệu từ trạm khí tượng</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="data-source-card" onclick="selectDataSource('manual')">
+                                        <div class="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-orange-500" id="data-source-manual">
+                                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-edit text-orange-600"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-gray-800">Nhập thủ công</h4>
+                                                <p class="text-sm text-gray-600">Dữ liệu do nông dân cung cấp</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Environmental Parameters -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <!-- Climate Data -->
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                                        <i class="fas fa-cloud-rain mr-2"></i>
+                                        Khí hậu
+                                    </h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="param-input-group">
+                                            <div class="param-label">Lượng mưa TB:</div>
+                                            <input type="number" class="param-value" id="rainfall" value="1800" min="1000" max="3000">
+                                            <span class="param-unit">mm/năm</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Độ ẩm TB:</div>
+                                            <input type="number" class="param-value" id="humidity" value="75" min="60" max="90">
+                                            <span class="param-unit">%</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Nhiệt độ TB:</div>
+                                            <input type="number" class="param-value" id="temperature" value="26" min="20" max="35">
+                                            <span class="param-unit">°C</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Ánh sáng:</div>
+                                            <input type="number" class="param-value" id="sunlight" value="6.5" min="4" max="12" step="0.1">
+                                            <span class="param-unit">h/ngày</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Soil Data -->
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-yellow-800 mb-3 flex items-center">
+                                        <i class="fas fa-seedling mr-2"></i>
+                                        Đất
+                                    </h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="param-input-group">
+                                            <div class="param-label">pH đất:</div>
+                                            <input type="number" class="param-value" id="soil-ph" value="6.2" min="4.0" max="9.0" step="0.1">
+                                            <span class="param-unit">pH</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Độ ẩm đất:</div>
+                                            <input type="number" class="param-value" id="soil-moisture" value="65" min="30" max="90">
+                                            <span class="param-unit">%</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Chất hữu cơ:</div>
+                                            <input type="number" class="param-value" id="organic-matter" value="3.2" min="1.0" max="8.0" step="0.1">
+                                            <span class="param-unit">%</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Độ dẫn điện:</div>
+                                            <input type="number" class="param-value" id="soil-ec" value="0.8" min="0.1" max="3.0" step="0.1">
+                                            <span class="param-unit">dS/m</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Nutrition Data -->
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-green-800 mb-3 flex items-center">
+                                        <i class="fas fa-flask mr-2"></i>
+                                        Dinh dưỡng
+                                    </h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="param-input-group">
+                                            <div class="param-label">Nitơ (N):</div>
+                                            <input type="number" class="param-value" id="nitrogen" value="45" min="20" max="100">
+                                            <span class="param-unit">ppm</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Lân (P):</div>
+                                            <input type="number" class="param-value" id="phosphorus" value="25" min="10" max="60">
+                                            <span class="param-unit">ppm</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Kali (K):</div>
+                                            <input type="number" class="param-value" id="potassium" value="180" min="80" max="300">
+                                            <span class="param-unit">ppm</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Canxi (Ca):</div>
+                                            <input type="number" class="param-value" id="calcium" value="850" min="400" max="1500">
+                                            <span class="param-unit">ppm</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Data Source Details -->
+                            <div class="mt-6" id="data-source-details">
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" id="iot-details">
+                                    <h4 class="font-semibold text-blue-800 mb-3">Kết nối Thiết bị IoT</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Trạm quan trắc</label>
+                                            <select class="form-input">
+                                                <option value="station-01" selected>Trạm 01 - Khu vực A (Hoạt động)</option>
+                                                <option value="station-02">Trạm 02 - Khu vực B (Hoạt động)</option>
+                                                <option value="station-03">Trạm 03 - Khu vực C (Bảo trì)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Tần suất cập nhật</label>
+                                            <select class="form-input">
+                                                <option value="realtime" selected>Thời gian thực (5 phút)</option>
+                                                <option value="hourly">Mỗi giờ</option>
+                                                <option value="daily">Hàng ngày</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 text-sm text-blue-700">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Dữ liệu sẽ được tự động đồng bộ từ các cảm biến IoT đã lắp đặt trong vườn.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process Phases Configuration -->
+                    <div class="card-modern mb-6">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-purple-800 mb-6 flex items-center">
+                                <i class="fas fa-cogs mr-3"></i>
+                                Tùy chỉnh Giai đoạn & Công việc
+                            </h3>
+                            
+                            <div class="space-y-6">
+                                <!-- Phase 3: Flowering Preparation -->
+                                <div class="phase-config-card border-l-4 border-l-green-500 bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 class="font-semibold text-green-800 text-lg">Giai đoạn 3: Chuẩn bị ra hoa</h4>
+                                            <p class="text-sm text-green-600">Từ Template: Sầu riêng Dona - Thái (SVIFARM)</p>
+                                        </div>
+                                        <button class="btn-secondary text-sm" onclick="editPhaseParams(3)">
+                                            <i class="fas fa-edit mr-2"></i>Tùy chỉnh
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                                        <div class="param-input-group">
+                                            <div class="param-label">Thời gian:</div>
+                                            <input type="number" class="param-value" value="2" min="1" max="4">
+                                            <span class="param-unit">-</span>
+                                            <input type="number" class="param-value" value="3" min="1" max="4">
+                                            <span class="param-unit">tháng</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Giảm nước:</div>
+                                            <input type="number" class="param-value" value="50" min="30" max="80">
+                                            <span class="param-unit">-</span>
+                                            <input type="number" class="param-value" value="70" min="30" max="80">
+                                            <span class="param-unit">%</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Độ ẩm đất mục tiêu:</div>
+                                            <input type="number" class="param-value" value="40" min="30" max="60">
+                                            <span class="param-unit">-</span>
+                                            <input type="number" class="param-value" value="50" min="30" max="60">
+                                            <span class="param-unit">%</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Nhiệt độ phù hợp:</div>
+                                            <input type="number" class="param-value" value="28" min="25" max="32">
+                                            <span class="param-unit">-</span>
+                                            <input type="number" class="param-value" value="30" min="25" max="32">
+                                            <span class="param-unit">°C</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tasks-list">
+                                        <h5 class="font-semibold text-green-700 mb-3">Công việc trong giai đoạn:</h5>
+                                        <div class="space-y-2">
+                                            <div class="task-item flex items-center justify-between p-3 bg-white border border-green-200 rounded-lg">
+                                                <div class="flex items-center space-x-3">
+                                                    <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                                    <div>
+                                                        <span class="font-medium text-gray-800">Stress nước kích thích ra hoa</span>
+                                                        <p class="text-sm text-gray-600">Giảm tưới nước 50-70% trong 6-8 tuần</p>
+                                                        <div class="flex items-center mt-1 space-x-2">
+                                                            <span class="resource-tag"><i class="fas fa-tint mr-1"></i>Giảm 60% nước tưới</span>
+                                                            <span class="resource-tag"><i class="fas fa-calendar mr-1"></i>14-21 ngày</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button class="btn-secondary text-xs" onclick="editTask(3, 1)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="task-item flex items-center justify-between p-3 bg-white border border-green-200 rounded-lg">
+                                                <div class="flex items-center space-x-3">
+                                                    <input type="checkbox" class="w-4 h-4 text-green-600" checked>
+                                                    <div>
+                                                        <span class="font-medium text-gray-800">Bón phân thúc đẩy ra hoa</span>
+                                                        <p class="text-sm text-gray-600">Bón phân chuyên dụng tăng P và K</p>
+                                                        <div class="flex items-center mt-1 space-x-2">
+                                                            <span class="resource-tag"><i class="fas fa-leaf mr-1"></i>NPK 10-30-20</span>
+                                                            <span class="resource-tag"><i class="fas fa-weight-hanging mr-1"></i>2-3kg/cây</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button class="btn-secondary text-xs" onclick="editTask(3, 2)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="task-item flex items-center justify-between p-3 bg-white border border-green-200 rounded-lg">
+                                                <div class="flex items-center space-x-3">
+                                                    <input type="checkbox" class="w-4 h-4 text-green-600">
+                                                    <div>
+                                                        <span class="font-medium text-gray-800">Tỉa cành chuẩn bị cho mùa hoa</span>
+                                                        <p class="text-sm text-gray-600">Tỉa bỏ cành yếu, tạo thông thoáng</p>
+                                                        <div class="flex items-center mt-1 space-x-2">
+                                                            <span class="resource-tag"><i class="fas fa-cut mr-1"></i>Kéo tỉa chuyên dụng</span>
+                                                            <span class="resource-tag"><i class="fas fa-users mr-1"></i>1 kỹ thuật + 1 hỗ trợ</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button class="btn-secondary text-xs" onclick="editTask(3, 3)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <button class="btn-secondary mt-3" onclick="addTaskToPhase(3)">
+                                            <i class="fas fa-plus mr-2"></i>Thêm công việc
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Phase 4: Flowering & Fruit Set -->
+                                <div class="phase-config-card border-l-4 border-l-blue-500 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 class="font-semibold text-blue-800 text-lg">Giai đoạn 4: Chăm sóc hoa và đậu trái</h4>
+                                            <p class="text-sm text-blue-600">Từ Template: Sầu riêng Dona - Thái (SVIFARM)</p>
+                                        </div>
+                                        <button class="btn-secondary text-sm" onclick="editPhaseParams(4)">
+                                            <i class="fas fa-edit mr-2"></i>Tùy chỉnh
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                                        <div class="param-input-group">
+                                            <div class="param-label">Thời gian ra hoa:</div>
+                                            <input type="number" class="param-value" value="16" min="14" max="25">
+                                            <span class="param-unit">-</span>
+                                            <input type="number" class="param-value" value="21" min="14" max="25">
+                                            <span class="param-unit">ngày</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Tỷ lệ đậu trái:</div>
+                                            <input type="number" class="param-value" value="15" min="10" max="30">
+                                            <span class="param-unit">-</span>
+                                            <input type="number" class="param-value" value="25" min="10" max="30">
+                                            <span class="param-unit">%</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Số trái/cây mục tiêu:</div>
+                                            <input type="number" class="param-value" value="15" min="10" max="30">
+                                            <span class="param-unit">-</span>
+                                            <input type="number" class="param-value" value="20" min="10" max="30">
+                                            <span class="param-unit">trái</span>
+                                        </div>
+                                        
+                                        <div class="param-input-group">
+                                            <div class="param-label">Độ ẩm yêu cầu:</div>
+                                            <input type="number" class="param-value" value="70" min="60" max="85">
+                                            <span class="param-unit">-</span>
+                                            <input type="number" class="param-value" value="80" min="60" max="85">
+                                            <span class="param-unit">%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="tasks-list">
+                                        <h5 class="font-semibold text-blue-700 mb-3">Công việc trong giai đoạn: (3 công việc)</h5>
+                                        <div class="text-sm text-blue-600 mb-2">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Nhấp "Xem chi tiết" để tùy chỉnh các công việc trong giai đoạn này
+                                        </div>
+                                        <button class="btn-secondary" onclick="showPhaseDetails(4)">
+                                            <i class="fas fa-eye mr-2"></i>Xem chi tiết và tùy chỉnh
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Phase 5: Fruit Development -->
+                                <div class="phase-config-card border-l-4 border-l-purple-500 bg-purple-50 border border-purple-200 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 class="font-semibold text-purple-800 text-lg">Giai đoạn 5: Chăm sóc trái phát triển</h4>
+                                            <p class="text-sm text-purple-600">Từ Template: Sầu riêng Dona - Thái (SVIFARM)</p>
+                                        </div>
+                                        <button class="btn-secondary text-sm" onclick="editPhaseParams(5)">
+                                            <i class="fas fa-edit mr-2"></i>Tùy chỉnh
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="text-sm text-purple-600 mb-3">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Giai đoạn này có 5 công việc chính với thời gian 3-4 tháng. Nhấp để xem chi tiết và tùy chỉnh.
+                                    </div>
+                                    <button class="btn-secondary" onclick="showPhaseDetails(5)">
+                                        <i class="fas fa-eye mr-2"></i>Xem chi tiết và tùy chỉnh
+                                    </button>
+                                </div>
+                                
+                                <!-- More Phases Placeholder -->
+                                <div class="text-center p-6 border-2 border-dashed border-gray-300 rounded-lg">
+                                    <i class="fas fa-plus text-gray-400 text-2xl mb-2"></i>
+                                    <p class="text-gray-600">Các giai đoạn khác sẽ hiển thị theo template đã chọn</p>
+                                    <button class="btn-secondary mt-2" onclick="showAllPhases()">
+                                        <i class="fas fa-list mr-2"></i>Xem tất cả giai đoạn
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cycle Configuration (integrated from template) -->
+                    <div class="cycle-config">
+                        <h3 class="text-xl font-bold text-green-800 mb-4 flex items-center">
+                            <i class="fas fa-sync-alt mr-3"></i>
+                            Cấu hình Chu kỳ
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Loại chu kỳ</label>
+                                <select class="form-input" id="cycle-type">
+                                    <option value="annual" selected>Hàng năm (Annual)</option>
+                                    <option value="seasonal">Theo mùa vụ (Seasonal)</option>
+                                    <option value="quarterly">Theo quý (Quarterly)</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Thời gian chu kỳ</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="number" class="form-input w-20" value="12" min="1">
+                                    <select class="form-input flex-1">
+                                        <option value="months" selected>Tháng</option>
+                                        <option value="weeks">Tuần</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Giai đoạn bắt đầu</label>
+                                <select class="form-input" id="start-phase">
+                                    <option value="3" selected>Từ giai đoạn 3 (Ra hoa)</option>
+                                    <option value="4">Từ giai đoạn 4 (Đậu trái)</option>
+                                    <option value="1">Từ giai đoạn 1 (Trồng mới)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-between">
+                        <button class="btn-secondary" onclick="prevStep(2)">
+                            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                        </button>
+                        <button class="btn-primary" onclick="nextStep(4)">
+                            Tiếp tục <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Review & Activate -->
+                <div class="wizard-step disabled" id="step-4">
+                    <div class="step-number">4</div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Xem lại và Kích hoạt</h2>
+                    
+                    <!-- Process Timeline -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Timeline Quy trình</h3>
+                            <div class="timeline-container">
+                                <div class="timeline-item recurring">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800">Chuẩn bị ra hoa</h4>
+                                            <p class="text-sm text-gray-600">15 Tháng 3 - 15 Tháng 5</p>
+                                        </div>
+                                        <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">2 tháng</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item recurring">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800">Chăm sóc hoa và đậu trái</h4>
+                                            <p class="text-sm text-gray-600">16 Tháng 5 - 15 Tháng 7</p>
+                                        </div>
+                                        <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">2 tháng</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item recurring">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800">Chăm sóc trái phát triển</h4>
+                                            <p class="text-sm text-gray-600">16 Tháng 7 - 15 Tháng 11</p>
+                                        </div>
+                                        <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">4 tháng</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item recurring">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800">Thu hoạch và bảo quản</h4>
+                                            <p class="text-sm text-gray-600">16 Tháng 11 - 15 Tháng 12</p>
+                                        </div>
+                                        <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">1 tháng</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item recurring">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h4 class="font-semibold text-gray-800">Chăm sóc sau thu hoạch</h4>
+                                            <p class="text-sm text-gray-600">16 Tháng 12 - 14 Tháng 3</p>
+                                        </div>
+                                        <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">3 tháng</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">Tham số Tính toán</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="param-display">
+                                    <h4 class="font-semibold text-green-700 mb-3">Thông số Sản xuất</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <div class="text-gray-600">Tổng số cây:</div>
+                                            <div class="font-semibold" id="calc-total-trees">520 cây</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-600">Mật độ:</div>
+                                            <div class="font-semibold" id="calc-density">100 cây/ha</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-600">Năng suất dự kiến:</div>
+                                            <div class="font-semibold" id="calc-yield">15.6 - 20.8 tấn</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-600">Số trái/cây:</div>
+                                            <div class="font-semibold" id="calc-fruits">15-20 trái</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="param-display">
+                                    <h4 class="font-semibold text-green-700 mb-3">Tài nguyên Cần thiết</h4>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-600">Phân bón (NPK):</span>
+                                            <span class="font-semibold" id="calc-fertilizer">2.6 tấn/năm</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-600">Nước tưới:</span>
+                                            <span class="font-semibold" id="calc-water">78,000 L/tháng</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-600">Nhân công:</span>
+                                            <span class="font-semibold" id="calc-labor">2-3 người/ngày</span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-gray-600">Chi phí/tháng:</span>
+                                            <span class="font-semibold text-red-600" id="calc-cost">45-60 triệu VNĐ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cost Summary with Production Forecast -->
+                    <div class="cost-summary mt-6">
+                        <h3 class="text-lg font-semibold text-red-700 mb-4">Tổng quan Sản lượng & Tài chính Vụ mùa</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-blue-600" id="production-forecast">18.2 tấn</div>
+                                <div class="text-sm text-gray-600">Sản lượng Dự báo</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-red-600" id="total-cost">540 triệu VNĐ</div>
+                                <div class="text-sm text-gray-600">Tổng chi phí/năm</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-green-600" id="total-revenue">910 triệu VNĐ</div>
+                                <div class="text-sm text-gray-600">Doanh thu dự kiến</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-purple-600" id="total-profit">370 triệu VNĐ</div>
+                                <div class="text-sm text-gray-600">Lợi nhuận dự kiến</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-red-200">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Giá bán TB:</span>
+                                    <span class="font-semibold">50,000 VNĐ/kg</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Chi phí/kg:</span>
+                                    <span class="font-semibold">29,700 VNĐ/kg</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Lợi nhuận/kg:</span>
+                                    <span class="font-semibold text-green-600">20,300 VNĐ/kg</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-between">
+                        <button class="btn-secondary" onclick="prevStep(3)">
+                            <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                        </button>
+                        <button class="btn-primary" onclick="activateProcess()">
+                            <i class="fas fa-play mr-2"></i>Kích hoạt Quy trình
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="space-y-6">
+                    <!-- Progress -->
+                    <div class="card-modern">
+                        <div class="p-6">
+                            <h3 class="font-bold text-gray-800 mb-4">Tiến độ Thiết lập</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span>Chọn Quy trình</span>
+                                    <span class="text-green-600">✓</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 25%"></div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between text-sm">
+                                    <span>Chọn giai đoạn kích hoạt</span>
+                                    <span class="text-green-600">✓</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 50%"></div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between text-sm">
+                                    <span>Nhập thông số và tính toán</span>
+                                    <span class="text-gray-400">○</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 75%"></div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between text-sm">
+                                    <span>Kích hoạt</span>
+                                    <span class="text-gray-400">○</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Weather Widget -->
+                    <div class="weather-widget">
+                        <h3 class="font-bold mb-3">Thời tiết Đắk Lắk</h3>
+                        <div class="flex items-center justify-center space-x-4 mb-3">
+                            <i class="fas fa-sun text-2xl"></i>
+                            <div>
+                                <div class="text-2xl font-bold">28°C</div>
+                                <div class="text-sm opacity-90">Nắng</div>
+                            </div>
+                        </div>
+                        <div class="text-xs space-y-1 opacity-90">
+                            <div>Độ ẩm: 75%</div>
+                            <div>Gió: 12 km/h</div>
+                            <div>UV: 8/10</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="card-modern">
+                        <div class="p-6">
+                            <h3 class="font-bold text-gray-800 mb-4">Tóm tắt Nhanh</h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Template:</span>
+                                    <span class="font-semibold">Sầu riêng Dona</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Đơn vị:</span>
+                                    <span class="font-semibold text-green-600">SVIFARM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Kích hoạt:</span>
+                                    <span class="font-semibold text-green-600">Chu kỳ lặp lại</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Diện tích:</span>
+                                    <span class="font-semibold">5.2 ha</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Số cây:</span>
+                                    <span class="font-semibold">520 cây</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Bắt đầu:</span>
+                                    <span class="font-semibold">15/03/2024</span>
+                                </div>
+                                <div class="flex justify-between border-t pt-2">
+                                    <span class="text-gray-600">Sản lượng dự báo:</span>
+                                    <span class="font-semibold text-blue-600">18.2 tấn</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Chi phí/năm:</span>
+                                    <span class="font-semibold text-red-600">540 triệu</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Lợi nhuận dự kiến:</span>
+                                    <span class="font-semibold text-green-600">370 triệu</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Processes -->
+                    <div class="card-modern">
+                        <div class="p-6">
+                            <h3 class="font-bold text-gray-800 mb-4">Quy trình Gần đây</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-check text-green-600 text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-semibold">Vụ 2023</div>
+                                        <div class="text-xs text-gray-600">Hoàn thành 12/2023</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center space-x-3 p-2 bg-gray-50 rounded">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-play text-blue-600 text-xs"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-semibold">Cà phê Lô B</div>
+                                        <div class="text-xs text-gray-600">Đang chạy - 65%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal-overlay" id="success-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="p-8 text-center">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-check text-green-600 text-3xl"></i>
+                </div>
+                
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Kích hoạt Thành công!</h2>
+                <p class="text-gray-600 mb-6">Quy trình sầu riêng Dona - Thái đã được kích hoạt cho vụ mùa 2024</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-sm">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="font-semibold text-gray-800">Giai đoạn đầu tiên</div>
+                        <div class="text-green-600">Chuẩn bị ra hoa</div>
+                        <div class="text-gray-600">Bắt đầu: 15/03/2024</div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="font-semibold text-gray-800">Công việc tiếp theo</div>
+                        <div class="text-blue-600">Stress nước kích thích</div>
+                        <div class="text-gray-600">Ngày mai</div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="font-semibold text-gray-800">Sản lượng dự báo</div>
+                        <div class="text-purple-600">18.2 tấn</div>
+                        <div class="text-gray-600">Tăng 15% so với vụ trước</div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center space-x-4">
+                    <button class="btn-secondary" onclick="closeSuccessModal()">
+                        Đóng
+                    </button>
+                    <button class="btn-primary" onclick="goToDashboard()">
+                        Đi tới Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedTemplate = 'durian-dona-svifarm';
+        let selectedActivationType = 'recurring';
+        let selectedPhase = 3;
+
+        // Template filtering
+        function filterTemplates() {
+            const farmingType = document.getElementById('farming-type').value;
+            const cropType = document.getElementById('crop-type').value;
+            const varietyType = document.getElementById('variety-type').value;
+            const researchUnit = document.getElementById('research-unit').value;
+            
+            const allTemplates = document.querySelectorAll('.template-carousel .process-template-card');
+            let visibleCount = 0;
+            
+            allTemplates.forEach(template => {
+                if (template.dataset.farming === "" && template.dataset.crop === "") {
+                    // Skip custom template
+                    template.style.display = 'block';
+                    return;
+                }
+                
+                const matches = (
+                    (!farmingType || template.dataset.farming === farmingType) &&
+                    (!cropType || template.dataset.crop === cropType) &&
+                    (!varietyType || template.dataset.variety === varietyType) &&
+                    (!researchUnit || template.dataset.research === researchUnit)
+                );
+                
+                if (matches) {
+                    template.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    template.style.display = 'none';
+                }
+            });
+            
+            // Update suggested templates visibility
+            const suggestedTemplates = document.querySelectorAll('.process-template-card.suggested');
+            suggestedTemplates.forEach(template => {
+                const matches = (
+                    (!farmingType || template.dataset.farming === farmingType) &&
+                    (!cropType || template.dataset.crop === cropType) &&
+                    (!varietyType || template.dataset.variety === varietyType) &&
+                    (!researchUnit || template.dataset.research === researchUnit)
+                );
+                
+                if (matches) {
+                    template.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    template.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('template-count').textContent = `Tìm thấy ${visibleCount} template phù hợp`;
+        }
+
+        function resetFilters() {
+            document.getElementById('farming-type').value = '';
+            document.getElementById('crop-type').value = '';
+            document.getElementById('variety-type').value = '';
+            document.getElementById('research-unit').value = '';
+            filterTemplates();
+        }
+
+        // Step Navigation
+        function nextStep(step) {
+            if (step <= 4) {
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                document.getElementById(`step-${currentStep}`).classList.add('completed');
+                
+                currentStep = step;
+                document.getElementById(`step-${currentStep}`).classList.remove('disabled');
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                
+                updateProgress();
+                
+                if (step === 3) {
+                    updatePhaseSelection();
+                    calculateParameters();
+                }
+            }
+        }
+
+        function prevStep(step) {
+            if (step >= 1) {
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                document.getElementById(`step-${currentStep}`).classList.add('disabled');
+                
+                if (currentStep > 1) {
+                    document.getElementById(`step-${currentStep-1}`).classList.remove('completed');
+                }
+                
+                currentStep = step;
+                document.getElementById(`step-${currentStep}`).classList.remove('completed');
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach((bar, index) => {
+                const width = currentStep > index + 1 ? 100 : (currentStep === index + 1 ? 50 : 0);
+                bar.style.width = width + '%';
+            });
+        }
+
+        // Template Selection
+        function selectTemplate(templateId) {
+            document.querySelectorAll('.process-template-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            selectedTemplate = templateId;
+        }
+
+        // Activation Type Selection
+        function selectActivationType(type) {
+            document.querySelectorAll('.activation-type-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            selectedActivationType = type;
+        }
+
+        // Phase Selection
+        function selectPhase(phaseId) {
+            document.querySelectorAll('.phase-selector').forEach(phase => {
+                phase.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            selectedPhase = phaseId;
+        }
+
+        function updatePhaseSelection() {
+            const phaseSelection = document.getElementById('phase-selection');
+            if (selectedActivationType === 'new') {
+                phaseSelection.style.display = 'block';
+            } else {
+                phaseSelection.style.display = 'none';
+            }
+        }
+
+        // Growth Parameters
+        function updateGrowthParameters() {
+            // This would integrate with the template's parameter system
+            calculateParameters();
+        }
+
+        // Parameter Calculation
+        function calculateParameters() {
+            const totalArea = parseFloat(document.getElementById('total-area').value) || 5.2;
+            const currentTrees = parseInt(document.getElementById('current-trees').value) || 520;
+            const treeAge = parseInt(document.getElementById('tree-age').value) || 4;
+            const yieldTarget = document.getElementById('yield-target').value || 'high';
+            
+            // Calculate density
+            const density = Math.round(currentTrees / totalArea);
+            
+            // Calculate yield based on age and target
+            let yieldPerTree = { min: 20, max: 30 }; // kg per tree
+            if (treeAge >= 5) {
+                yieldPerTree = { min: 30, max: 45 };
+            } else if (treeAge >= 4) {
+                yieldPerTree = { min: 25, max: 35 };
+            } else if (treeAge >= 3) {
+                yieldPerTree = { min: 15, max: 25 };
+            }
+            
+            if (yieldTarget === 'premium') {
+                yieldPerTree.min += 10;
+                yieldPerTree.max += 15;
+            } else if (yieldTarget === 'high') {
+                yieldPerTree.min += 5;
+                yieldPerTree.max += 10;
+            }
+            
+            const totalYield = {
+                min: (currentTrees * yieldPerTree.min) / 1000, // Convert to tons
+                max: (currentTrees * yieldPerTree.max) / 1000
+            };
+            
+            const avgYield = (totalYield.min + totalYield.max) / 2;
+            
+            // Calculate resources
+            const fertilizerPerTree = 5; // kg per year
+            const totalFertilizer = (currentTrees * fertilizerPerTree) / 1000; // tons
+            
+            const waterPerTree = 150; // liters per month
+            const totalWater = currentTrees * waterPerTree;
+            
+            // Calculate costs (example values)
+            const costPerTree = 1000000; // VND per tree per year
+            const totalCost = (currentTrees * costPerTree) / 1000000; // millions VND
+            
+            const pricePerKg = 50000; // VND per kg
+            const totalRevenue = avgYield * pricePerKg / 1000000; // millions VND
+            
+            const profit = totalRevenue - totalCost;
+            
+            // Update display
+            document.getElementById('calc-total-trees').textContent = `${currentTrees} cây`;
+            document.getElementById('calc-density').textContent = `${density} cây/ha`;
+            document.getElementById('calc-yield').textContent = `${totalYield.min.toFixed(1)} - ${totalYield.max.toFixed(1)} tấn`;
+            document.getElementById('calc-fruits').textContent = `${Math.round(yieldPerTree.min/2)}-${Math.round(yieldPerTree.max/2)} trái`;
+            document.getElementById('calc-fertilizer').textContent = `${totalFertilizer.toFixed(1)} tấn/năm`;
+            document.getElementById('calc-water').textContent = `${(totalWater/1000).toFixed(0)},000 L/tháng`;
+            document.getElementById('calc-labor').textContent = `${Math.ceil(currentTrees/200)}-${Math.ceil(currentTrees/150)} người/ngày`;
+            document.getElementById('calc-cost').textContent = `${Math.round(totalCost/12)}-${Math.round(totalCost/10)} triệu VNĐ`;
+            
+            document.getElementById('production-forecast').textContent = `${avgYield.toFixed(1)} tấn`;
+            document.getElementById('total-cost').textContent = `${Math.round(totalCost)} triệu VNĐ`;
+            document.getElementById('total-revenue').textContent = `${Math.round(totalRevenue)} triệu VNĐ`;
+            document.getElementById('total-profit').textContent = `${Math.round(profit)} triệu VNĐ`;
+        }
+
+        // Process Activation
+        function activateProcess() {
+            if (confirm('Bạn có chắc muốn kích hoạt quy trình này?\n\nSau khi kích hoạt, hệ thống sẽ bắt đầu theo dõi và nhắc nhở các công việc theo lịch trình.')) {
+                // Show loading state
+                event.target.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang kích hoạt...';
+                event.target.disabled = true;
+                
+                // Simulate activation process
+                setTimeout(() => {
+                    document.getElementById('success-modal').style.display = 'flex';
+                }, 1500);
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('success-modal').style.display = 'none';
+        }
+
+        function goToDashboard() {
+            alert('Chuyển đến Dashboard\n\nBạn sẽ được chuyển đến dashboard quản lý quy trình với timeline chi tiết và các công việc cần thực hiện.');
+            closeSuccessModal();
+        }
+
+        // Data Source Selection
+        let selectedDataSource = 'iot';
+        
+        function selectDataSource(source) {
+            // Remove selected class from all data source cards
+            document.querySelectorAll('[id^="data-source-"]').forEach(card => {
+                card.classList.remove('selected');
+                card.style.borderColor = '#e5e7eb';
+            });
+            
+            // Add selected class to chosen source
+            const selectedCard = document.getElementById(`data-source-${source}`);
+            selectedCard.classList.add('selected');
+            
+            selectedDataSource = source;
+            
+            // Update border color and show details
+            switch(source) {
+                case 'iot':
+                    selectedCard.style.borderColor = '#3b82f6';
+                    updateDataSourceDetails('iot');
+                    break;
+                case 'forecast':
+                    selectedCard.style.borderColor = '#22c55e';
+                    updateDataSourceDetails('forecast');
+                    break;
+                case 'manual':
+                    selectedCard.style.borderColor = '#f59e0b';
+                    updateDataSourceDetails('manual');
+                    break;
+            }
+        }
+        
+        function updateDataSourceDetails(source) {
+            const detailsContainer = document.getElementById('data-source-details');
+            
+            let content = '';
+            switch(source) {
+                case 'iot':
+                    content = `
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-blue-800 mb-3">Kết nối Thiết bị IoT</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Trạm quan trắc</label>
+                                    <select class="form-input">
+                                        <option value="station-01" selected>Trạm 01 - Khu vực A (Hoạt động)</option>
+                                        <option value="station-02">Trạm 02 - Khu vực B (Hoạt động)</option>
+                                        <option value="station-03">Trạm 03 - Khu vực C (Bảo trì)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tần suất cập nhật</label>
+                                    <select class="form-input">
+                                        <option value="realtime" selected>Thời gian thực (5 phút)</option>
+                                        <option value="hourly">Mỗi giờ</option>
+                                        <option value="daily">Hàng ngày</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-sm text-blue-700">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Dữ liệu sẽ được tự động đồng bộ từ các cảm biến IoT đã lắp đặt trong vườn.
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'forecast':
+                    content = `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-green-800 mb-3">Dữ liệu Quan trắc & Dự báo</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Trạm khí tượng</label>
+                                    <select class="form-input">
+                                        <option value="daklak-center" selected>Đắk Lắk - Trung tâm</option>
+                                        <option value="daklak-north">Đắk Lắk - Phía Bắc</option>
+                                        <option value="daklak-south">Đắk Lắk - Phía Nam</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Độ tin cậy</label>
+                                    <select class="form-input">
+                                        <option value="high" selected>Cao (95%)</option>
+                                        <option value="medium">Trung bình (85%)</option>
+                                        <option value="basic">Cơ bản (75%)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-sm text-green-700">
+                                <i class="fas fa-satellite mr-1"></i>
+                                Dữ liệu từ mạng lưới quan trắc quốc gia và dự báo vệ tinh.
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'manual':
+                    content = `
+                        <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-orange-800 mb-3">Nhập Dữ liệu Thủ công</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tần suất cập nhật</label>
+                                    <select class="form-input">
+                                        <option value="daily" selected>Hàng ngày</option>
+                                        <option value="weekly">Hàng tuần</option>
+                                        <option value="monthly">Hàng tháng</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phương pháp đo</label>
+                                    <select class="form-input">
+                                        <option value="instruments" selected>Dụng cụ đo chuyên dụng</option>
+                                        <option value="visual">Quan sát trực tiếp</option>
+                                        <option value="mixed">Kết hợp</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-sm text-orange-700">
+                                <i class="fas fa-edit mr-1"></i>
+                                Người nông dân sẽ nhập dữ liệu định kỳ qua ứng dụng di động hoặc web.
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            detailsContainer.innerHTML = content;
+        }
+
+        // Phase Configuration Functions
+        function editPhaseParams(phaseId) {
+            alert(`Chỉnh sửa tham số giai đoạn ${phaseId}\n\nTính năng này sẽ mở form chi tiết để tùy chỉnh các tham số sinh trưởng của giai đoạn.`);
+        }
+
+        function editTask(phaseId, taskId) {
+            alert(`Chỉnh sửa công việc ${taskId} trong giai đoạn ${phaseId}\n\nTính năng này sẽ mở form chi tiết để tùy chỉnh:\n- Thời gian thực hiện\n- Vật tư cần thiết\n- Điều kiện kích hoạt\n- Tiêu chí hoàn thành`);
+        }
+
+        function addTaskToPhase(phaseId) {
+            const taskName = prompt(`Nhập tên công việc mới cho giai đoạn ${phaseId}:`);
+            if (taskName) {
+                alert(`Đã thêm công việc: "${taskName}"\n\nCông việc mới sẽ được thêm vào giai đoạn ${phaseId} với các thông số mặc định. Bạn có thể chỉnh sửa chi tiết sau.`);
+            }
+        }
+
+        function showPhaseDetails(phaseId) {
+            alert(`Hiển thị chi tiết giai đoạn ${phaseId}\n\nTính năng này sẽ mở modal với:\n- Danh sách đầy đủ các công việc\n- Tham số sinh trưởng chi tiết\n- Timeline thực hiện\n- Điều kiện môi trường yêu cầu`);
+        }
+
+        function showAllPhases() {
+            alert(`Hiển thị tất cả giai đoạn\n\nTính năng này sẽ mở danh sách đầy đủ 7 giai đoạn từ template với khả năng:\n- Bật/tắt từng giai đoạn\n- Tùy chỉnh thứ tự\n- Điều chỉnh thời gian\n- Thêm giai đoạn tùy chỉnh`);
+        }
+
+        // Environmental Data Functions
+        function updateEnvironmentalData() {
+            // This function would sync data based on selected source
+            if (selectedDataSource === 'iot') {
+                // Simulate IoT data sync
+                document.getElementById('temperature').value = 28;
+                document.getElementById('humidity').value = 78;
+                document.getElementById('soil-moisture').value = 68;
+            } else if (selectedDataSource === 'forecast') {
+                // Simulate weather forecast data
+                document.getElementById('rainfall').value = 1650;
+                document.getElementById('temperature').value = 27;
+            }
+            // For manual, user inputs their own data
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            calculateParameters();
+            filterTemplates();
+            selectDataSource('iot'); // Initialize with IoT as default
+        });
+    </script>
+</body>
+</html>

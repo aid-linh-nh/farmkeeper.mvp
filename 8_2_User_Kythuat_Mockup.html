@@ -1,0 +1,2420 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmKeeper Technician - Kỹ thuật viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* Mobile-first responsive design */
+        .mobile-container {
+            max-width: 390px;
+            margin: 0 auto;
+            background: #f8fafc;
+            min-height: 100vh;
+            position: relative;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 12px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding-bottom: 80px;
+            overflow-y: auto;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 390px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            padding: 8px 0;
+            display: flex;
+            justify-content: around;
+            z-index: 100;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            padding: 8px 4px;
+            color: #6b7280;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: #3b82f6;
+        }
+        
+        .nav-item i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 8px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #f1f5f9;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .alert-badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            animation: pulse 2s infinite;
+        }
+        
+        .farm-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .farm-item:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .farm-item.urgent {
+            border-left: 4px solid #ef4444;
+            background: #fef2f2;
+        }
+        
+        .farm-item.warning {
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+        }
+        
+        .farm-item.normal {
+            border-left: 4px solid #10b981;
+            background: #f0fdf4;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+        
+        .status-urgent { background: #ef4444; }
+        .status-warning { background: #f59e0b; }
+        .status-normal { background: #10b981; }
+        .status-offline { background: #6b7280; }
+        
+        .priority-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .priority-critical { background: #ef4444; animation: pulse 2s infinite; }
+        .priority-high { background: #f59e0b; }
+        .priority-medium { background: #3b82f6; }
+        .priority-low { background: #10b981; }
+        
+        .communication-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+        
+        .communication-item:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .communication-item.unread {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+        
+        /* Enhanced FAB with expanded menu */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            z-index: 90;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+        }
+        
+        .fab.expanded {
+            transform: rotate(45deg);
+            background: #ef4444;
+        }
+        
+        .fab-menu {
+            position: fixed;
+            bottom: 160px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 85;
+        }
+        
+        .fab-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .fab-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 28px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .fab-item:hover {
+            transform: translateX(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .fab-item i {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 14px;
+            color: white;
+        }
+        
+        .fab-item span {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            white-space: nowrap;
+        }
+        
+        .fab-ai { background: #8b5cf6; }
+        .fab-camera { background: #10b981; }
+        .fab-voice { background: #f59e0b; }
+        .fab-emergency { background: #ef4444; }
+        .fab-nav { background: #3b82f6; }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .schedule-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .schedule-item.today {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .schedule-item.overdue {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .knowledge-item {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .knowledge-item:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin: 12px 0;
+        }
+        
+        .filter-btn {
+            flex-shrink: 0;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #6b7280;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        
+        .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="mobile-container">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span>09:41</span>
+            <span>📶 📶 📶 💾 🔋</span>
+        </div>
+        
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-user-tie text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold">KS. Phạm Văn Minh</h1>
+                        <p class="text-sm opacity-90">ID: KTV001 • Rank: #1 • 98% hiệu suất</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Connection Status -->
+                    <div class="flex items-center space-x-1">
+                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                        <span class="text-xs opacity-80">Sync</span>
+                    </div>
+                    <!-- Quick Actions -->
+                    <div class="flex items-center space-x-2">
+                        <button class="bg-white bg-opacity-20 p-2 rounded-lg" onclick="startEmergencyCall()">
+                            <i class="fas fa-phone text-white"></i>
+                        </button>
+                        <button class="bg-white bg-opacity-20 p-2 rounded-lg" onclick="openCamera()">
+                            <i class="fas fa-camera text-white"></i>
+                        </button>
+                        <div class="relative">
+                            <button class="bg-white bg-opacity-20 p-2 rounded-lg" onclick="toggleNotifications()">
+                                <i class="fas fa-bell text-white"></i>
+                            </button>
+                            <div class="alert-badge">7</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <!-- Critical Alerts Summary -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-red-800 flex items-center">
+                            <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                            Cảnh báo khẩn cấp
+                        </h3>
+                        <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">7 vườn</span>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-2">
+                                    <div class="priority-indicator priority-critical"></div>
+                                    <span class="font-bold text-red-800 text-sm">Sâu phủ quả</span>
+                                </div>
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">4 vườn</span>
+                            </div>
+                            <p class="text-xs text-red-700 mb-2">Vườn Anh Hiền, Chú Dũng, Bác Tâm, Cô Lan</p>
+                            <div class="flex space-x-2">
+                                <button class="bg-red-500 text-white px-3 py-1 rounded text-xs" onclick="handleMassEmergency('pest')">
+                                    🚨 Xử lý hàng loạt
+                                </button>
+                                <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="createGroupChat('pest')">
+                                    💬 Chat nhóm
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <div class="priority-indicator priority-high"></div>
+                                    <span class="font-bold text-yellow-800 text-sm">Thiếu phân NPK</span>
+                                </div>
+                                <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">3 vườn</span>
+                            </div>
+                            <p class="text-xs text-yellow-700">Cần đặt hàng khẩn cấp</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overview Metrics -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-chart-pie text-blue-600 mr-2"></i>
+                        Dashboard Kỹ thuật viên
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="metric-card">
+                            <div class="text-2xl font-bold text-blue-700">23</div>
+                            <div class="text-sm text-gray-600">Vườn phụ trách</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-2xl font-bold text-green-700">18</div>
+                            <div class="text-sm text-gray-600">Hoàn thành hôm nay</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-2xl font-bold text-orange-700">5</div>
+                            <div class="text-sm text-gray-600">Đang thực hiện</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="text-2xl font-bold text-purple-700">2</div>
+                            <div class="text-sm text-gray-600">Khẩn cấp</div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Assistant Integration -->
+                    <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-3 border border-blue-200 mb-4">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-robot text-blue-600"></i>
+                            <span class="font-bold text-blue-800">AI Assistant</span>
+                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">Beta</span>
+                        </div>
+                        <p class="text-sm text-blue-700 mb-2">"Hôm nay nên ưu tiên xử lý sâu phủ quả ở vườn Anh Hiền trước khi mưa"</p>
+                        <div class="flex space-x-2">
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="followAIAdvice()">
+                                ✓ Áp dụng
+                            </button>
+                            <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs" onclick="askAI()">
+                                💬 Hỏi thêm
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Smart Route Optimization -->
+                    <div class="bg-gradient-to-r from-green-50 to-teal-50 rounded-lg p-3 border border-green-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <i class="fas fa-route text-green-600"></i>
+                                <span class="font-bold text-green-800">Lộ trình tối ưu</span>
+                            </div>
+                            <span class="text-sm text-green-700">Tiết kiệm 45 phút</span>
+                        </div>
+                        <div class="text-sm text-green-700 mb-2">
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-clock text-green-600"></i>
+                                <span>4 giờ 15 phút • 67.3 km</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="startOptimizedRoute()">
+                                🚗 Bắt đầu
+                            </button>
+                            <button class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs" onclick="customizeRoute()">
+                                ⚙️ Tùy chỉnh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Today's Schedule -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-calendar-day text-green-600 mr-2"></i>
+                            Lịch hôm nay
+                        </h3>
+                        <button class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs" onclick="viewFullSchedule()">
+                            Xem tất cả
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="schedule-item today">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium text-green-800 text-sm">8:00 - Vườn Anh Hiền</span>
+                                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">Hôm nay</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Kiểm tra sâu phủ quả • Cú M'Gar, DL</p>
+                            <div class="flex items-center mt-2 space-x-2">
+                                <button class="bg-green-500 text-white px-2 py-1 rounded text-xs" onclick="startVisit('farm-1')">
+                                    🚗 Bắt đầu
+                                </button>
+                                <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs" onclick="callFarmer('farm-1')">
+                                    📞 Gọi
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="schedule-item">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium text-blue-800 text-sm">14:00 - Vườn Bác Tâm</span>
+                                <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Sắp tới</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Hướng dẫn bón phân • Trảng Bom, DN</p>
+                        </div>
+                        
+                        <div class="schedule-item overdue">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-medium text-red-800 text-sm">Thứ 6 - Vườn Chú Dũng</span>
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Trễ hẹn</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Kiểm tra định kỳ • Cần liên hệ lại</p>
+                            <button class="bg-red-500 text-white px-2 py-1 rounded text-xs mt-1" onclick="rescheduleVisit('farm-3')">
+                                📅 Đổi lịch
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">Hành động nhanh</h3>
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="text-center" onclick="startVideoCall()">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
+                                <i class="fas fa-video text-blue-600 text-lg"></i>
+                            </div>
+                            <div class="text-xs font-medium">Video call</div>
+                        </div>
+                        <div class="text-center" onclick="createReport()">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-2">
+                                <i class="fas fa-file-alt text-green-600 text-lg"></i>
+                            </div>
+                            <div class="text-xs font-medium">Báo cáo</div>
+                        </div>
+                        <div class="text-center" onclick="sendBroadcast()">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-2">
+                                <i class="fas fa-broadcast-tower text-purple-600 text-lg"></i>
+                            </div>
+                            <div class="text-xs font-medium">Thông báo</div>
+                        </div>
+                        <div class="text-center" onclick="openKnowledge()">
+                            <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-2">
+                                <i class="fas fa-book text-orange-600 text-lg"></i>
+                            </div>
+                            <div class="text-xs font-medium">Tài liệu</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Farms Tab -->
+            <div id="farms-tab" class="tab-content">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-map-marked-alt text-green-600 mr-2"></i>
+                            Vườn đang quản lý
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            <select class="text-xs border rounded px-2 py-1" onchange="filterByRegion(this.value)">
+                                <option value="all">Tất cả khu vực</option>
+                                <option value="dongnai">Đồng Nai</option>
+                                <option value="binhduong">Bình Dương</option>
+                                <option value="longan">Long An</option>
+                            </select>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded-lg text-xs" onclick="addNewFarm()">
+                                <i class="fas fa-plus mr-1"></i>Thêm vườn
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Filter -->
+                    <div class="flex overflow-x-auto space-x-2 mb-4 pb-2">
+                        <button class="filter-btn active" onclick="filterFarms('all')">Tất cả</button>
+                        <button class="filter-btn" onclick="filterFarms('urgent')">Khẩn cấp</button>
+                        <button class="filter-btn" onclick="filterFarms('warning')">Cảnh báo</button>
+                        <button class="filter-btn" onclick="filterFarms('normal')">Bình thường</button>
+                        <button class="filter-btn" onclick="filterFarms('offline')">Mất kết nối</button>
+                    </div>
+                </div>
+
+                <!-- Farm List -->
+                <div class="px-4 space-y-3">
+                    <!-- Critical Farm -->
+                    <div class="farm-item urgent" onclick="selectFarm('farm-1')">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="status-dot status-urgent"></span>
+                                <span class="font-bold text-red-800">Vườn Anh Hiền</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Khẩn cấp</span>
+                                <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-600">12.5ha • 156 cây • Cú M'Gar, DL</span>
+                            <span class="text-xs text-gray-500">2 giờ trước</span>
+                        </div>
+                        <div class="bg-red-50 p-2 rounded-lg mb-2">
+                            <p class="text-xs text-red-700 font-medium">Sâu phủ quả - 35 cây bị ảnh hưởng</p>
+                        </div>
+                        
+                        <!-- IoT Sensor Data -->
+                        <div class="grid grid-cols-3 gap-2 mb-2">
+                            <div class="bg-white p-2 rounded text-center">
+                                <div class="text-xs text-orange-600 font-bold">34°C</div>
+                                <div class="text-xs text-gray-500">Nhiệt độ</div>
+                            </div>
+                            <div class="bg-white p-2 rounded text-center">
+                                <div class="text-xs text-blue-600 font-bold">72%</div>
+                                <div class="text-xs text-gray-500">Độ ẩm</div>
+                            </div>
+                            <div class="bg-white p-2 rounded text-center">
+                                <div class="text-xs text-green-600 font-bold">6.2</div>
+                                <div class="text-xs text-gray-500">pH đất</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Smart Actions -->
+                        <div class="flex space-x-2">
+                            <button class="bg-red-500 text-white px-3 py-1 rounded text-xs" onclick="handleFarmEmergency('farm-1')">
+                                🚨 Xử lý ngay
+                            </button>
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="openAICamera('farm-1')">
+                                📸 AI Scan
+                            </button>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="startNavigation('farm-1')">
+                                🧭 Dẫn đường
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Warning Farm -->
+                    <div class="farm-item warning" onclick="selectFarm('farm-2')">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="status-dot status-warning"></span>
+                                <span class="font-bold text-yellow-800">Vườn Bác Tâm</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">Theo dõi</span>
+                                <i class="fas fa-eye text-yellow-600"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-600">8.2ha • 98 cây • Trảng Bom, DN</span>
+                            <span class="text-xs text-gray-500">4 giờ trước</span>
+                        </div>
+                        <div class="bg-yellow-50 p-2 rounded-lg mb-2">
+                            <p class="text-xs text-yellow-700 font-medium">Thiếu phân NPK - Cần đặt hàng</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-yellow-500 text-white px-3 py-1 rounded text-xs" onclick="scheduleFertilizer('farm-2')">
+                                📦 Đặt phân
+                            </button>
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="callFarmer('farm-2')">
+                                📞 Gọi
+                            </button>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="chatFarmer('farm-2')">
+                                💬 Chat
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Normal Farm -->
+                    <div class="farm-item normal" onclick="selectFarm('farm-3')">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="status-dot status-normal"></span>
+                                <span class="font-bold text-green-800">Vườn Chú Dũng</span>
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">Tốt</span>
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-gray-600">15.8ha • 201 cây • Xuân Lộc, DN</span>
+                            <span class="text-xs text-gray-500">1 ngày trước</span>
+                        </div>
+                        <div class="bg-green-50 p-2 rounded-lg mb-2">
+                            <p class="text-xs text-green-700 font-medium">Tiến độ bón phân: 78% hoàn thành</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="viewProgress('farm-3')">
+                                📊 Xem tiến độ
+                            </button>
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="callFarmer('farm-3')">
+                                📞 Gọi
+                            </button>
+                            <button class="bg-purple-500 text-white px-3 py-1 rounded text-xs" onclick="scheduleVisit('farm-3')">
+                                📅 Hẹn thăm
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Show more farms -->
+                    <div class="text-center py-4">
+                        <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm" onclick="loadMoreFarms()">
+                            <i class="fas fa-chevron-down mr-2"></i>Xem thêm 20 vườn
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Communication Tab - Focused on Manager Reporting -->
+            <div id="communication-tab" class="tab-content">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-chart-line text-indigo-600 mr-2"></i>
+                            Báo cáo & Giao tiếp
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            <div class="flex items-center space-x-1">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-xs text-green-600">KS. Sang Online</span>
+                            </div>
+                            <button class="bg-indigo-500 text-white px-3 py-1 rounded-lg text-xs" onclick="quickReport()">
+                                <i class="fas fa-paper-plane mr-1"></i>Báo cáo nhanh
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Report -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-tasks text-blue-600 mr-2"></i>
+                            Báo cáo tiến độ hôm nay
+                        </h4>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">18/23 hoàn thành</span>
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs" onclick="sendProgressReport()">
+                                📊 Gửi báo cáo
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <!-- Completed Tasks -->
+                        <div class="bg-green-50 p-3 rounded-lg border border-green-200">
+                            <h5 class="font-semibold text-green-800 mb-2 text-sm">✅ Hoàn thành (18 công việc)</h5>
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-green-700">• Xử lý sâu phủ quả - Vườn Anh Hiền</span>
+                                    <span class="text-xs text-green-600">14:30</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-green-700">• Kiểm tra phân bón - Vườn Bác Tâm</span>
+                                    <span class="text-xs text-green-600">11:45</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-green-700">• Tưới nước khẩn cấp - 3 vườn</span>
+                                    <span class="text-xs text-green-600">09:20</span>
+                                </div>
+                                <div class="text-center">
+                                    <button class="text-xs text-green-600 hover:text-green-800" onclick="viewAllCompleted()">
+                                        ... xem tất cả 18 công việc
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- In Progress Tasks -->
+                        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                            <h5 class="font-semibold text-yellow-800 mb-2 text-sm">🔄 Đang thực hiện (3 công việc)</h5>
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-yellow-700">• Kiểm tra GAP - Vườn Chị Lan</span>
+                                    <span class="text-xs text-yellow-600">60% hoàn thành</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-yellow-700">• Tư vấn nông dân - Vườn Chú Minh</span>
+                                    <span class="text-xs text-yellow-600">30% hoàn thành</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pending Tasks -->
+                        <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                            <h5 class="font-semibold text-red-800 mb-2 text-sm">⏳ Chậm tiến độ (2 công việc)</h5>
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-red-700">• Phun thuốc định kỳ - Vườn Cô Hoa</span>
+                                    <span class="text-xs text-red-600">Trễ 2 giờ</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-red-700">• Kiểm tra pH đất - Vườn Anh Dũng</span>
+                                    <span class="text-xs text-red-600">Chờ thiết bị</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manager Communication -->
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-user-tie text-indigo-600 mr-2"></i>
+                            Giao tiếp với Quản lý
+                        </h4>
+                        <div class="flex items-center space-x-2">
+                            <button class="bg-indigo-500 text-white px-3 py-1 rounded-lg text-xs" onclick="callManager()">
+                                📞 Gọi
+                            </button>
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs" onclick="chatManager()">
+                                💬 Chat
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <!-- Latest conversation -->
+                        <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <img src="https://via.placeholder.com/32x32/6366F1/FFFFFF?text=KS" alt="Manager" class="w-8 h-8 rounded-full">
+                                <div>
+                                    <span class="font-semibold text-indigo-800">KS. Nguyễn Văn Sang</span>
+                                    <span class="text-xs text-indigo-600 ml-2">15 phút trước</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-indigo-700 mb-2">"Anh Minh làm tốt lắm! Vườn Anh Hiền đã xử lý sâu phủ quả hiệu quả. Tiếp tục duy trì chất lượng như vậy."</p>
+                            <div class="flex space-x-2">
+                                <button class="bg-indigo-500 text-white px-3 py-1 rounded text-xs" onclick="thankManager()">
+                                    🙏 Cảm ơn
+                                </button>
+                                <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="shareAdditionalInfo()">
+                                    ℹ️ Thêm thông tin
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- My response -->
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <img src="https://via.placeholder.com/32x32/22C55E/FFFFFF?text=PM" alt="Me" class="w-8 h-8 rounded-full">
+                                <div>
+                                    <span class="font-semibold text-blue-800">Tôi</span>
+                                    <span class="text-xs text-blue-600 ml-2">2 giờ trước</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-blue-700 mb-2">"Dạ, em đã hoàn thành xử lý sâu phủ quả tại vườn Anh Hiền. Tỷ lệ hiệu quả 95%. Đã gửi báo cáo chi tiết với hình ảnh."</p>
+                            <div class="flex space-x-2">
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">✓ Đã đọc</span>
+                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">📎 Có đính kèm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Report Actions -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-bolt text-orange-600 mr-2"></i>
+                        Báo cáo nhanh
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button class="bg-green-50 hover:bg-green-100 p-4 rounded-lg border border-green-200 transition-all text-left" onclick="reportSuccess()">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-check-circle text-green-600"></i>
+                                <span class="font-medium text-green-800">Hoàn thành công việc</span>
+                            </div>
+                            <p class="text-xs text-green-600">Báo cáo kết quả tích cực</p>
+                        </button>
+                        
+                        <button class="bg-orange-50 hover:bg-orange-100 p-4 rounded-lg border border-orange-200 transition-all text-left" onclick="reportIssue()">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-exclamation-triangle text-orange-600"></i>
+                                <span class="font-medium text-orange-800">Báo cáo vấn đề</span>
+                            </div>
+                            <p class="text-xs text-orange-600">Cần hỗ trợ từ quản lý</p>
+                        </button>
+                        
+                        <button class="bg-blue-50 hover:bg-blue-100 p-4 rounded-lg border border-blue-200 transition-all text-left" onclick="requestResources()">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-boxes text-blue-600"></i>
+                                <span class="font-medium text-blue-800">Yêu cầu vật tư</span>
+                            </div>
+                            <p class="text-xs text-blue-600">Đề xuất bổ sung thiết bị</p>
+                        </button>
+                        
+                        <button class="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg border border-purple-200 transition-all text-left" onclick="submitSuggestion()">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <i class="fas fa-lightbulb text-purple-600"></i>
+                                <span class="font-medium text-purple-800">Đề xuất cải tiến</span>
+                            </div>
+                            <p class="text-xs text-purple-600">Ý kiến từ thực địa</p>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-chart-bar text-purple-600 mr-2"></i>
+                        Hiệu suất của tôi
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-3 rounded-lg">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm font-medium text-green-800">Tuần này</span>
+                                <i class="fas fa-arrow-up text-green-500"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-green-700">94%</div>
+                            <div class="text-xs text-green-600">Hiệu suất tổng thể</div>
+                        </div>
+                        <div class="bg-gradient-to-r from-blue-50 to-sky-50 p-3 rounded-lg">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm font-medium text-blue-800">Phản hồi TB</span>
+                                <i class="fas fa-clock text-blue-500"></i>
+                            </div>
+                            <div class="text-2xl font-bold text-blue-700">12 phút</div>
+                            <div class="text-xs text-blue-600">Mục tiêu: <15 phút</div>
+                        </div>
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-purple-800">Ranking trong đội</span>
+                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">#1</span>
+                        </div>
+                        <div class="text-xs text-purple-600">Duy trì vị trí số 1 trong 3 tuần liên tiếp</div>
+                    </div>
+                    <div class="flex space-x-2 mt-3">
+                        <button class="bg-purple-500 text-white px-3 py-1 rounded text-xs" onclick="viewDetailedStats()">
+                            📊 Thống kê chi tiết
+                        </button>
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="shareAchievement()">
+                            🏆 Chia sẻ thành tích
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schedule Tab -->
+            <div id="schedule-tab" class="tab-content">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-calendar-alt text-purple-600 mr-2"></i>
+                            Lịch thăm vườn
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="bg-purple-500 text-white px-3 py-1 rounded-lg text-xs" onclick="addSchedule()">
+                                <i class="fas fa-plus mr-1"></i>Thêm lịch
+                            </button>
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs" onclick="optimizeRoute()">
+                                <i class="fas fa-route mr-1"></i>Tối ưu
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Calendar View Toggle -->
+                    <div class="flex overflow-x-auto space-x-2 mb-4 pb-2">
+                        <button class="filter-btn active" onclick="showScheduleView('today')">Hôm nay</button>
+                        <button class="filter-btn" onclick="showScheduleView('week')">Tuần này</button>
+                        <button class="filter-btn" onclick="showScheduleView('month')">Tháng này</button>
+                        <button class="filter-btn" onclick="showScheduleView('overdue')">Trễ hẹn</button>
+                    </div>
+                    
+                    <!-- Route Optimization -->
+                    <div class="bg-blue-50 rounded-lg p-3 border border-blue-200 mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold text-blue-800">Lộ trình tối ưu hôm nay</span>
+                            <span class="text-sm text-blue-700">67.3 km • 4 giờ</span>
+                        </div>
+                        <div class="text-sm text-blue-700 mb-2">
+                            Cú M'Gar → Trảng Bom → Xuân Lộc → Dĩ An
+                        </div>
+                        <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="startNavigation()">
+                            🗺️ Bắt đầu dẫn đường
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Schedule List -->
+                <div class="px-4 space-y-3">
+                    <!-- Today's Schedule -->
+                    <div class="schedule-item today">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <span class="font-bold text-green-800">8:00 - 11:00</span>
+                            </div>
+                            <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">Hôm nay</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="font-medium">Vườn Anh Hiền</span>
+                            <span class="text-sm text-gray-600 ml-2">• Cú M'Gar, Đồng Nai</span>
+                        </div>
+                        <div class="bg-green-50 p-2 rounded-lg mb-2">
+                            <p class="text-sm font-medium text-green-800">Mục tiêu:</p>
+                            <ul class="text-sm text-green-700 list-disc ml-4">
+                                <li>Kiểm tra tình hình sâu phủ quả</li>
+                                <li>Hướng dẫn phun thuốc Imidacloprid</li>
+                                <li>Đánh giá hiệu quả bón phân</li>
+                            </ul>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="startVisit('visit-1')">
+                                🚗 Bắt đầu
+                            </button>
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="callBeforeVisit('visit-1')">
+                                📞 Gọi trước
+                            </button>
+                            <button class="bg-gray-500 text-white px-3 py-1 rounded text-xs" onclick="reschedule('visit-1')">
+                                📅 Đổi lịch
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Visit -->
+                    <div class="schedule-item">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                <span class="font-bold text-blue-800">14:00 - 16:30</span>
+                            </div>
+                            <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Sắp tới</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="font-medium">Vườn Bác Tâm</span>
+                            <span class="text-sm text-gray-600 ml-2">• Trảng Bom, Đồng Nai</span>
+                        </div>
+                        <div class="bg-blue-50 p-2 rounded-lg mb-2">
+                            <p class="text-sm font-medium text-blue-800">Mục tiêu:</p>
+                            <ul class="text-sm text-blue-700 list-disc ml-4">
+                                <li>Hướng dẫn bón phân NPK</li>
+                                <li>Kiểm tra hệ thống tưới</li>
+                                <li>Tư vấn kế hoạch thu hoạch</li>
+                            </ul>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded text-xs" onclick="setReminder('visit-2')">
+                                ⏰ Nhắc nhở
+                            </button>
+                            <button class="bg-green-500 text-white px-3 py-1 rounded text-xs" onclick="callBeforeVisit('visit-2')">
+                                📞 Gọi trước
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Overdue Visit -->
+                    <div class="schedule-item overdue">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                                <span class="font-bold text-red-800">Thứ 6 - Trễ hẹn</span>
+                            </div>
+                            <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Cần xử lý</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="font-medium">Vườn Chú Dũng</span>
+                            <span class="text-sm text-gray-600 ml-2">• Xuân Lộc, Đồng Nai</span>
+                        </div>
+                        <div class="bg-red-50 p-2 rounded-lg mb-2">
+                            <p class="text-sm font-medium text-red-800">Lý do trễ:</p>
+                            <p class="text-sm text-red-700">Chú Dũng có việc đột xuất, cần đổi lịch</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-red-500 text-white px-3 py-1 rounded text-xs" onclick="callToReschedule('visit-3')">
+                                📞 Gọi đổi lịch
+                            </button>
+                            <button class="bg-yellow-500 text-white px-3 py-1 rounded text-xs" onclick="quickReschedule('visit-3')">
+                                📅 Lên lịch mới
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Summary -->
+                    <div class="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                        <h4 class="font-bold text-purple-800 mb-2">📊 Thống kê tuần này</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white p-2 rounded text-center">
+                                <div class="text-lg font-bold text-purple-700">12</div>
+                                <div class="text-xs text-gray-600">Lượt thăm</div>
+                            </div>
+                            <div class="bg-white p-2 rounded text-center">
+                                <div class="text-lg font-bold text-green-700">94%</div>
+                                <div class="text-xs text-gray-600">Đúng hẹn</div>
+                            </div>
+                            <div class="bg-white p-2 rounded text-center">
+                                <div class="text-lg font-bold text-blue-700">3.2h</div>
+                                <div class="text-xs text-gray-600">TB/vườn</div>
+                            </div>
+                            <div class="bg-white p-2 rounded text-center">
+                                <div class="text-lg font-bold text-orange-700">247km</div>
+                                <div class="text-xs text-gray-600">Tổng quãng đường</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Tab -->
+            <div id="tools-tab" class="tab-content">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-toolbox text-orange-600 mr-2"></i>
+                            Công cụ Kỹ thuật
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs">12 công cụ</span>
+                            <button class="bg-orange-500 text-white px-3 py-1 rounded-lg text-xs" onclick="addCustomTool()">
+                                <i class="fas fa-plus mr-1"></i>Thêm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Tools Section -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-robot text-blue-600 mr-2"></i>
+                        Công cụ AI & Phân tích
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 cursor-pointer hover:bg-blue-100 transition-all" onclick="openPestIdentifier()">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-search text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-blue-800">AI Nhận diện Sâu bệnh</h5>
+                                    <p class="text-xs text-blue-700">Chụp ảnh để nhận diện</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200 cursor-pointer hover:bg-green-100 transition-all" onclick="openDosageCalculator()">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-calculator text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-green-800">Tính liều lượng</h5>
+                                    <p class="text-xs text-green-700">Thuốc & phân bón</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200 cursor-pointer hover:bg-purple-100 transition-all" onclick="openPlantHealthScanner()">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-heartbeat text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-purple-800">Đánh giá Sức khỏe Cây</h5>
+                                    <p class="text-xs text-purple-700">Quét lá & thân cây</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 cursor-pointer hover:bg-yellow-100 transition-all" onclick="openWeatherAnalyzer()">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-cloud-sun text-yellow-600"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-yellow-800">Phân tích Thời tiết</h5>
+                                    <p class="text-xs text-yellow-700">Dự báo & khuyến nghị</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Tools -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-bolt text-orange-600 mr-2"></i>
+                        Công cụ Nhanh
+                    </h4>
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 text-center cursor-pointer hover:shadow-md transition-all" onclick="openVoiceRecorder()">
+                            <i class="fas fa-microphone text-red-600 text-xl mb-2"></i>
+                            <div class="text-sm font-medium">Ghi âm</div>
+                            <div class="text-xs text-gray-500">Báo cáo bằng giọng nói</div>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 text-center cursor-pointer hover:shadow-md transition-all" onclick="openQRScanner()">
+                            <i class="fas fa-qrcode text-indigo-600 text-xl mb-2"></i>
+                            <div class="text-sm font-medium">Quét QR</div>
+                            <div class="text-xs text-gray-500">Nhận diện vật tư</div>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 text-center cursor-pointer hover:shadow-md transition-all" onclick="openMeasurementTool()">
+                            <i class="fas fa-ruler text-green-600 text-xl mb-2"></i>
+                            <div class="text-sm font-medium">Đo lường</div>
+                            <div class="text-xs text-gray-500">Kích thước & diện tích</div>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 text-center cursor-pointer hover:shadow-md transition-all" onclick="openColorAnalyzer()">
+                            <i class="fas fa-palette text-purple-600 text-xl mb-2"></i>
+                            <div class="text-sm font-medium">Phân tích Màu</div>
+                            <div class="text-xs text-gray-500">Tình trạng lá</div>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 text-center cursor-pointer hover:shadow-md transition-all" onclick="openOfflineSync()">
+                            <i class="fas fa-sync text-blue-600 text-xl mb-2"></i>
+                            <div class="text-sm font-medium">Sync Offline</div>
+                            <div class="text-xs text-gray-500">Đồng bộ dữ liệu</div>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg border border-gray-200 text-center cursor-pointer hover:shadow-md transition-all" onclick="openEmergencyHelp()">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl mb-2"></i>
+                            <div class="text-sm font-medium">SOS</div>
+                            <div class="text-xs text-gray-500">Hỗ trợ khẩn cấp</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reference Materials -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-book-open text-teal-600 mr-2"></i>
+                        Tài liệu Tham khảo
+                    </h4>
+                    <div class="space-y-2">
+                        <div class="bg-teal-50 p-3 rounded-lg border border-teal-200 cursor-pointer hover:bg-teal-100 transition-all" onclick="openPestGuide()">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-bug text-teal-600"></i>
+                                    <div>
+                                        <h5 class="font-medium text-teal-800">Cẩm nang Sâu bệnh</h5>
+                                        <p class="text-xs text-teal-700">150+ loại sâu bệnh & cách xử lý</p>
+                                    </div>
+                                </div>
+                                <span class="bg-teal-200 text-teal-800 px-2 py-1 rounded-full text-xs">Offline</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200 cursor-pointer hover:bg-blue-100 transition-all" onclick="openFertilizerGuide()">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-seedling text-blue-600"></i>
+                                    <div>
+                                        <h5 class="font-medium text-blue-800">Hướng dẫn Phân bón</h5>
+                                        <p class="text-xs text-blue-700">Liều lượng & thời gian bón</p>
+                                    </div>
+                                </div>
+                                <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Offline</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-50 p-3 rounded-lg border border-purple-200 cursor-pointer hover:bg-purple-100 transition-all" onclick="openGAPStandards()">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-certificate text-purple-600"></i>
+                                    <div>
+                                        <h5 class="font-medium text-purple-800">Tiêu chuẩn GAP</h5>
+                                        <p class="text-xs text-purple-700">VietGAP & GlobalGAP</p>
+                                    </div>
+                                </div>
+                                <span class="bg-purple-200 text-purple-800 px-2 py-1 rounded-full text-xs">Offline</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipment Management -->
+                <div class="card">
+                    <h4 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-cogs text-gray-600 mr-2"></i>
+                        Quản lý Thiết bị
+                    </h4>
+                    <div class="space-y-2">
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-spray-can text-gray-600"></i>
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Bình xịt thuốc</h5>
+                                        <p class="text-xs text-gray-600">Cuối cùng bảo dưỡng: 5 ngày trước</p>
+                                    </div>
+                                </div>
+                                <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">Tốt</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-thermometer-half text-gray-600"></i>
+                                    <div>
+                                        <h5 class="font-medium text-gray-800">Nhiệt kế & pH meter</h5>
+                                        <p class="text-xs text-gray-600">Cần hiệu chỉnh</p>
+                                    </div>
+                                </div>
+                                <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs">Cần kiểm tra</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="card">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-graduation-cap text-orange-600 mr-2"></i>
+                            Kho kiến thức
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            <button class="bg-orange-500 text-white px-3 py-1 rounded-lg text-xs" onclick="addKnowledge()">
+                                <i class="fas fa-plus mr-1"></i>Thêm tài liệu
+                            </button>
+                            <button class="bg-blue-500 text-white px-3 py-1 rounded-lg text-xs" onclick="searchKnowledge()">
+                                <i class="fas fa-search mr-1"></i>Tìm kiếm
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Knowledge Categories -->
+                    <div class="flex overflow-x-auto space-x-2 mb-4 pb-2">
+                        <button class="filter-btn active" onclick="filterKnowledge('all')">Tất cả</button>
+                        <button class="filter-btn" onclick="filterKnowledge('pest')">Sâu bệnh</button>
+                        <button class="filter-btn" onclick="filterKnowledge('fertilizer')">Phân bón</button>
+                        <button class="filter-btn" onclick="filterKnowledge('harvest')">Thu hoạch</button>
+                        <button class="filter-btn" onclick="filterKnowledge('standards')">Tiêu chuẩn</button>
+                    </div>
+                </div>
+
+                <!-- Knowledge List -->
+                <div class="px-4 space-y-3">
+                    <!-- Pest Control Guide -->
+                    <div class="knowledge-item" onclick="openKnowledgeItem('pest-control-guide')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-bug text-red-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-red-800">Hướng dẫn phòng trừ sâu phủ quả</span>
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Cập nhật</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-1">Triệu chứng, phương pháp điều trị và phòng ngừa</p>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500">📄 15 trang</span>
+                                    <span class="text-xs text-gray-500">👥 23 nông dân đã sử dụng</span>
+                                    <span class="text-xs text-gray-500">⭐ 4.8/5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fertilizer Guide -->
+                    <div class="knowledge-item" onclick="openKnowledgeItem('fertilizer-guide')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-seedling text-green-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-green-800">Kỹ thuật bón phân theo giai đoạn</span>
+                                    <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">Phổ biến</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-1">Liều lượng, thời gian bón phân cho từng giai đoạn</p>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500">📄 12 trang</span>
+                                    <span class="text-xs text-gray-500">👥 45 nông dân đã sử dụng</span>
+                                    <span class="text-xs text-gray-500">⭐ 4.9/5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VietGAP Standards -->
+                    <div class="knowledge-item" onclick="openKnowledgeItem('vietgap-standards')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-certificate text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-blue-800">Tiêu chuẩn VietGAP cho sầu riêng</span>
+                                    <span class="bg-blue-500 text-white px-2 py-1 rounded-full text-xs">Chính thức</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-1">Quy trình chuẩn để đạt chứng nhận VietGAP</p>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500">📄 28 trang</span>
+                                    <span class="text-xs text-gray-500">👥 12 nông dân đã áp dụng</span>
+                                    <span class="text-xs text-gray-500">⭐ 4.7/5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Reference -->
+                    <div class="knowledge-item" onclick="openKnowledgeItem('quick-reference')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-tachometer-alt text-purple-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-purple-800">Bảng tra cứu nhanh</span>
+                                    <span class="bg-purple-500 text-white px-2 py-1 rounded-full text-xs">Tiện dụng</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-1">Liều lượng thuốc, phân bón, lịch canh tác</p>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500">📄 4 trang</span>
+                                    <span class="text-xs text-gray-500">👥 67 nông dân đã lưu</span>
+                                    <span class="text-xs text-gray-500">⭐ 4.9/5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Tutorial -->
+                    <div class="knowledge-item" onclick="openKnowledgeItem('video-tutorial')">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-play text-red-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-medium text-red-800">Video: Cách nhận biết sâu bệnh</span>
+                                    <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Video</span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-1">Hướng dẫn chi tiết với hình ảnh thực tế</p>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs text-gray-500">🎥 15 phút</span>
+                                    <span class="text-xs text-gray-500">👥 34 lượt xem</span>
+                                    <span class="text-xs text-gray-500">⭐ 4.8/5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Section -->
+                    <div class="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
+                        <h4 class="font-bold text-yellow-800 mb-2">❓ Câu hỏi thường gặp</h4>
+                        <div class="space-y-2">
+                            <button class="w-full text-left bg-white p-2 rounded border text-sm" onclick="viewFAQ('pest-season')">
+                                <span class="font-medium">Mùa nào sâu bệnh xuất hiện nhiều nhất?</span>
+                            </button>
+                            <button class="w-full text-left bg-white p-2 rounded border text-sm" onclick="viewFAQ('fertilizer-timing')">
+                                <span class="font-medium">Khi nào nên bón phân cho hiệu quả cao nhất?</span>
+                            </button>
+                            <button class="w-full text-left bg-white p-2 rounded border text-sm" onclick="viewFAQ('harvest-signs')">
+                                <span class="font-medium">Làm sao biết quả sầu riêng chín?</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Floating Action Button with Menu -->
+        <div class="fab-menu" id="fabMenu">
+            <div class="fab-item" onclick="openAIAssistant()">
+                <i class="fab-ai fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <div class="fab-item" onclick="openSmartCamera()">
+                <i class="fab-camera fas fa-camera"></i>
+                <span>AI Camera</span>
+            </div>
+            <div class="fab-item" onclick="startVoiceReport()">
+                <i class="fab-voice fas fa-microphone"></i>
+                <span>Voice Report</span>
+            </div>
+            <div class="fab-item" onclick="startEmergencyCall()">
+                <i class="fab-emergency fas fa-phone"></i>
+                <span>Emergency</span>
+            </div>
+            <div class="fab-item" onclick="openQuickNavigation()">
+                <i class="fab-nav fas fa-directions"></i>
+                <span>Quick Nav</span>
+            </div>
+        </div>
+        
+        <button class="fab" id="mainFab" onclick="toggleFabMenu()">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <!-- Bottom Navigation - Optimized -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showTab('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Tổng quan</span>
+            </div>
+            <div class="nav-item" onclick="showTab('tasks')">
+                <i class="fas fa-clipboard-check"></i>
+                <span>Công việc</span>
+                <div class="alert-badge">5</div>
+            </div>
+            <div class="nav-item" onclick="showTab('communication')">
+                <i class="fas fa-comments"></i>
+                <span>Báo cáo</span>
+                <div class="alert-badge">3</div>
+            </div>
+            <div class="nav-item" onclick="showTab('tools')">
+                <i class="fas fa-toolbox"></i>
+                <span>Công cụ</span>
+                <div class="w-2 h-2 bg-orange-500 rounded-full absolute top-1 right-8"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab navigation
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.currentTarget.classList.add('active');
+        }
+
+        // Dashboard Functions
+        function handleMassEmergency(type) {
+            showNotification(`Khởi động quy trình xử lý ${type} hàng loạt cho 4 vườn`, 'warning');
+        }
+
+        function createGroupChat(topic) {
+            showNotification(`Tạo nhóm chat về ${topic} với 4 nông dân`, 'info');
+        }
+
+        function startVideoCall() {
+            showNotification('Khởi động video call khẩn cấp...', 'info');
+        }
+
+        function createReport() {
+            showNotification('Tạo báo cáo tuần...', 'info');
+        }
+
+        function sendBroadcast() {
+            showNotification('Gửi thông báo đến tất cả vườn...', 'info');
+        }
+
+        function openKnowledge() {
+            showTab('knowledge');
+        }
+
+        // Farm Management Functions
+        function filterByRegion(region) {
+            showNotification(`Lọc vườn theo khu vực: ${region}`, 'info');
+        }
+
+        function filterFarms(filter) {
+            showNotification(`Lọc vườn theo trạng thái: ${filter}`, 'info');
+        }
+
+        function selectFarm(farmId) {
+            showNotification(`Xem chi tiết vườn: ${farmId}`, 'info');
+        }
+
+        function handleFarmEmergency(farmId) {
+            showNotification(`Xử lý tình huống khẩn cấp tại ${farmId}`, 'warning');
+        }
+
+        function callFarmer(farmId) {
+            showNotification(`Gọi điện cho nông dân ${farmId}`, 'info');
+        }
+
+        function chatFarmer(farmId) {
+            showNotification(`Mở chat với nông dân ${farmId}`, 'info');
+            setTimeout(() => showTab('communication'), 1000);
+        }
+
+        function scheduleFertilizer(farmId) {
+            showNotification(`Lập đơn đặt phân cho ${farmId}`, 'info');
+        }
+
+        function viewProgress(farmId) {
+            showNotification(`Xem tiến độ canh tác ${farmId}`, 'info');
+        }
+
+        function scheduleVisit(farmId) {
+            showNotification(`Lên lịch thăm ${farmId}`, 'info');
+            setTimeout(() => showTab('schedule'), 1000);
+        }
+
+        // Communication Functions
+        function filterCommunications(filter) {
+            showNotification(`Lọc tin nhắn theo: ${filter}`, 'info');
+        }
+
+        function openChat(farmerId) {
+            showNotification(`Mở chat với ${farmerId}`, 'info');
+        }
+
+        function openGroupChat(topic) {
+            showNotification(`Mở nhóm chat về ${topic}`, 'info');
+        }
+
+        function callUrgent(farmerId) {
+            showNotification(`Gọi khẩn cấp cho ${farmerId}`, 'warning');
+        }
+
+        function sendQuickReply(farmerId) {
+            showNotification(`Gửi phản hồi nhanh cho ${farmerId}`, 'info');
+        }
+
+        function replyToGroup(groupId) {
+            showNotification(`Trả lời trong nhóm ${groupId}`, 'info');
+        }
+
+        function sendGuide(groupId) {
+            showNotification(`Gửi hướng dẫn cho nhóm ${groupId}`, 'info');
+        }
+
+        function acceptVideoCall(farmerId) {
+            showNotification(`Chấp nhận video call từ ${farmerId}`, 'info');
+        }
+
+        function declineVideoCall(farmerId) {
+            showNotification(`Từ chối video call, chuyển sang gọi thường`, 'info');
+        }
+
+        function followUp(farmerId) {
+            showNotification(`Theo dõi tiến độ của ${farmerId}`, 'info');
+        }
+
+        function scheduleCheckup(farmerId) {
+            showNotification(`Lên lịch kiểm tra cho ${farmerId}`, 'info');
+        }
+
+        // Schedule Functions
+        function addSchedule() {
+            showNotification('Thêm lịch thăm vườn mới...', 'info');
+        }
+
+        function optimizeRoute() {
+            showNotification('Tối ưu hóa lộ trình thăm vườn...', 'info');
+        }
+
+        function showScheduleView(view) {
+            showNotification(`Chuyển sang xem lịch: ${view}`, 'info');
+        }
+
+        function startNavigation() {
+            showNotification('Bắt đầu dẫn đường theo lộ trình tối ưu...', 'info');
+        }
+
+        function startVisit(visitId) {
+            showNotification(`Bắt đầu thăm vườn: ${visitId}`, 'success');
+        }
+
+        function callBeforeVisit(visitId) {
+            showNotification(`Gọi trước khi thăm: ${visitId}`, 'info');
+        }
+
+        function reschedule(visitId) {
+            showNotification(`Đổi lịch thăm: ${visitId}`, 'info');
+        }
+
+        function setReminder(visitId) {
+            showNotification(`Đặt nhắc nhở cho: ${visitId}`, 'info');
+        }
+
+        function callToReschedule(visitId) {
+            showNotification(`Gọi để đổi lịch: ${visitId}`, 'info');
+        }
+
+        function quickReschedule(visitId) {
+            showNotification(`Lên lịch mới nhanh cho: ${visitId}`, 'info');
+        }
+
+        // Knowledge Functions
+        function addKnowledge() {
+            showNotification('Thêm tài liệu kiến thức mới...', 'info');
+        }
+
+        function searchKnowledge() {
+            showNotification('Tìm kiếm trong kho kiến thức...', 'info');
+        }
+
+        function filterKnowledge(category) {
+            showNotification(`Lọc kiến thức theo: ${category}`, 'info');
+        }
+
+        function openKnowledgeItem(itemId) {
+            showNotification(`Mở tài liệu: ${itemId}`, 'info');
+        }
+
+        function viewFAQ(faqId) {
+            showNotification(`Xem câu hỏi thường gặp: ${faqId}`, 'info');
+        }
+
+        // Updated Tab Management
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active class from all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+            
+            // Show selected tab
+            const selectedTab = document.getElementById(tabName + '-tab');
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Add active class to clicked nav item
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Update header title based on tab
+            updateHeaderTitle(tabName);
+            
+            // Load tab-specific data
+            loadTabData(tabName);
+        }
+
+        function updateHeaderTitle(tabName) {
+            const headerTitle = document.querySelector('.app-header h1');
+            const titles = {
+                'dashboard': 'Tổng quan',
+                'tasks': 'Công việc hôm nay',
+                'communication': 'Báo cáo & Giao tiếp',
+                'tools': 'Công cụ kỹ thuật'
+            };
+            
+            if (headerTitle && titles[tabName]) {
+                headerTitle.textContent = titles[tabName];
+            }
+        }
+
+        function loadTabData(tabName) {
+            switch(tabName) {
+                case 'dashboard':
+                    updateDashboardMetrics();
+                    break;
+                case 'tasks':
+                    loadTasksData();
+                    break;
+                case 'communication':
+                    loadCommunicationData();
+                    break;
+                case 'tools':
+                    loadToolsData();
+                    break;
+            }
+        }
+
+        // Manager Communication Functions
+        function quickReplyManager() {
+            showNotification('Gửi phản hồi nhanh...', 'success');
+            // Auto-reply to manager
+            setTimeout(() => {
+                showNotification('Đã gửi: "Dạ, em hiểu rồi ạ!"', 'success');
+            }, 1000);
+        }
+
+        function askQuestion() {
+            showNotification('Mở chat với quản lý...', 'info');
+            // Open chat interface with manager
+        }
+
+        function sendProgressReport() {
+            showNotification('Đang gửi báo cáo tiến độ...', 'info');
+            // Send progress report to manager
+            setTimeout(() => {
+                showNotification('Báo cáo đã gửi thành công!', 'success');
+            }, 2000);
+        }
+
+        function requestSupport() {
+            showNotification('Gửi yêu cầu hỗ trợ...', 'info');
+            // Request support from manager
+        }
+
+        function confirmWithManager(taskId) {
+            showNotification('Xác nhận với quản lý...', 'info');
+            // Confirm task understanding with manager
+            setTimeout(() => {
+                showNotification('Đã xác nhận hiểu rõ nhiệm vụ', 'success');
+            }, 1500);
+        }
+
+        function callManager() {
+            showNotification('Đang gọi KS. Nguyễn Văn Sang...', 'info');
+        }
+
+        function chatManager() {
+            showNotification('Mở chat với quản lý...', 'info');
+        }
+
+        function thankManager() {
+            showNotification('Gửi lời cảm ơn...', 'success');
+        }
+
+        function shareAdditionalInfo() {
+            showNotification('Chia sẻ thông tin bổ sung...', 'info');
+        }
+
+        // Task Management Functions
+        function syncWithManager() {
+            showNotification('Đồng bộ với hệ thống quản lý...', 'info');
+            setTimeout(() => {
+                showNotification('Đã cập nhật 3 công việc mới', 'success');
+                updateTaskBadges();
+            }, 2000);
+        }
+
+        function filterTasks(filter) {
+            const filterBtns = document.querySelectorAll('.task-filter-btn');
+            filterBtns.forEach(btn => btn.classList.remove('active'));
+            
+            const activeBtn = document.getElementById(filter + 'TasksBtn');
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            
+            const taskItems = document.querySelectorAll('.task-item');
+            taskItems.forEach(item => {
+                if (filter === 'all' || item.classList.contains(filter)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            showNotification(`Hiển thị công việc: ${filter}`, 'info');
+        }
+
+        function startTask(taskId) {
+            showNotification(`Bắt đầu công việc ${taskId}...`, 'info');
+            // Start task execution
+            setTimeout(() => {
+                showNotification('Đã bắt đầu thực hiện', 'success');
+            }, 1000);
+        }
+
+        function acceptTask(taskId) {
+            showNotification(`Chấp nhận công việc ${taskId}...`, 'success');
+            // Accept task from manager
+        }
+
+        function requestDelay(taskId) {
+            showNotification('Gửi yêu cầu hoãn...', 'info');
+            // Request task delay
+        }
+
+        function askForDetails(taskId) {
+            showNotification('Hỏi chi tiết về công việc...', 'info');
+            // Ask manager for task details
+        }
+
+        function continueTask(taskId) {
+            showNotification(`Tiếp tục công việc ${taskId}...`, 'info');
+            // Continue paused task
+        }
+
+        function viewTaskReport(taskId) {
+            showNotification('Mở báo cáo công việc...', 'info');
+            // View task completion report
+        }
+
+        function shareSuccess(taskId) {
+            showNotification('Chia sẻ thành công...', 'success');
+            // Share successful completion
+        }
+
+        function viewFarmMap() {
+            showNotification('Mở bản đồ vườn...', 'info');
+            // Open farm map view
+        }
+
+        function viewWeekSchedule() {
+            showNotification('Mở lịch tuần...', 'info');
+            // Open weekly schedule
+        }
+
+        function requestScheduleChange() {
+            showNotification('Gửi đề xuất thay đổi lịch...', 'info');
+            // Request schedule modification
+        }
+
+        // Route and Navigation Functions
+        function startRoute() {
+            showNotification('Bắt đầu lộ trình tối ưu...', 'info');
+            // Start optimized route
+        }
+
+        function getDirections(farmId) {
+            showNotification(`Dẫn đường đến ${farmId}...`, 'info');
+            // Get directions to specific farm
+        }
+
+        // Reporting Functions
+        function reportSuccess() {
+            showNotification('Mở form báo cáo thành công...', 'success');
+            // Open success report form
+        }
+
+        function reportIssue() {
+            showNotification('Mở form báo cáo vấn đề...', 'warning');
+            // Open issue report form
+        }
+
+        function requestResources() {
+            showNotification('Mở form yêu cầu vật tư...', 'info');
+            // Open resource request form
+        }
+
+        function submitSuggestion() {
+            showNotification('Mở form đề xuất...', 'info');
+            // Open suggestion form
+        }
+
+        function viewDetailedStats() {
+            showNotification('Mở thống kê chi tiết...', 'info');
+            // Open detailed statistics
+        }
+
+        function shareAchievement() {
+            showNotification('Chia sẻ thành tích...', 'success');
+            // Share achievement with team
+        }
+
+        function viewAllCompleted() {
+            showNotification('Hiển thị tất cả công việc hoàn thành...', 'info');
+            // Show all completed tasks
+        }
+
+        // Dashboard Functions
+        function updateDashboardMetrics() {
+            // Update dashboard metrics
+            const metrics = {
+                completed: Math.floor(Math.random() * 5) + 16,
+                inProgress: Math.floor(Math.random() * 3) + 3,
+                urgent: Math.floor(Math.random() * 2) + 1,
+                totalFarms: 23
+            };
+            
+            updateMetricCards(metrics);
+        }
+
+        function updateMetricCards(metrics) {
+            const cards = document.querySelectorAll('.metric-card');
+            if (cards.length >= 4) {
+                cards[0].querySelector('.text-2xl').textContent = metrics.completed;
+                cards[1].querySelector('.text-2xl').textContent = metrics.inProgress;
+                cards[2].querySelector('.text-2xl').textContent = metrics.urgent;
+                cards[3].querySelector('.text-2xl').textContent = metrics.totalFarms;
+            }
+        }
+
+        function updateTaskBadges() {
+            const badges = document.querySelectorAll('.alert-badge');
+            badges.forEach(badge => {
+                if (badge.textContent === '5') {
+                    badge.textContent = '8';
+                } else if (badge.textContent === '3') {
+                    badge.textContent = '5';
+                }
+            });
+        }
+
+        // Data Loading Functions
+        function loadTasksData() {
+            // Load tasks data
+            showNotification('Đang tải dữ liệu công việc...', 'info');
+        }
+
+        function loadCommunicationData() {
+            // Load communication data
+            showNotification('Đang tải dữ liệu giao tiếp...', 'info');
+        }
+
+        function loadToolsData() {
+            // Load tools data
+            showNotification('Đang tải công cụ...', 'info');
+        }
+
+        // Performance and Metrics
+        function updateMetrics() {
+            // Update performance metrics
+            const performanceElement = document.querySelector('.text-2xl.text-blue-700');
+            if (performanceElement && performanceElement.textContent.includes('%')) {
+                const currentValue = parseInt(performanceElement.textContent);
+                const newValue = Math.max(85, Math.min(100, currentValue + (Math.random() * 4 - 2)));
+                performanceElement.textContent = Math.round(newValue) + '%';
+            }
+        }
+
+        function updateNotifications() {
+            // Update notification counts
+            const now = new Date();
+            const timeElements = document.querySelectorAll('.text-xs.text-gray-500');
+            timeElements.forEach(element => {
+                if (element.textContent.includes('phút trước')) {
+                    const minutes = parseInt(element.textContent) + 1;
+                    element.textContent = minutes + ' phút trước';
+                }
+            });
+        }
+
+        function askAI() {
+            showNotification('Mở AI Assistant...', 'info');
+            // Open AI chat interface
+        }
+
+        function startOptimizedRoute() {
+            showNotification('Bắt đầu lộ trình tối ưu...', 'info');
+            // Start GPS navigation with optimized route
+        }
+
+        function customizeRoute() {
+            showNotification('Mở tùy chỉnh lộ trình...', 'info');
+        }
+
+        function openAICamera(farmId) {
+            showNotification('Mở AI Camera để scan sâu bệnh...', 'info');
+            // Open camera with AI pest detection
+        }
+
+        function startNavigation(farmId) {
+            showNotification(`Bắt đầu dẫn đường đến ${farmId}...`, 'info');
+            // Start GPS navigation
+        }
+
+        function startEmergencyCall() {
+            showNotification('Kết nối khẩn cấp với trung tâm...', 'warning');
+        }
+
+        function openCamera() {
+            showNotification('Mở camera AI...', 'info');
+        }
+
+        function toggleNotifications() {
+            showNotification('Hiển thị thông báo...', 'info');
+        }
+
+        // AI Tools Functions
+        function openPestIdentifier() {
+            showNotification('Mở công cụ nhận diện sâu bệnh AI...', 'info');
+            // Open camera with AI pest identification
+        }
+
+        function openDosageCalculator() {
+            showNotification('Mở máy tính liều lượng...', 'info');
+            // Open dosage calculation tool
+        }
+
+        function openPlantHealthScanner() {
+            showNotification('Mở công cụ đánh giá sức khỏe cây...', 'info');
+            // Open plant health scanner
+        }
+
+        function openWeatherAnalyzer() {
+            showNotification('Mở phân tích thời tiết...', 'info');
+            // Open weather analysis tool
+        }
+
+        // Quick Tools Functions
+        function openVoiceRecorder() {
+            showNotification('Bắt đầu ghi âm báo cáo...', 'info');
+            // Start voice recording
+        }
+
+        function openQRScanner() {
+            showNotification('Mở quét QR code...', 'info');
+            // Open QR code scanner
+        }
+
+        function openMeasurementTool() {
+            showNotification('Mở công cụ đo lường AR...', 'info');
+            // Open AR measurement tool
+        }
+
+        function openColorAnalyzer() {
+            showNotification('Mở phân tích màu lá...', 'info');
+            // Open color analysis tool
+        }
+
+        function openOfflineSync() {
+            showNotification('Đồng bộ dữ liệu offline...', 'info');
+            // Sync offline data
+        }
+
+        function openEmergencyHelp() {
+            showNotification('Kích hoạt hỗ trợ khẩn cấp...', 'warning');
+            // Activate emergency help
+        }
+
+        // Reference Materials Functions
+        function openPestGuide() {
+            showNotification('Mở cẩm nang sâu bệnh...', 'info');
+        }
+
+        function openFertilizerGuide() {
+            showNotification('Mở hướng dẫn phân bón...', 'info');
+        }
+
+        function openGAPStandards() {
+            showNotification('Mở tiêu chuẩn GAP...', 'info');
+        }
+
+        function addCustomTool() {
+            showNotification('Thêm công cụ tùy chỉnh...', 'info');
+        }
+        
+        // IoT Functions
+        function viewAllSensors() {
+            showNotification('Mở dashboard IoT đầy đủ...', 'info');
+        }
+        
+        // Enhanced farm management with IoT integration
+        function getFarmSensorData(farmId) {
+            // Simulate getting real sensor data
+            return {
+                temperature: Math.round((Math.random() * 10 + 28) * 10) / 10,
+                humidity: Math.round((Math.random() * 20 + 60) * 10) / 10,
+                soilPH: Math.round((Math.random() * 2 + 5.5) * 10) / 10,
+                lightIntensity: Math.round((Math.random() * 30 + 70) * 10) / 10
+            };
+        }
+        
+        // Auto-update sensor data every 30 seconds
+        function updateSensorData() {
+            // Update temperature
+            const tempElements = document.querySelectorAll('.sensor-temp');
+            tempElements.forEach(element => {
+                const newTemp = Math.round((Math.random() * 2 + 30) * 10) / 10;
+                element.textContent = newTemp + '°C';
+            });
+            
+            // Update humidity
+            const humidityElements = document.querySelectorAll('.sensor-humidity');
+            humidityElements.forEach(element => {
+                const newHumidity = Math.round((Math.random() * 10 + 65) * 10) / 10;
+                element.textContent = newHumidity + '%';
+            });
+        }
+        
+        // Voice commands integration
+        function startVoiceCommand() {
+            if ('webkitSpeechRecognition' in window) {
+                const recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'vi-VN';
+                
+                recognition.onstart = function() {
+                    showNotification('Đang nghe lệnh giọng nói...', 'info');
+                };
+                
+                recognition.onresult = function(event) {
+                    const command = event.results[0][0].transcript.toLowerCase();
+                    processVoiceCommand(command);
+                };
+                
+                recognition.onerror = function(event) {
+                    showNotification('Lỗi nhận diện giọng nói', 'error');
+                };
+                
+                recognition.start();
+            } else {
+                showNotification('Trình duyệt không hỗ trợ nhận diện giọng nói', 'error');
+            }
+        }
+        
+        function processVoiceCommand(command) {
+            if (command.includes('vườn')) {
+                showTab('farms');
+                showNotification('Đã chuyển đến tab Vườn', 'success');
+            } else if (command.includes('lịch')) {
+                showTab('schedule');
+                showNotification('Đã chuyển đến tab Lịch', 'success');
+            } else if (command.includes('báo cáo')) {
+                createReport();
+                showNotification('Đang tạo báo cáo...', 'success');
+            } else if (command.includes('khẩn cấp')) {
+                startEmergencyCall();
+                showNotification('Kích hoạt cuộc gọi khẩn cấp', 'warning');
+            } else {
+                showNotification('Không hiểu lệnh: ' + command, 'info');
+            }
+        }
+        
+        // Enhanced offline support
+        function enableOfflineMode() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('Service Worker registered');
+                    showNotification('Đã kích hoạt chế độ offline', 'success');
+                }).catch(function(error) {
+                    console.log('Service Worker registration failed');
+                });
+            }
+        }
+        
+        // Check network status
+        function checkNetworkStatus() {
+            const isOnline = navigator.onLine;
+            const statusElement = document.querySelector('.connection-status');
+            
+            if (isOnline) {
+                statusElement.innerHTML = '<div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div><span class="text-xs opacity-80">Online</span>';
+            } else {
+                statusElement.innerHTML = '<div class="w-2 h-2 bg-red-400 rounded-full"></div><span class="text-xs opacity-80">Offline</span>';
+            }
+        }
+        
+        // Enhanced initialization with new features
+        function initializeAdvancedFeatures() {
+            // Check network status
+            checkNetworkStatus();
+            
+            // Listen for network changes
+            window.addEventListener('online', checkNetworkStatus);
+            window.addEventListener('offline', checkNetworkStatus);
+            
+            // Enable offline mode
+            enableOfflineMode();
+            
+            // Start sensor data updates
+            setInterval(updateSensorData, 30000);
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case '1':
+                            showTab('dashboard');
+                            break;
+                        case '2':
+                            showTab('farms');
+                            break;
+                        case '3':
+                            showTab('communication');
+                            break;
+                        case '4':
+                            showTab('schedule');
+                            break;
+                        case '5':
+                            showTab('tools');
+                            break;
+                        case ' ':
+                            e.preventDefault();
+                            startVoiceCommand();
+                            break;
+                    }
+                }
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                'info': 'bg-blue-500',
+                'success': 'bg-green-500',
+                'warning': 'bg-yellow-500',
+                'error': 'bg-red-500'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 left-1/2 transform -translate-x-1/2 ${colors[type]} text-white px-4 py-2 rounded-lg text-sm z-50 shadow-lg`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('FarmKeeper Technician App initialized');
+            
+            // Initialize advanced features
+            initializeAdvancedFeatures();
+            
+            // Simulate real-time updates
+            setInterval(() => {
+                updateMetrics();
+                updateNotifications();
+                updateSensorData();
+            }, 30000);
+            
+            // Add touch gestures for mobile
+            let touchStartY = 0;
+            let touchStartX = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+                touchStartX = e.touches[0].clientX;
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                const touchEndY = e.changedTouches[0].clientY;
+                const touchEndX = e.changedTouches[0].clientX;
+                const deltaY = touchStartY - touchEndY;
+                const deltaX = touchStartX - touchEndX;
+                
+                // Pull to refresh
+                if (deltaY < -100 && Math.abs(deltaX) < 50) {
+                    refreshData();
+                }
+                
+                // Swipe left/right to change tabs
+                if (Math.abs(deltaX) > 100 && Math.abs(deltaY) < 50) {
+                    const currentTab = document.querySelector('.nav-item.active');
+                    const tabs = document.querySelectorAll('.nav-item');
+                    const currentIndex = Array.from(tabs).indexOf(currentTab);
+                    
+                    if (deltaX > 0 && currentIndex > 0) {
+                        // Swipe right - previous tab
+                        tabs[currentIndex - 1].click();
+                    } else if (deltaX < 0 && currentIndex < tabs.length - 1) {
+                        // Swipe left - next tab
+                        tabs[currentIndex + 1].click();
+                    }
+                }
+            });
+            
+            // Add double tap to refresh
+            let lastTap = 0;
+            document.addEventListener('touchend', function(e) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                if (tapLength < 500 && tapLength > 0) {
+                    refreshData();
+                }
+                lastTap = currentTime;
+            });
+        });
+        
+        function refreshData() {
+            showNotification('Đang làm mới dữ liệu...', 'info');
+            // Simulate data refresh
+            setTimeout(() => {
+                showNotification('Dữ liệu đã được cập nhật', 'success');
+                updateMetrics();
+                updateSensorData();
+            }, 2000);   
+        }
+
+        function updateMetrics() {
+            // Simulate metric updates
+            console.log('Metrics updated');
+        }
+
+        function updateNotifications() {
+            // Simulate new notifications
+            console.log('Notifications updated');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Chi tiết đăng ký doanh nghiệp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* * ==============================================
+         * CÀI ĐẶT BIẾN VÀ THIẾT LẬP CHUNG
+         * ==============================================
+         */
+      :root {
+        --primary-color: #69bd70;
+        --primary-color-dark: #58a05f;
+        --success-bg-color: #e6f7ec;
+        --success-text-color: #38a169;
+        --warning-color: #f59e0b;
+        --warning-color-dark: #d97706;
+        --background-color: #f7f8fc;
+        --card-background-color: #ffffff;
+        --text-primary: #2d3748;
+        --text-secondary: #718096;
+        --border-color: #e2e8f0;
+        --font-family: 'Noto Sans', sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-family);
+        margin: 0;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        display: flex;
+        height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* * ==============================================
+         * THANH MENU BÊN TRÁI (SIDEBAR)
+         * ==============================================
+         */
+      .sidebar {
+        width: 260px;
+        background-color: var(--card-background-color);
+        padding: 24px;
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+
+      .sidebar .logo {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--primary-color);
+        text-align: center;
+        margin-bottom: 40px;
+        letter-spacing: 1px;
+      }
+
+      .menu-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        margin: 20px 0 10px 15px;
+      }
+
+      .menu-item a {
+        text-decoration: none;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: background-color 0.2s ease, color 0.2s ease;
+        margin-bottom: 5px;
+      }
+
+      .menu-item a .icon {
+        margin-right: 15px;
+        width: 20px;
+        height: 20px;
+        color: var(--text-secondary);
+        transition: color 0.2s ease;
+      }
+
+      .menu-item a:hover {
+        background-color: var(--background-color);
+      }
+
+      .menu-item.active a {
+        background-color: var(--primary-color);
+        color: var(--card-background-color);
+        font-weight: 600;
+      }
+
+      .menu-item.active a .icon {
+        color: var(--card-background-color);
+      }
+
+      /* * ==============================================
+         * KHUNG NỘI DUNG CHÍNH
+         * ==============================================
+         */
+      .main-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+      }
+
+      .main-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .header-title-group {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        border-radius: 20px;
+        background-color: var(--success-bg-color);
+        color: var(--success-text-color);
+      }
+
+      .back-link {
+        display: flex;
+        align-items: center;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+      }
+      .back-link:hover {
+        color: var(--text-primary);
+      }
+      .back-link .icon {
+        margin-right: 8px;
+      }
+
+      .details-card {
+        background-color: var(--card-background-color);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+          0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      }
+
+      .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px 40px;
+        margin-bottom: 40px;
+      }
+
+      .detail-item label {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
+        font-weight: 500;
+        display: block;
+      }
+
+      .detail-item .value {
+        font-size: 16px;
+        padding: 12px 15px;
+        background-color: var(--background-color);
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        font-weight: 500;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .map-container {
+        width: 100%;
+        height: 350px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+      }
+      .map-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* * ==============================================
+         * KHU VỰC HÀNH ĐỘNG (ĐÃ PHÊ DUYỆT)
+         * ==============================================
+         */
+      .actions {
+        display: flex;
+        justify-content: flex-start; /* Thay đổi từ space-between */
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        border-top: 1px solid var(--border-color);
+        margin-top: 30px;
+      }
+
+      .approval-info {
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        color: var(--text-secondary);
+      }
+
+      .approval-info .icon {
+        width: 22px;
+        height: 22px;
+        color: var(--success-text-color);
+        margin-right: 12px;
+      }
+
+      .approval-info strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="logo">FARMKEEPER</div>
+      <nav class="menu">
+        <div class="menu-title">Quản lý chung</div>
+        <div class="menu-item">
+          <a href="#">
+            <svg
+              class="icon"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3 3 0 0110.5 9.75v-.75a3 3 0 013-3h.75a3 3 0 013 3v.75a3 3 0 01-1.253 2.488M9.06 15.75A3 3 0 009 18h.75a3 3 0 003-3v-.75a3 3 0 00-3-3H9.75a3 3 0 00-3 3v.75a3 3 0 00.06 1.036M12 15.75a3 3 0 01-3-3v-.75a3 3 0 013-3h.75a3 3 0 013 3v.75a3 3 0 01-3 3h-.75z"
+              />
+            </svg>
+            Quản lý người dùng
+          </a>
+        </div>
+        <div class="menu-item active">
+          <a href="#">
+            <svg
+              class="icon"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 21h16.5M4.5 3h15M5.25 3v18M18.75 3v18M9 6.75h6.375M9 12h6.375M9 17.25h6.375M12 3c-1.105 0-2.07.123-3 .348m6 0A9.005 9.005 0 0012 3zm0 18c1.105 0 2.07-.123 3-.348m-6 0A9.005 9.005 0 0112 21z"
+              />
+            </svg>
+            Quản lý Doanh nghiệp
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="main-container">
+        <header class="header">
+          <div class="header-title-group">
+            <h1>Chi tiết đăng ký</h1>
+            <span class="status-badge">Đã phê duyệt</span>
+          </div>
+          <a href="#" class="back-link">
+            <svg
+              class="icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z"
+              />
+            </svg>
+            Quay lại danh sách
+          </a>
+        </header>
+
+        <div class="details-card">
+          <div class="details-grid">
+            <!-- Nội dung chi tiết giữ nguyên -->
+            <div class="detail-item">
+              <label>Tên doanh nghiệp</label>
+              <div class="value">Công ty TNHH Nông sản Sầu riêng Vàng</div>
+            </div>
+            <div class="detail-item">
+              <label>Mã số thuế</label>
+              <div class="value">0312345678</div>
+            </div>
+            <div class="detail-item">
+              <label>Người đại diện</label>
+              <div class="value">Nguyễn Văn An</div>
+            </div>
+            <div class="detail-item">
+              <label>Số điện thoại</label>
+              <div class="value">0987654321</div>
+            </div>
+            <div class="detail-item full-width">
+              <label>Email</label>
+              <div class="value">contact@sauriengvang.com.vn</div>
+            </div>
+            <div class="detail-item">
+              <label>Tỉnh/Thành phố</label>
+              <div class="value">Tỉnh Tiền Giang</div>
+            </div>
+            <div class="detail-item">
+              <label>Phường/Xã (Quận/Huyện)</label>
+              <div class="value">Xã Tam Bình, Huyện Cai Lậy</div>
+            </div>
+            <div class="detail-item">
+              <label>Lĩnh vực</label>
+              <div class="value">Sản xuất nông nghiệp</div>
+            </div>
+            <div class="detail-item">
+              <label>Quy mô</label>
+              <div class="value">50 - 200 ha</div>
+            </div>
+            <div class="detail-item full-width">
+              <label>Vị trí ghim</label>
+              <div class="map-container">
+                <img
+                  src="https://placehold.co/1200x800/e2e8f0/718096?text=Bản+đồ+vị+trí"
+                  alt="Bản đồ vị trí doanh nghiệp"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <div class="approval-info">
+              <svg
+                class="icon"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span
+                >Phê duyệt bởi <strong>Admin</strong> lúc 10:30,
+                11/08/2025</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

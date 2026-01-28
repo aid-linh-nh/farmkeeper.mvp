@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Quản lý doanh nghiệp</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font: Noto Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Feather Icons for UI icons -->
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <style>
+      /* Apply Noto Sans font globally */
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        background-color: #f8fafc; /* Lighter slate background */
+      }
+      /* Custom color for the logo and accents */
+      :root {
+        --farmkeeper-green: #69bd70;
+        --farmkeeper-green-light: #f0fdf4;
+      }
+      .text-farmkeeper-green {
+        color: var(--farmkeeper-green);
+      }
+      .bg-farmkeeper-green {
+        background-color: var(--farmkeeper-green);
+      }
+      .border-farmkeeper-green {
+        border-color: var(--farmkeeper-green);
+      }
+      .ring-farmkeeper-green {
+        --tw-ring-color: var(--farmkeeper-green);
+      }
+
+      /* Custom scrollbar for better aesthetics */
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+
+      /* Modal Animation */
+      .modal-enter {
+        animation: fadeIn 0.3s ease-out;
+      }
+      .modal-content-enter {
+        animation: scaleUp 0.3s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes scaleUp {
+        from {
+          transform: scale(0.95);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 text-slate-600">
+    <div class="flex h-screen">
+      <!-- Sidebar Menu -->
+      <aside
+        class="w-64 flex-shrink-0 bg-white border-r border-slate-200 flex flex-col"
+      >
+        <!-- Logo -->
+        <div class="h-20 flex items-center justify-center">
+          <h1 class="text-2xl font-bold text-farmkeeper-green">FARMKEEPER</h1>
+        </div>
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-2">
+          <div class="space-y-4">
+            <div>
+              <h3
+                class="px-3 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider"
+              >
+                Tổng quan
+              </h3>
+              <a
+                href="#"
+                class="flex items-center px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <i data-feather="home" class="w-5 h-5 mr-3 text-slate-500"></i>
+                <span class="font-medium">Trang chủ</span>
+              </a>
+            </div>
+            <div>
+              <h3
+                class="px-3 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider"
+              >
+                Quản lý người dùng
+              </h3>
+              <ul class="space-y-1">
+                <li>
+                  <a
+                    href="#"
+                    class="flex items-center px-3 py-2.5 bg-green-50 text-farmkeeper-green rounded-lg font-semibold transition-colors border-l-4 border-farmkeeper-green"
+                  >
+                    <i data-feather="briefcase" class="w-5 h-5 mr-3"></i>
+                    <span>Quản lý doanh nghiệp</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="flex items-center px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  >
+                    <i
+                      data-feather="user"
+                      class="w-5 h-5 mr-3 text-slate-500"
+                    ></i>
+                    <span class="font-medium">Quản lý nông dân</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3
+                class="px-3 mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider"
+              >
+                Hệ thống
+              </h3>
+              <a
+                href="#"
+                class="flex items-center px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+              >
+                <i
+                  data-feather="settings"
+                  class="w-5 h-5 mr-3 text-slate-500"
+                ></i>
+                <span class="font-medium">Cài đặt</span>
+              </a>
+            </div>
+          </div>
+        </nav>
+        <!-- Sidebar Footer -->
+        <div class="p-4">
+          <a
+            href="#"
+            class="flex items-center w-full px-3 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            <i data-feather="log-out" class="w-5 h-5 mr-3 text-slate-500"></i>
+            <span class="font-medium">Đăng xuất</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header
+          class="bg-white border-b border-slate-200 flex items-center justify-between px-8 h-20"
+        >
+          <h2 class="text-2xl font-bold text-slate-800">
+            Quản lý doanh nghiệp
+          </h2>
+          <div class="flex items-center space-x-6">
+            <button class="text-slate-500 hover:text-farmkeeper-green relative">
+              <i data-feather="bell" class="w-6 h-6"></i>
+              <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"
+                ></span>
+                <span
+                  class="relative inline-flex rounded-full h-3 w-3 bg-red-500"
+                ></span>
+              </span>
+            </button>
+            <div class="flex items-center space-x-3">
+              <img
+                src="https://placehold.co/40x40/69BD70/FFFFFF?text=A"
+                alt="Avatar"
+                class="w-10 h-10 rounded-full"
+              />
+              <div>
+                <p class="font-semibold text-slate-700">Admin</p>
+                <p class="text-xs text-slate-500">Quản trị viên</p>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Content Body -->
+        <div class="flex-1 p-8 overflow-y-auto">
+          <!-- Filters -->
+          <div
+            class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8"
+          >
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-slate-700">
+                Bộ lọc tìm kiếm
+              </h3>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <input
+                type="text"
+                placeholder="Tên, MST, người đại diện..."
+                class="w-full px-4 py-2 bg-slate-100 border border-transparent rounded-lg focus:bg-white focus:border-farmkeeper-green focus:ring-2 focus:ring-green-200 transition"
+              />
+
+              <select
+                class="w-full px-4 py-2 bg-slate-100 border border-transparent rounded-lg focus:bg-white focus:border-farmkeeper-green focus:ring-2 focus:ring-green-200 transition"
+              >
+                <option value="">Tất cả Tỉnh/Thành</option>
+                <option value="tg">Tiền Giang</option>
+                <option value="bt">Bến Tre</option>
+                <option value="dn">Đồng Nai</option>
+              </select>
+
+              <select
+                class="w-full px-4 py-2 bg-slate-100 border border-transparent rounded-lg focus:bg-white focus:border-farmkeeper-green focus:ring-2 focus:ring-green-200 transition"
+              >
+                <option value="">Tất cả Lĩnh vực</option>
+                <option value="sxnn">Sản xuất nông nghiệp</option>
+                <option value="vattu">Cung ứng vật tư & kỹ thuật</option>
+                <option value="thumua">Thu mua và chế biến</option>
+              </select>
+
+              <select
+                class="w-full px-4 py-2 bg-slate-100 border border-transparent rounded-lg focus:bg-white focus:border-farmkeeper-green focus:ring-2 focus:ring-green-200 transition"
+              >
+                <option value="">Tất cả Trạng thái</option>
+                <option value="pending">Chờ phê duyệt</option>
+                <option value="approved">Đã phê duyệt</option>
+                <option value="rejected">Đã từ chối</option>
+              </select>
+
+              <button
+                class="w-full bg-farmkeeper-green text-white font-semibold py-2 px-4 rounded-lg hover:bg-green-600 transition-all duration-300 shadow-sm hover:shadow-lg flex items-center justify-center"
+              >
+                <i data-feather="filter" class="w-4 h-4 mr-2"></i>
+                Lọc
+              </button>
+            </div>
+          </div>
+
+          <!-- Registration List Table -->
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+          >
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left">
+                <thead class="text-xs text-slate-500 uppercase bg-slate-100">
+                  <tr>
+                    <th scope="col" class="px-6 py-4 font-semibold">
+                      Tên doanh nghiệp
+                    </th>
+                    <th scope="col" class="px-6 py-4 font-semibold">
+                      Người đại diện
+                    </th>
+                    <th scope="col" class="px-6 py-4 font-semibold">Địa chỉ</th>
+                    <th scope="col" class="px-6 py-4 font-semibold">
+                      Lĩnh vực & Quy mô
+                    </th>
+                    <th scope="col" class="px-6 py-4 font-semibold">
+                      Ngày đăng ký
+                    </th>
+                    <th scope="col" class="px-6 py-4 font-semibold text-center">
+                      Trạng thái
+                    </th>
+                    <th scope="col" class="px-6 py-4 font-semibold text-center">
+                      Hành động
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="text-slate-700">
+                  <!-- Sample Row 1: Pending -->
+                  <tr class="border-b border-slate-200 hover:bg-slate-50">
+                    <td class="px-6 py-5 font-semibold text-slate-800">
+                      <p>Công ty TNHH Nông sản Vàng</p>
+                      <p class="text-xs text-slate-500 font-normal">
+                        MST: 0312345678
+                      </p>
+                    </td>
+                    <td class="px-6 py-5">
+                      <p>Nguyễn Văn An</p>
+                      <p class="text-xs text-slate-500">0909123456</p>
+                    </td>
+                    <td class="px-6 py-5">Cai Lậy, Tiền Giang</td>
+                    <td class="px-6 py-5">
+                      <p>Sản xuất nông nghiệp</p>
+                      <p class="text-xs text-slate-500">50 - 200 ha</p>
+                    </td>
+                    <td class="px-6 py-5">10/08/2024</td>
+                    <td class="px-6 py-5 text-center">
+                      <span
+                        class="inline-flex items-center px-3 py-1 text-xs font-semibold text-amber-700 bg-amber-100 rounded-full"
+                      >
+                        <span
+                          class="h-2 w-2 mr-2 bg-amber-500 rounded-full"
+                        ></span>
+                        Chờ phê duyệt
+                      </span>
+                    </td>
+                    <td class="px-6 py-5">
+                      <div class="flex items-center justify-center space-x-2">
+                        <button
+                          onclick="openModal('detailModal')"
+                          class="p-2 text-slate-500 hover:bg-blue-100 hover:text-blue-600 rounded-full transition"
+                          title="Xem chi tiết"
+                        >
+                          <i data-feather="eye" class="w-4 h-4"></i>
+                        </button>
+                        <button
+                          class="p-2 text-slate-500 hover:bg-green-100 hover:text-green-600 rounded-full transition"
+                          title="Phê duyệt"
+                        >
+                          <i data-feather="check-circle" class="w-4 h-4"></i>
+                        </button>
+                        <button
+                          onclick="openModal('rejectModal')"
+                          class="p-2 text-slate-500 hover:bg-red-100 hover:text-red-600 rounded-full transition"
+                          title="Từ chối"
+                        >
+                          <i data-feather="x-circle" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <!-- Sample Row 2: Approved -->
+                  <tr class="border-b border-slate-200 hover:bg-slate-50">
+                    <td class="px-6 py-5 font-semibold text-slate-800">
+                      <p>HTX Sầu riêng Bến Tre</p>
+                      <p class="text-xs text-slate-500 font-normal">
+                        MST: 0411223344
+                      </p>
+                    </td>
+                    <td class="px-6 py-5">
+                      <p>Trần Thị Bích</p>
+                      <p class="text-xs text-slate-500">0987654321</p>
+                    </td>
+                    <td class="px-6 py-5">Châu Thành, Bến Tre</td>
+                    <td class="px-6 py-5">
+                      <p>Thu mua và chế biến</p>
+                      <p class="text-xs text-slate-500">200 - 500 ha</p>
+                    </td>
+                    <td class="px-6 py-5">09/08/2024</td>
+                    <td class="px-6 py-5 text-center">
+                      <span
+                        class="inline-flex items-center px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full"
+                      >
+                        <span
+                          class="h-2 w-2 mr-2 bg-green-500 rounded-full"
+                        ></span>
+                        Đã phê duyệt
+                      </span>
+                    </td>
+                    <td class="px-6 py-5">
+                      <div class="flex items-center justify-center space-x-2">
+                        <button
+                          onclick="openModal('detailModal')"
+                          class="p-2 text-slate-500 hover:bg-blue-100 hover:text-blue-600 rounded-full transition"
+                          title="Xem chi tiết"
+                        >
+                          <i data-feather="eye" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <!-- Sample Row 3: Rejected -->
+                  <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-5 font-semibold text-slate-800">
+                      <p>Vườn ươm Cây Giống Xanh</p>
+                      <p class="text-xs text-slate-500 font-normal">
+                        MST: 0598765432
+                      </p>
+                    </td>
+                    <td class="px-6 py-5">
+                      <p>Lê Minh Cường</p>
+                      <p class="text-xs text-slate-500">0912987654</p>
+                    </td>
+                    <td class="px-6 py-5">Long Khánh, Đồng Nai</td>
+                    <td class="px-6 py-5">
+                      <p>Cung ứng vật tư & kỹ thuật</p>
+                      <p class="text-xs text-slate-500">dưới 50 ha</p>
+                    </td>
+                    <td class="px-6 py-5">08/08/2024</td>
+                    <td class="px-6 py-5 text-center">
+                      <span
+                        class="inline-flex items-center px-3 py-1 text-xs font-semibold text-red-700 bg-red-100 rounded-full"
+                      >
+                        <span
+                          class="h-2 w-2 mr-2 bg-red-500 rounded-full"
+                        ></span>
+                        Đã từ chối
+                      </span>
+                    </td>
+                    <td class="px-6 py-5">
+                      <div class="flex items-center justify-center space-x-2">
+                        <button
+                          onclick="openModal('detailModal')"
+                          class="p-2 text-slate-500 hover:bg-blue-100 hover:text-blue-600 rounded-full transition"
+                          title="Xem chi tiết"
+                        >
+                          <i data-feather="eye" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination -->
+            <nav
+              class="flex items-center justify-between p-4"
+              aria-label="Table navigation"
+            >
+              <span class="text-sm font-normal text-slate-500"
+                >Hiển thị
+                <span class="font-semibold text-slate-800">1-10</span> trên
+                <span class="font-semibold text-slate-800">100</span></span
+              >
+              <ul class="inline-flex items-center -space-x-px">
+                <li>
+                  <a
+                    href="#"
+                    class="px-3 py-2 ml-0 leading-tight text-slate-500 bg-white border border-slate-300 rounded-l-lg hover:bg-slate-100 hover:text-slate-700"
+                    >Trước</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    aria-current="page"
+                    class="px-3 py-2 text-farmkeeper-green bg-green-50 border border-farmkeeper-green hover:bg-green-100 hover:text-green-700 font-semibold"
+                    >1</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="px-3 py-2 leading-tight text-slate-500 bg-white border border-slate-300 hover:bg-slate-100 hover:text-slate-700"
+                    >2</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    class="px-3 py-2 leading-tight text-slate-500 bg-white border border-slate-300 rounded-r-lg hover:bg-slate-100 hover:text-slate-700"
+                    >Sau</a
+                  >
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modals -->
+    <div
+      id="detailModal"
+      class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 modal-enter"
+      onclick="closeModal('detailModal')"
+    >
+      <div
+        class="bg-white rounded-xl shadow-xl w-full max-w-2xl m-4 modal-content-enter"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="p-6 border-b border-slate-200 flex justify-between items-center"
+        >
+          <h3 class="text-xl font-semibold text-slate-800">
+            Chi tiết đăng ký doanh nghiệp
+          </h3>
+          <button
+            onclick="closeModal('detailModal')"
+            class="text-slate-400 hover:text-slate-600"
+          >
+            <i data-feather="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div class="p-8 max-h-[70vh] overflow-y-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+            <div>
+              <h4 class="font-semibold text-slate-500">Tên doanh nghiệp</h4>
+              <p class="text-slate-800">Công ty TNHH Nông sản Vàng</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Mã số thuế</h4>
+              <p class="text-slate-800">0312345678</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Người đại diện</h4>
+              <p class="text-slate-800">Nguyễn Văn An</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Email</h4>
+              <p class="text-slate-800">an.nguyen@email.com</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Số điện thoại</h4>
+              <p class="text-slate-800">0909123456</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Ngày đăng ký</h4>
+              <p class="text-slate-800">10/08/2024</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Tỉnh/Thành phố</h4>
+              <p class="text-slate-800">Tiền Giang</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Quận/Huyện</h4>
+              <p class="text-slate-800">Thị xã Cai Lậy</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Lĩnh vực hoạt động</h4>
+              <p class="text-slate-800">Sản xuất nông nghiệp</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-500">Quy mô</h4>
+              <p class="text-slate-800">50 - 200 ha</p>
+            </div>
+            <div class="md:col-span-2">
+              <h4 class="font-semibold text-slate-500 mb-2">
+                Vị trí ghim trên bản đồ
+              </h4>
+              <div
+                class="w-full h-48 bg-slate-200 rounded-lg flex items-center justify-center"
+              >
+                <p class="text-slate-500">Bản đồ vị trí</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-6 bg-slate-50 rounded-b-xl flex justify-end space-x-3">
+          <button
+            onclick="closeModal('detailModal')"
+            class="px-5 py-2.5 bg-white text-slate-800 font-semibold rounded-lg border border-slate-300 hover:bg-slate-100 transition"
+          >
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="rejectModal"
+      class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-4 modal-enter"
+      onclick="closeModal('rejectModal')"
+    >
+      <div
+        class="bg-white rounded-xl shadow-xl w-full max-w-lg m-4 modal-content-enter"
+        onclick="event.stopPropagation()"
+      >
+        <div
+          class="p-6 border-b border-slate-200 flex justify-between items-center"
+        >
+          <h3 class="text-xl font-semibold text-red-600">Từ chối phê duyệt</h3>
+          <button
+            onclick="closeModal('rejectModal')"
+            class="text-slate-400 hover:text-slate-600"
+          >
+            <i data-feather="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        <div class="p-8">
+          <p class="mb-4 text-slate-600">
+            Vui lòng nhập lý do từ chối đăng ký cho
+            <span class="font-semibold text-slate-800"
+              >Công ty TNHH Nông sản Vàng</span
+            >.
+          </p>
+          <textarea
+            id="rejectionReason"
+            rows="4"
+            class="w-full px-4 py-2 bg-slate-100 border border-transparent rounded-lg focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-200 transition"
+            placeholder="Ví dụ: Thông tin cung cấp chưa chính xác..."
+          ></textarea>
+        </div>
+        <div class="p-6 bg-slate-50 rounded-b-xl flex justify-end space-x-3">
+          <button
+            onclick="closeModal('rejectModal')"
+            class="px-5 py-2.5 bg-white text-slate-800 font-semibold rounded-lg border border-slate-300 hover:bg-slate-100 transition"
+          >
+            Hủy
+          </button>
+          <button
+            onclick="closeModal('rejectModal')"
+            class="px-5 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition"
+          >
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Initialize Feather Icons
+      feather.replace();
+
+      // Modal handling functions
+      function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+        }
+      }
+
+      function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+        }
+      }
+
+      // Close modal on Escape key press
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          document.querySelectorAll('.fixed.inset-0').forEach((modal) => {
+            if (!modal.classList.contains('hidden')) {
+              closeModal(modal.id);
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

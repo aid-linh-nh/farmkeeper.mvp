@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FARMKEEPER - Quản lý các hệ số của vườn</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: 'Noto Sans', sans-serif;
+      }
+      .tooltip {
+        position: relative;
+      }
+      .tooltip:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 10;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 50;
+      }
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 700px;
+      }
+      .modal.active {
+        display: flex;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 flex">
+    <!-- Sidebar -->
+    <div class="w-64 bg-white h-screen shadow-md fixed">
+      <div class="p-4">
+        <h1 class="text-2xl font-bold text-[#69BD70]">FARMKEEPER</h1>
+      </div>
+      <nav class="mt-4">
+        <ul>
+          <li class="p-4 font-bold text-gray-700">Quản lý Kỹ thuật</li>
+          <li
+            class="pl-8 p-2 text-gray-600 hover:bg-gray-200 cursor-pointer bg-gray-200"
+          >
+            Quản lý các Hệ số
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="ml-64 p-8 w-full">
+      <header class="mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">
+          Quản lý các hệ số của vườn
+        </h2>
+        <div class="mt-4 flex justify-between items-center">
+          <input
+            type="text"
+            placeholder="Tìm kiếm vườn..."
+            class="p-2 border rounded-lg w-1/3"
+          />
+          <button
+            class="bg-[#69BD70] text-white px-4 py-2 rounded-lg hover:bg-green-600"
+          >
+            Thiết lập Hệ số Phức tạp
+          </button>
+        </div>
+      </header>
+
+      <!-- Garden List Table -->
+      <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Tên Vườn
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Trạng thái Phức tạp
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Hệ Số Phức Tạp
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Cập Nhật Cuối
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Hành Động
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <!-- Sample Garden 1: Cao -->
+            <tr>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+              >
+                Vườn Sầu Riêng A
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <span
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800"
+                >
+                  Cao
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                1.5
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                2025-08-20
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  onclick="openModal('Vườn Sầu Riêng A')"
+                  class="text-[#69BD70] hover:text-green-600"
+                >
+                  Xem Chi Tiết
+                </button>
+              </td>
+            </tr>
+            <!-- Sample Garden 3: Trung bình -->
+            <tr>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+              >
+                Vườn Cam C
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <span
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800"
+                >
+                  Trung bình
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                1.2
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                2025-08-21
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  onclick="openModal('Vườn Cam C')"
+                  class="text-[#69BD70] hover:text-green-600"
+                >
+                  Xem Chi Tiết
+                </button>
+              </td>
+            </tr>
+            <!-- Sample Garden 4: Thấp -->
+            <tr>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+              >
+                Vườn Bưởi D
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <span
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                >
+                  Thấp
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                0.8
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                2025-08-22
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  onclick="openModal('Vườn Bưởi D')"
+                  class="text-[#69BD70] hover:text-green-600"
+                >
+                  Xem Chi Tiết
+                </button>
+              </td>
+            </tr>
+            <!-- Sample Garden 2: Chưa có -->
+            <tr>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+              >
+                Vườn Sầu Riêng B
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                Chưa có
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                Chưa có
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                -
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  onclick="openModal('Vườn Sầu Riêng B')"
+                  class="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600"
+                >
+                  Thiết lập
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal for Garden Details -->
+    <div id="gardenModal" class="modal">
+      <div class="modal-content overflow-y-auto max-h-screen">
+        <div class="flex justify-between items-center mb-4">
+          <h3 id="modalTitle" class="text-xl font-bold">Chi tiết Vườn</h3>
+          <button
+            onclick="closeModal()"
+            class="text-gray-500 hover:text-gray-800 text-2xl"
+          >
+            &times;
+          </button>
+        </div>
+        <div id="modalContent">
+          <!-- Dynamic content will be injected here -->
+        </div>
+        <div class="mt-6 flex justify-end">
+          <button
+            onclick="closeModal()"
+            class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mr-2 hover:bg-gray-400"
+          >
+            Đóng
+          </button>
+          <button
+            id="modalEditButton"
+            class="bg-[#69BD70] text-white px-4 py-2 rounded-lg hover:bg-green-600"
+          >
+            Chỉnh sửa
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openModal(gardenName) {
+        const modal = document.getElementById('gardenModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modalContent');
+        const modalEditButton = document.getElementById('modalEditButton');
+        modalTitle.textContent = `Chi tiết Vườn: ${gardenName}`;
+
+        // Sample dynamic content based on garden
+        if (gardenName === 'Vườn Sầu Riêng A') {
+          modalEditButton.textContent = 'Chỉnh sửa';
+          modalEditButton.onclick = () =>
+            alert('Chuyển đến form chỉnh sửa (chưa triển khai)');
+          modalContent.innerHTML = `
+            <div class="space-y-6">
+                <!-- Reference Information -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-2 border-b pb-2">1. Thông tin Tham chiếu</h4>
+                    <div class="grid grid-cols-2 gap-4 mt-2 text-sm">
+                        <p><strong>Diện tích (ha):</strong> 6.2</p>
+                        <p><strong>Tổng số cây:</strong> 500</p>
+                        <p><strong>Khoảng cách:</strong> 25 km</p>
+                        <p><strong>Phân bổ Giai đoạn:</strong> Kinh doanh ổn định (425), Kiến thiết (50), Vườn già (25)</p>
+                    </div>
+                </div>
+
+                <!-- Evaluation & Configuration -->
+                <div>
+                    <h4 class="text-lg font-semibold mb-2 border-b pb-2">2. Đánh giá & Cấu hình</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <!-- Auto-calculated Coefficients -->
+                        <div>
+                            <h5 class="text-sm font-medium text-gray-700 mb-2">Hệ số được tính tự động</h5>
+                            <ul class="space-y-2 text-sm">
+                                <li class="p-2 bg-gray-100 rounded-lg tooltip" data-tooltip="Tính dựa trên quy tắc diện tích">
+                                    Hệ số Quy mô Diện tích: <span class="font-semibold float-right">1.20</span>
+                                </li>
+                                <li class="p-2 bg-gray-100 rounded-lg tooltip" data-tooltip="Tính dựa trên phân bổ giai đoạn">
+                                    Hệ số Giai đoạn (hỗn hợp): <span class="font-semibold float-right">1.03</span>
+                                </li>
+                                <li class="p-2 bg-gray-100 rounded-lg tooltip" data-tooltip="Tính dựa trên khoảng cách">
+                                    Hệ số Khoảng cách: <span class="font-semibold float-right">1.05</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Manual Coefficients -->
+                        <div>
+                            <h5 class="text-sm font-medium text-gray-700 mb-2">Hệ số do Quản lý đánh giá</h5>
+                            <ul class="space-y-2 text-sm">
+                                <li class="p-2 bg-gray-100 rounded-lg">
+                                    Hệ số Mức độ Đầu tư: <span class="font-semibold float-right">Khá (1.1)</span>
+                                </li>
+                                <li class="p-2 bg-gray-100 rounded-lg">
+                                    Hệ số Yêu cầu Hỗ trợ: <span class="font-semibold float-right">Cao (1.2)</span>
+                                </li>
+                                <li class="p-2 bg-gray-100 rounded-lg">
+                                    Hệ số Loại Hợp đồng: <span class="font-semibold float-right">Liên kết (1.15)</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Total Complexity -->
+                <div class="mt-4">
+                    <h4 class="text-lg font-semibold">Tổng Hệ số Phức tạp Vườn: <span class="text-[#69BD70]">1.5</span></h4>
+                    <h4 class="text-lg font-semibold">Phân loại Độ phức tạp: <span class="text-red-600">Cao</span></h4>
+                </div>
+            </div>
+          `;
+        } else {
+          modalEditButton.textContent = 'Thiết lập ngay';
+          modalEditButton.onclick = () =>
+            alert('Chuyển đến form thiết lập (chưa triển khai)');
+          modalContent.innerHTML = `
+            <div class="text-center p-4">
+                <svg class="mx-auto h-12 w-12 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <h3 class="mt-2 text-lg font-medium text-gray-900">Vườn chưa được cấu hình hệ số</h3>
+                <p class="mt-1 text-sm text-gray-500">
+                    Bạn cần thiết lập các quy tắc và đánh giá để hệ thống có thể tính toán độ phức tạp cho vườn này.
+                </p>
+            </div>
+          `;
+        }
+
+        modal.classList.add('active');
+      }
+
+      function closeModal() {
+        document.getElementById('gardenModal').classList.remove('active');
+      }
+    </script>
+  </body>
+</html>

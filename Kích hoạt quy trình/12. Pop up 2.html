@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chi tiết Công việc & Chi phí</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #69bd70;
+        --primary-dark: #5aa661;
+        --secondary-color: #4b5563;
+        --danger-color: #dc2626;
+        --warning-color: #d97706;
+        --purple-color: #7c3aed;
+        --indigo-color: #4f46e5;
+        --blue-color: #2563eb;
+        --orange-color: #f39c12;
+        --bg-light: #f9fafb;
+        --bg-white: #ffffff;
+        --border-color: #e5e7eb;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Noto Sans', sans-serif;
+        background: rgba(0, 0, 0, 0.5);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .modal-container {
+        background: var(--bg-light);
+        border-radius: 16px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 1200px;
+        max-height: 95vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .modal-header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--primary-dark) 100%
+        );
+        color: white;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+      }
+
+      .header-left h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .header-left p {
+        font-size: 0.875rem;
+        opacity: 0.9;
+      }
+
+      .close-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.25rem;
+        margin-left: 1rem;
+        transition: all 0.2s ease;
+      }
+      .close-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .modal-body {
+        overflow-y: auto;
+        flex: 1;
+        padding: 1.5rem;
+      }
+
+      .section {
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bg-white);
+        box-shadow: var(--shadow);
+      }
+
+      .section-header {
+        background: var(--bg-light);
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .section-cost {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .section-icon {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+      }
+
+      .section-body {
+        padding: 1.25rem;
+      }
+
+      .view-group {
+        margin-bottom: 1rem;
+      }
+
+      .view-label {
+        display: block;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.875rem;
+      }
+
+      .view-value {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        white-space: pre-wrap; /* To respect newlines in text */
+        background: #f8fafc;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+      }
+
+      .view-value a {
+        color: var(--blue-color);
+        text-decoration: none;
+      }
+      .view-value a:hover {
+        text-decoration: underline;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: white;
+        box-shadow: var(--shadow);
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--primary-dark) 100%
+        );
+      }
+
+      .item-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .item-title {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .item-badge {
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+
+      .cost-summary {
+        background: linear-gradient(135deg, #f0fdf4, #e6f8f0);
+        border: 1px solid var(--primary-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .cost-breakdown {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .cost-item {
+        text-align: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+      }
+
+      .cost-item-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary-dark);
+      }
+
+      .cost-item-label {
+        font-size: 0.8rem;
+        color: var(--text-light);
+        margin-top: 0.25rem;
+      }
+
+      .total-cost {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          #4d8e53 100%
+        );
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .total-cost-value {
+        font-size: 2rem;
+        font-weight: 800;
+      }
+
+      .total-cost-label {
+        font-size: 0.875rem;
+        opacity: 0.9;
+      }
+
+      .modal-footer {
+        background: var(--bg-light);
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        flex-shrink: 0;
+        gap: 0.75rem;
+      }
+
+      .item-tag {
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+      .item-tag.tag-orange {
+        background-color: var(--orange-color);
+      }
+      .item-tag.tag-green {
+        background-color: var(--primary-color);
+      }
+
+      .file-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: #f3f4f6;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+      }
+      .file-item a {
+        text-decoration: none;
+        color: var(--text-dark);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="modal-container">
+      <header class="modal-header">
+        <div class="header-left">
+          <h1>
+            <i class="fa-solid fa-circle-info"></i> Chi tiết Công việc & Chi phí
+          </h1>
+          <p><strong>Công việc:</strong> Làm đất và bón phân cơ bản</p>
+        </div>
+        <button class="close-btn" onclick="closeModal()">✕</button>
+      </header>
+
+      <div class="modal-body">
+        <!-- 1. TỔNG QUAN CHI PHÍ -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-sack-dollar"></i> Tổng quan chi
+              phí công việc
+            </h3>
+          </div>
+          <div class="section-body">
+            <div
+              class="cost-summary"
+              style="margin: 0; padding: 0; border: none; background: none"
+            >
+              <div class="cost-breakdown">
+                <div class="cost-item">
+                  <div class="cost-item-value">1.250.000 VNĐ</div>
+                  <div class="cost-item-label">Vật tư</div>
+                </div>
+                <div class="cost-item">
+                  <div class="cost-item-value">50.000 VNĐ</div>
+                  <div class="cost-item-label">Công cụ</div>
+                </div>
+                <div class="cost-item">
+                  <div class="cost-item-value">600.000 VNĐ</div>
+                  <div class="cost-item-label">Nhân công</div>
+                </div>
+                <div class="cost-item">
+                  <div class="cost-item-value">750.000 VNĐ</div>
+                  <div class="cost-item-label">Dịch vụ</div>
+                </div>
+              </div>
+              <div class="total-cost">
+                <div class="total-cost-value">2.650.000 VNĐ</div>
+                <div class="total-cost-label">TỔNG CHI PHÍ DỰ KIẾN</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. MÔ TẢ VÀ HƯỚNG DẪN -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-file-lines"></i> Mô tả và hướng
+              dẫn chi tiết
+            </h3>
+          </div>
+          <div class="section-body">
+            <div class="view-group">
+              <label class="view-label">Mô tả chi tiết công việc</label>
+              <div class="view-value">
+                Công việc này bao gồm các bước chuẩn bị đất trồng ban đầu, bao
+                gồm cày xới, làm phẳng bề mặt và bón lót các loại phân hữu cơ
+                cần thiết để cải tạo đất và cung cấp dinh dưỡng cho cây trồng
+                giai đoạn đầu.
+              </div>
+            </div>
+            <div class="view-group">
+              <label class="view-label">Hướng dẫn từng bước</label>
+              <div class="view-value">
+                Bước 1: Sử dụng máy cày để xới sâu đất khoảng 20-30cm. Bước 2:
+                Dùng cào để làm phẳng bề mặt đất, loại bỏ các cục đất to. Bước
+                3: Rải đều phân hữu cơ đã chuẩn bị lên bề mặt.
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="view-group">
+                <label class="view-label">Link video hướng dẫn</label>
+                <div class="view-value">
+                  <a href="https://youtube.com" target="_blank"
+                    >https://youtube.com/watch?v=example</a
+                  >
+                </div>
+              </div>
+              <div class="view-group">
+                <label class="view-label">Link tài liệu tham khảo</label>
+                <div class="view-value">
+                  <a href="https://example.com" target="_blank"
+                    >https://nongnghiep.vn/huong-dan-bon-phan</a
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="view-group">
+              <label class="view-label">Tài liệu đính kèm</label>
+              <div class="file-list">
+                <div class="file-item">
+                  <i class="fa-solid fa-file-pdf"></i>
+                  <a href="#" target="_blank">quy_trinh_lam_dat.pdf</a>
+                </div>
+                <div class="file-item">
+                  <i class="fa-solid fa-file-image"></i>
+                  <a href="#" target="_blank">so_do_khu_vuc.jpg</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. THAM SỐ KỸ THUẬT -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-ruler-combined"></i> Tham số kỹ
+              thuật và tính toán
+            </h3>
+          </div>
+          <div class="section-body">
+            <div class="item-card">
+              <div class="item-header" style="border: none; padding-bottom: 0">
+                <h4 class="item-title">Lượng phân bón lót</h4>
+              </div>
+              <div
+                class="form-grid"
+                style="grid-template-columns: repeat(3, 1fr)"
+              >
+                <div class="view-group">
+                  <label class="view-label">Giá trị</label>
+                  <div class="view-value">500</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Đơn vị</label>
+                  <div class="view-value">kg/ha</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Diện tích áp dụng</label>
+                  <div class="view-value">2.5 ha</div>
+                </div>
+              </div>
+              <div class="view-group">
+                <label class="view-label">Công thức tính</label>
+                <div class="view-value">
+                  Tổng lượng bón = [Giá trị] * [Diện tích áp dụng]
+                </div>
+              </div>
+              <div class="view-group" style="margin-bottom: 0">
+                <label class="view-label">Kết quả tính toán</label>
+                <div
+                  class="view-value"
+                  style="
+                    background-color: #eef2ff;
+                    color: #4338ca;
+                    font-weight: 600;
+                  "
+                >
+                  1250 kg
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. ĐIỀU KIỆN KÍCH HOẠT -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-arrow-right-arrow-left"></i>
+              Điều kiện kích hoạt tiến hành
+            </h3>
+          </div>
+          <div class="section-body">
+            <div class="item-card">
+              <div class="item-header" style="border-bottom: none">
+                <div class="item-title">
+                  <span class="item-tag tag-orange">Tuần tự</span>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="view-group">
+                  <label class="view-label">Công việc tiên quyết</label>
+                  <div class="view-value">Bón vôi</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Thời gian chờ</label>
+                  <div class="view-value">7 ngày</div>
+                </div>
+              </div>
+            </div>
+            <div class="item-card">
+              <div class="item-header" style="border-bottom: none">
+                <div class="item-title">
+                  <span class="item-tag tag-green">Môi trường</span>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="view-group">
+                  <label class="view-label">Nhiệt độ (°C)</label>
+                  <div class="view-value">22 - 32</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Độ ẩm đất (%)</label>
+                  <div class="view-value">60 - 75</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. VẬT TƯ SỬ DỤNG -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-flask-vial"></i> Vật tư sử dụng
+            </h3>
+            <div class="section-cost">1.250.000 VNĐ</div>
+          </div>
+          <div class="section-body">
+            <div class="item-card">
+              <div class="item-header">
+                <h4 class="item-title">
+                  <span
+                    class="item-badge"
+                    style="background-color: var(--primary-color)"
+                    >Vật tư 1</span
+                  >
+                  Phân hữu cơ ABC
+                </h4>
+              </div>
+              <div
+                class="form-grid"
+                style="grid-template-columns: 2fr 1fr 1fr 1fr"
+              >
+                <div class="view-group">
+                  <label class="view-label">Nhà cung cấp</label>
+                  <div class="view-value">Công ty Nông Nghiệp Xanh</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Số lượng</label>
+                  <div class="view-value">50 túi</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Đơn giá</label>
+                  <div class="view-value">25.000 VNĐ/túi</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Thành tiền</label>
+                  <div class="view-value">1.250.000 VNĐ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. CÔNG CỤ CẦN THIẾT -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-helmet-safety"></i> Công cụ cần
+              thiết
+            </h3>
+            <div class="section-cost">50.000 VNĐ</div>
+          </div>
+          <div class="section-body">
+            <div class="item-card">
+              <div class="item-header">
+                <h4 class="item-title">
+                  <span
+                    class="item-badge"
+                    style="background-color: var(--primary-color)"
+                    >Công cụ 1</span
+                  >
+                  Cuốc, xẻng
+                </h4>
+              </div>
+              <div class="form-grid" style="grid-template-columns: 1fr 1fr 1fr">
+                <div class="view-group">
+                  <label class="view-label">Số lượng</label>
+                  <div class="view-value">5 cái</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Chi phí/Khấu hao</label>
+                  <div class="view-value">10.000 VNĐ/cái</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Thành tiền</label>
+                  <div class="view-value">50.000 VNĐ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. NHÂN CÔNG -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-users"></i> Nhân công
+            </h3>
+            <div class="section-cost">600.000 VNĐ</div>
+          </div>
+          <div class="section-body">
+            <div class="item-card">
+              <div class="item-header">
+                <h4 class="item-title">
+                  <span
+                    class="item-badge"
+                    style="background-color: var(--purple-color)"
+                    >Nhân công 1</span
+                  >
+                  Nguyễn Văn A
+                </h4>
+              </div>
+              <div
+                class="form-grid"
+                style="grid-template-columns: 1fr 1fr 1fr 1fr"
+              >
+                <div class="view-group">
+                  <label class="view-label">Loại công việc</label>
+                  <div class="view-value">Làm đất, bón phân</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Số lượng</label>
+                  <div class="view-value">2 ngày công</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Thù lao</label>
+                  <div class="view-value">300.000 VNĐ/ngày</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Thành tiền</label>
+                  <div class="view-value">600.000 VNĐ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8. THUÊ KHOÁN DỊCH VỤ -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-truck-fast"></i> Thuê khoán
+              dịch vụ
+            </h3>
+            <div class="section-cost">750.000 VNĐ</div>
+          </div>
+          <div class="section-body">
+            <div class="item-card">
+              <div class="item-header">
+                <h4 class="item-title">
+                  <span
+                    class="item-badge"
+                    style="background-color: var(--indigo-color)"
+                    >Dịch vụ 1</span
+                  >
+                  Thuê máy cày
+                </h4>
+              </div>
+              <div
+                class="form-grid"
+                style="grid-template-columns: 2fr 1fr 1fr 1fr"
+              >
+                <div class="view-group">
+                  <label class="view-label">Nhà cung cấp</label>
+                  <div class="view-value">Hợp tác xã XYZ</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Số lượng</label>
+                  <div class="view-value">1 chuyến</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Đơn giá</label>
+                  <div class="view-value">750.000 VNĐ/chuyến</div>
+                </div>
+                <div class="view-group">
+                  <label class="view-label">Thành tiền</label>
+                  <div class="view-value">750.000 VNĐ</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 9. GHI CHÚ AN TOÀN -->
+        <div class="section">
+          <div class="section-header">
+            <h3 class="section-title">
+              <i class="section-icon fa-solid fa-triangle-exclamation"></i> Ghi
+              chú an toàn
+            </h3>
+          </div>
+          <div class="section-body">
+            <div class="view-group">
+              <label class="view-label" style="color: #b45309"
+                >Lưu ý an toàn quan trọng</label
+              >
+              <div
+                class="view-value"
+                style="background: #fffbeb; border-color: #fde68a"
+              >
+                Luôn sử dụng đồ bảo hộ cá nhân đầy đủ. Kiểm tra máy móc trước
+                khi vận hành.
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="view-group">
+                <label class="view-label">Thiết bị bảo hộ bắt buộc</label>
+                <div class="view-value">
+                  Găng tay, khẩu trang, kính bảo hộ, ủng.
+                </div>
+              </div>
+              <div class="view-group">
+                <label class="view-label">Cấm thực hiện khi</label>
+                <div class="view-value">
+                  Trời mưa to, gió lớn, hoặc khi có cảnh báo thời tiết xấu.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="closeModal()">
+          <i class="fa-solid fa-check"></i> Đóng
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function closeModal() {
+        // In a real app, you would destroy or hide the modal.
+        // For this example, we'll just make it disappear.
+        document.querySelector('.modal-container').style.display = 'none';
+        document.body.style.background = 'transparent';
+      }
+    </script>
+  </body>
+</html>
